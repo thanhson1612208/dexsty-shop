@@ -6,21 +6,11 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Bảng thông báo tùy chỉnh */
+        /* GIỮ NGUYÊN CSS CỦA NÍ */
         #customAlert.modal { display: none; }
-        .alert-content { 
-            background: #0f172a; padding: 25px; border-radius: 20px; 
-            width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; 
-        }
-        :root { 
-            --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; 
-            --gold: #fbbf24; --hot: #ff4757; --text: #f8fafc;
-        }
-        body { 
-            margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-        }
+        .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
+        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --text: #f8fafc; }
+        body { margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
         .logo-container { display: flex; align-items: center; text-decoration: none; }
@@ -100,6 +90,13 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
+
+    // FIX: Đưa các hàm Firebase ra Global để các nút bấm onclick nhận được
+    window.rtdb = rtdb;
+    window.ref = ref;
+    window.set = set;
+    window.get = get;
+    window.update = update;
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
@@ -185,24 +182,42 @@
         {n: "Bomb", p: 31000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Bomb_Fruit_Icon.png"},
         {n: "Spring", p: 26000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spring_Fruit_Icon.png"},
         {n: "Chop", p: 15000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/c/c4/Chop_Fruit_Icon.png"},
-        {n: "Spin", p: 12000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spin_Fruit_Icon.png"},
+        {n: "Spin", p: 12000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spin_Spin_Icon.png"},
         {n: "Rocket", p: 8000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/5/5e/Rocket_Fruit_Icon.png"}
     ];
 
     window.buyItem = async (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         try {
-            const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
-            const snapshot = await get(userRef);
+            // Sử dụng các hàm từ window đã được gán phía trên
+            const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
+            const snapshot = await window.get(userRef);
             const b = snapshot.val()?.balance || 0;
-            if(b < p) return showAlert(`Số dư không đủ!`);
-            if(confirm(`Mua ${n} giá ${p.toLocaleString()}đ?`)) {
+            
+            if(b < p) return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`);
+            
+            if(confirm(`Ní chắc chắn muốn mua ${n} giá ${p.toLocaleString()}đ?`)) {
                 const nb = b - p;
-                await update(userRef, { balance: nb });
-                await set(ref(rtdb, 'orders/' + Date.now()), { uid: auth.currentUser.uid, email: auth.currentUser.email, item: n, price: p });
-                showAlert(`Mua thành công!`);
+                
+                // 1. Trừ tiền
+                await window.update(userRef, { balance: nb });
+                
+                // 2. Ghi đơn hàng (Phải ghi vào đúng nhánh 'orders')
+                const orderId = Date.now();
+                await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
+                    uid: auth.currentUser.uid, 
+                    email: auth.currentUser.email, 
+                    item: n, 
+                    price: p,
+                    status: "Chờ phát đồ"
+                });
+                
+                showAlert(`Mua thành công! Số dư còn lại: ${nb.toLocaleString()}đ.`);
             }
-        } catch (err) { showAlert("Lỗi: " + err.message); }
+        } catch (err) { 
+            showAlert("Lỗi giao dịch: " + err.message); 
+            console.error(err);
+        }
     };
 
     function render() {
