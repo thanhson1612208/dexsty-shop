@@ -35,15 +35,15 @@
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
-        
-        /* CSS MỚI CHO TOP NẠP */
-        .top-deposit-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 15px; padding: 15px; margin-top: 20px; }
-        .top-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+
+        /* CSS CHO BẢNG TOP NẠP */
+        .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .top-row:last-child { border: none; }
-        .rank { width: 30px; font-weight: 900; }
-        .rank-1 { color: #fbbf24; text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
-        .user-name { flex: 1; color: #cbd5e1; }
-        .amount { color: #22c55e; font-weight: 700; }
+        .rank { font-weight: 900; width: 30px; }
+        .rank-1 { color: var(--gold); }
+        .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
+        .amount { color: var(--success); font-weight: 700; }
 
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
     </style>
@@ -94,8 +94,8 @@
 
 <div class="container">
     <div class="section-title">🏆 Top Nạp Đại Gia</div>
-    <div class="top-deposit-card" id="top-deposit-list">
-        <div style="text-align: center; color: gray;">Đang tải bảng xếp hạng...</div>
+    <div id="top-deposit-list" class="top-deposit-card">
+        <div style="text-align: center; color: gray; padding: 10px;">Đang tải bảng xếp hạng...</div>
     </div>
 
     <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
@@ -120,52 +120,12 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    // XUẤT RA WINDOW ĐỂ DÙNG
     window.rtdb = rtdb;
     window.ref = ref;
+    window.set = set;
+    window.get = get;
     window.update = update;
-    window.increment = increment; // Quan trọng để cộng dồn tiền
-
-    // HÀM HIỂN THỊ TOP NẠP
-    function loadTopDeposit() {
-        // Lấy 5 người có totalDeposit cao nhất
-        const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
-        onValue(topRef, (snapshot) => {
-            const data = snapshot.val();
-            const listArea = document.getElementById('top-deposit-list');
-            if(!data) {
-                listArea.innerHTML = "<div style='text-align:center; color:gray;'>Chưa có đại gia nào xuất hiện!</div>";
-                return;
-            }
-
-            // Chuyển về mảng và sắp xếp giảm dần
-            const sorted = Object.values(data)
-                .filter(u => u.totalDeposit > 0)
-                .sort((a, b) => b.totalDeposit - a.totalDeposit);
-
-            listArea.innerHTML = '';
-            sorted.forEach((u, i) => {
-                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-                const name = u.email ? u.email.split('@')[0] : "User";
-                listArea.innerHTML += `
-                    <div class="top-row">
-                        <div class="rank ${i<3?'rank-1':''}">${medal}</div>
-                        <div class="user-name">${name}***</div>
-                        <div class="amount">${u.totalDeposit.toLocaleString()}đ</div>
-                    </div>
-                `;
-            });
-        });
-    }
-
-    /* MẸO CHO NÍ (ADMIN):
-       Khi ní dùng một trang Admin hoặc Console để cộng tiền cho khách, hãy dùng đoạn code này:
-       
-       update(ref(rtdb, 'users/' + userUID), {
-           balance: increment(100000),      // Cộng 100k vào số dư hiện tại
-           totalDeposit: increment(100000) // Tự động tạo hoặc cộng dồn vào tổng nạp
-       });
-    */
+    window.increment = increment;
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
@@ -239,7 +199,7 @@
             if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
             else {
                 const res = await createUserWithEmailAndPassword(auth, e, p);
-                // Khởi tạo luôn totalDeposit = 0 khi đăng ký
+                // Khởi tạo cả balance và totalDeposit khi đăng ký mới
                 await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, totalDeposit: 0, email: e });
             }
             window.closeModal('authModal');
@@ -261,7 +221,44 @@
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
     });
 
-    // MẢNG VẬT PHẨM GIỮ NGUYÊN (NÍ CÓ THỂ THÊM BỚT)
+    // HÀM LOAD BẢNG XẾP HẠNG
+    function loadTopDeposit() {
+        const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
+        onValue(topRef, (snapshot) => {
+            const listArea = document.getElementById('top-deposit-list');
+            const data = snapshot.val();
+            if(!data) {
+                listArea.innerHTML = '<div style="text-align:center; color:gray; padding:10px;">Chưa có dữ liệu xếp hạng.</div>';
+                return;
+            }
+
+            const sorted = Object.entries(data)
+                .map(([id, val]) => ({ id, ...val }))
+                .filter(u => u.totalDeposit > 0)
+                .sort((a, b) => b.totalDeposit - a.totalDeposit);
+
+            if(sorted.length === 0) {
+                listArea.innerHTML = '<div style="text-align:center; color:gray; padding:10px;">Hãy là người đầu tiên lên Top!</div>';
+                return;
+            }
+
+            listArea.innerHTML = '';
+            sorted.forEach((u, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+                const name = u.email ? u.email.split('@')[0] : "User";
+                listArea.innerHTML += `
+                    <div class="top-row">
+                        <div>
+                            <span class="rank ${i<3?'rank-1':''}">${medal}</span>
+                            <span class="user-name">${name}***</span>
+                        </div>
+                        <div class="amount">${(u.totalDeposit || 0).toLocaleString()}đ</div>
+                    </div>
+                `;
+            });
+        });
+    }
+
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://tr.rbxcdn.com/4f728c707d0f1710972410a823c4a631/150/150/Image/Png"},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://tr.rbxcdn.com/17799d5059d486014e5900216790901e/150/150/Image/Png"},
@@ -274,17 +271,17 @@
         {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
         {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
         {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"},
-        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"},
+        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg "},
         {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"},
         {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"},
-        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"},
-        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/RdG22Ra.jpeg"},
+        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg "},
+        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/RdG22Ra.jpeg "},
         {n: "Dough", p: 341000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/4/4c/Dough_Fruit_Icon.png"},
         {n: "Mammoth", p: 332000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/6/6x/Mammoth_Fruit_Icon.png"},
         {n: "T-Rex", p: 332000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/2/2x/T-Rex_Fruit_Icon.png"},
         {n: "Gravity", p: 326000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/g/g0/Gravity_Fruit_Icon.png"},
         {n: "Blizzard", p: 320000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/3/3x/Blizzard_Fruit_Icon.png"},
-        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"},
+        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg "},
         {n: "Rumble", p: 307000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/6/6v/Rumble_Fruit_Icon.png"},
         {n: "Portal", p: 291000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Portal_Fruit_Icon.png"},
         {n: "Phoenix", p: 291000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/p/p4/Phoenix_Fruit_Icon.png"},
@@ -364,7 +361,7 @@
             card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
-        loadTopDeposit(); // Chạy hàm load top nạp
+        loadTopDeposit(); // Khởi chạy bảng xếp hạng
     }
     render();
 </script>
