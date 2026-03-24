@@ -91,7 +91,6 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    // FIX: Đưa các hàm Firebase ra Global để các nút bấm onclick nhận được
     window.rtdb = rtdb;
     window.ref = ref;
     window.set = set;
@@ -189,7 +188,6 @@
     window.buyItem = async (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         try {
-            // Sử dụng các hàm từ window đã được gán phía trên
             const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
             const snapshot = await window.get(userRef);
             const b = snapshot.val()?.balance || 0;
@@ -202,7 +200,7 @@
                 // 1. Trừ tiền
                 await window.update(userRef, { balance: nb });
                 
-                // 2. Ghi đơn hàng (Phải ghi vào đúng nhánh 'orders')
+                // 2. Ghi đơn hàng vào Firebase
                 const orderId = Date.now();
                 await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
                     uid: auth.currentUser.uid, 
@@ -211,8 +209,31 @@
                     price: p,
                     status: "Chờ phát đồ"
                 });
+
+                // 3. Gửi thông báo đến Discord Webhook
+                const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: "Dexsty Shop - ĐƠN MỚI",
+                        avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
+                        embeds: [{
+                            title: "🛒 CÓ ĐƠN HÀNG MỚI!",
+                            color: 5814783,
+                            fields: [
+                                { name: "👤 Khách hàng", value: auth.currentUser.email, inline: true },
+                                { name: "🎁 Vật phẩm", value: n, inline: true },
+                                { name: "💰 Giá tiền", value: p.toLocaleString() + "đ", inline: false },
+                                { name: "🆔 UID Khách", value: auth.currentUser.uid, inline: false }
+                            ],
+                            footer: { text: "Hệ thống tự động Dexsty Shop" },
+                            timestamp: new Date().toISOString()
+                        }]
+                    })
+                });
                 
-                showAlert(`Mua thành công! Số dư còn lại: ${nb.toLocaleString()}đ.`);
+                showAlert(`Mua thành công! Check Discord đi ní ơi.`);
             }
         } catch (err) { 
             showAlert("Lỗi giao dịch: " + err.message); 
