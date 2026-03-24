@@ -56,8 +56,8 @@
             <img id="qrImg" src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%; height: auto;">
         </div>
         <p style="font-size: 13px; color: #cbd5e1;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
-        <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px;">(Tiền sẽ được cộng sau 1-5 phút khi shop kiểm tra đơn)</p>
-        <button class="btn-submit" onclick="window.closeModal('depositModal')">ĐÓNG</button>
+        <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN</button>
+        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
 
@@ -114,14 +114,12 @@
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    // FIX: Hàm ShowAlert mới hỗ trợ đổi màu theo trạng thái
     window.showAlert = (msg, isSuccess = false) => {
         const box = document.getElementById('alertBox');
         const icon = document.getElementById('alertIcon');
         const title = document.getElementById('alertTitle');
         const btn = document.getElementById('alertBtn');
         const message = document.getElementById('alertMessage');
-
         const color = isSuccess ? "#22c55e" : "#ff4757";
         box.style.borderColor = color;
         title.style.color = color;
@@ -130,7 +128,6 @@
         icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
         btn.style.background = color;
         message.innerText = msg;
-        
         document.getElementById('customAlert').style.display = 'flex';
     };
 
@@ -138,6 +135,38 @@
         if(!auth.currentUser) return window.openAuthModal();
         document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
         document.getElementById('depositModal').style.display = 'flex';
+    };
+
+    // HÀM GỬI WEBHOOK NẠP TIỀN
+    window.sendDepositWebhook = async () => {
+        const user = auth.currentUser;
+        if(!user) return;
+        const depositContent = "NAP " + user.email;
+        const webhookDeposit = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+        
+        try {
+            await fetch(webhookDeposit, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - NẠP TIỀN",
+                    avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
+                    embeds: [{
+                        title: "💰 YÊU CẦU NẠP TIỀN MỚI!",
+                        color: 2278750,
+                        fields: [
+                            { name: "👤 Khách hàng", value: user.email, inline: true },
+                            { name: "📝 Nội dung CK", value: depositContent, inline: true },
+                            { name: "🆔 UID", value: user.uid, inline: false }
+                        ],
+                        footer: { text: "Vui lòng check bank và cộng tiền cho khách" },
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+            window.closeModal('depositModal');
+            showAlert("Đã gửi yêu cầu nạp tiền! Vui lòng đợi shop kiểm tra nhé ní.", true);
+        } catch (e) { showAlert("Lỗi gửi yêu cầu: " + e.message); }
     };
 
     let authMode = 'login';
@@ -233,13 +262,10 @@
             const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
             const snapshot = await window.get(userRef);
             const b = snapshot.val()?.balance || 0;
-            
             if(b < p) return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`);
-            
             if(confirm(`Ní chắc chắn muốn mua ${n} giá ${p.toLocaleString()}đ?`)) {
                 const nb = b - p;
                 await window.update(userRef, { balance: nb });
-                
                 const orderId = Date.now();
                 await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
                     uid: auth.currentUser.uid, 
@@ -248,7 +274,6 @@
                     price: p,
                     status: "Chờ phát đồ"
                 });
-
                 const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -270,14 +295,9 @@
                         }]
                     })
                 });
-                
-                // HIỆN THÔNG BÁO MÀU XANH LÁ
                 showAlert(`Đặt mua thành công. Shop sẽ done đơn nhanh nhất có thể`, true);
             }
-        } catch (err) { 
-            showAlert("Lỗi giao dịch: " + err.message); 
-            console.error(err);
-        }
+        } catch (err) { showAlert("Lỗi giao dịch: " + err.message); }
     };
 
     function render() {
