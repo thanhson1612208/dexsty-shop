@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dexsty Shop - Roblox Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Bảng thông báo tùy chỉnh */
+        #customAlert.modal { display: none; }
+        .alert-content { 
+            background: #0f172a; padding: 25px; border-radius: 20px; 
+            width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; 
+        }
+        .btn-alert { 
+            width: 100%; padding: 12px; border-radius: 12px; border: none; 
+            background: #38bdf8; color: #000; font-weight: 800; cursor: pointer; margin-top: 15px;
+        }
+
+        :root { 
+            --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; 
+            --gold: #fbbf24; --hot: #ff4757; --text: #f8fafc;
+        }
+        body { 
+            margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        /* NAVBAR & LOGO */
+        .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
+        .logo-container { display: flex; align-items: center; text-decoration: none; }
+        .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
+        .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
+        
+        /* GRID & CARDS */
+        .container { padding: 0 5%; max-width: 1200px; margin: auto; }
+        .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; overflow: hidden; }
+        .card img { width: 85px; height: 85px; object-fit: contain; margin-bottom: 10px; }
+        .price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
+        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; }
+
+        /* MODALS CHUNG */
+        .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+
+        /* STYLE RIÊNG CHO BẢNG CHÀO MỪNG */
+        .event-header { color: var(--gold); font-size: 20px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .reward-box { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); border-radius: 12px; padding: 15px; margin: 15px 0; text-align: left; }
+        .reward-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .reward-rank { font-weight: 800; color: var(--sky); }
+        .reward-value { font-weight: 700; color: var(--gold); }
+        .welcome-logo { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 10px; border: 2px solid var(--sky); mix-blend-mode: screen; }
+
+        /* TAB AUTH */
+        .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
+        .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; }
+        .auth-tab.active { background: var(--sky); color: #000; }
+        .modal-content input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
+        .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
+
+        .nav-right { display: flex; gap: 10px; align-items: center; }
+        .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
+        .btn-login { background: var(--sky); color: #000; }
+        .btn-logout { background: #ff4757; color: #fff; }
+
+        @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
+    </style>
+</head>
+<body>
+<div id="customAlert" class="modal">
+    <div class="modal-content" style="border-color: #ff4757; max-width: 320px;">
+        <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <h3 id="alertTitle" style="color: #ff4757; margin-bottom: 10px;">THÔNG BÁO</h3>
+        <p id="alertMessage" style="color: #cbd5e1; font-size: 15px; line-height: 1.5;"></p>
+        <button class="btn-submit" style="background: #ff4757; color: white; margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+    </div>
+</div>
+<div id="welcomeModal" class="modal" style="display: flex;">
+    <div class="modal-content">
+        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        <div class="event-header">
+            <i class="fas fa-crown"></i> THÔNG BÁO SỰ KIỆN <i class="fas fa-crown"></i>
+        </div>
+        <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Chào mừng ní đến với <b>DEXSTY SHOP</b>! Hiện đang diễn ra sự kiện đua Top nạp thẻ tháng này:</p>
+        
+        <div class="reward-box">
+            <div style="text-align: center; font-weight: 900; color: var(--sky); margin-bottom: 10px; border-bottom: 1px solid rgba(56,189,248,0.3); padding-bottom: 5px;">🏆 PHẦN THƯỞNG TOP NẠP 🏆</div>
+            <div class="reward-item">
+                <span class="reward-rank">🥇 TOP 1:</span>
+                <span class="reward-value">1,000 Robux</span>
+            </div>
+            <div class="reward-item">
+                <span class="reward-rank">🥈 TOP 2:</span>
+                <span class="reward-value">1 Cây Yoru (Dark Blade)</span>
+            </div>
+            <div class="reward-item">
+                <span class="reward-rank">🥉 TOP 3:</span>
+                <span class="reward-value">+1 Slot chứa rương</span>
+            </div>
+        </div>
+
+        <p style="font-size: 12px; color: #94a3b8; font-style: italic; margin-bottom: 15px;">Hệ thống tự động 24/7 - Uy tín tạo nên thương hiệu!</p>
+        <button class="btn-submit" onclick="window.closeModal('welcomeModal')">VÀO SHOP ĐUA TOP NGAY</button>
+    </div>
+</div>
+
+<nav class="navbar">
+    <a href="#" class="logo-container">
+        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img">
+        <span class="logo-text">DEXSTY SHOP</span>
+    </a>
+    <div id="auth-ui" class="nav-right"></div>
+</nav>
+
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <div class="auth-tabs">
+            <div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div>
+            <div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div>
+        </div>
+        <input type="email" id="email" placeholder="Email...">
+        <input type="password" id="password" placeholder="Mật khẩu...">
+        <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button>
+        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
+    <div id="gp-grid" class="grid"></div>
+    <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn (48 Trái)</div>
+    <div id="fruit-grid" class="grid"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
+
+    let authMode = 'login';
+
+    window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+    window.showAlert = (msg) => {
+        document.getElementById('alertMessage').innerText = msg;
+        document.getElementById('customAlert').style.display = 'flex';
+    };
+
+    window.setAuthMode = (mode) => {
+        authMode = mode;
+        document.getElementById('tab-login').className = `auth-tab ${mode === 'login' ? 'active' : ''}`;
+        document.getElementById('tab-register').className = `auth-tab ${mode === 'register' ? 'active' : ''}`;
+        document.getElementById('auth-btn-text').innerText = mode === 'login' ? 'XÁC NHẬN ĐĂNG NHẬP' : 'XÁC NHẬN ĐĂNG KÝ';
+    };
+
+    window.processAuth = async () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        if(!e || !p) return showAlert("Nhập đủ thông tin ní ơi!");
+        try {
+            if(authMode === 'login') {
+                await signInWithEmailAndPassword(auth, e, p);
+            } else {
+                const res = await createUserWithEmailAndPassword(auth, e, p);
+                await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, email: e });
+            }
+            window.closeModal('authModal');
+        } catch (err) { showAlert(err.message); }
+    };
+
+    window.logout = () => signOut(auth).then(() => location.reload());
+
+    onAuthStateChanged(auth, (u) => {
+        const ui = document.getElementById('auth-ui');
+        if(u) {
+            // SỬA LỖI TẠI ĐÂY: Sử dụng onValue để lắng nghe sự thay đổi tiền ngay lập tức
+            onValue(ref(rtdb, 'users/' + u.uid), (snapshot) => {
+                const data = snapshot.val();
+                const b = data?.balance || 0;
+                ui.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b>
+                        <button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>
+                    </div>
+                `;
+            });
+        } else {
+            ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`;
+        }
+    });
+
+    const allItems = [
+        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://tr.rbxcdn.com/4f728c707d0f1710972410a823c4a631/150/150/Image/Png"},
+        {n: "Dark Blade", p: 170000, t: "gp", i: "https://tr.rbxcdn.com/17799d5059d486014e5900216790901e/150/150/Image/Png"},
+        {n: "x2 Money", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/264584283597a7388756c6970f90e386/150/150/Image/Png"},
+        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/626d70a3161f36471e49d68128331773/150/150/Image/Png"},
+        {n: "+1 Storage", p: 62000, t: "gp", i: "https://tr.rbxcdn.com/7123497f1f77e68202537f80f7d54988/150/150/Image/Png"},
+        {n: "Fast Boats", p: 55000, t: "gp", i: "https://tr.rbxcdn.com/47d81a8b988f57f6d2218868a29a0076/150/150/Image/Png"},
+        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://tr.rbxcdn.com/f04746688b150937c449197992985868/150/150/Image/Png"},
+        {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
+        {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
+        {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
+        {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"},
+        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg "},
+        {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"},
+        {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"},
+        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg "},
+        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/RdG22Ra.jpeg "},
+        {n: "Dough", p: 341000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/4/4c/Dough_Fruit_Icon.png"},
+        {n: "Mammoth", p: 332000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/6/6x/Mammoth_Fruit_Icon.png"},
+        {n: "T-Rex", p: 332000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/2/2x/T-Rex_Fruit_Icon.png"},
+        {n: "Gravity", p: 326000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/g/g0/Gravity_Fruit_Icon.png"},
+        {n: "Blizzard", p: 320000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/3/3x/Blizzard_Fruit_Icon.png"},
+        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg "},
+        {n: "Rumble", p: 307000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/6/6v/Rumble_Fruit_Icon.png"},
+        {n: "Portal", p: 291000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Portal_Fruit_Icon.png"},
+        {n: "Phoenix", p: 291000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/p/p4/Phoenix_Fruit_Icon.png"},
+        {n: "Sound", p: 278000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s0/Sound_Fruit_Icon.png"},
+        {n: "Spider", p: 264000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spider_Fruit_Icon.png"},
+        {n: "Quake", p: 252000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/q/q4/Quake_Fruit_Icon.png"},
+        {n: "Love", p: 244000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/l/l4/Love_Fruit_Icon.png"},
+        {n: "Buddha", p: 239000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/1/17/Buddha_Fruit_Icon.png"},
+        {n: "Magma", p: 200000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/d/df/Magma_Fruit_Icon.png"},
+        {n: "Barrier", p: 178000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Barrier_Fruit_Icon.png"},
+        {n: "Rubber", p: 168000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/r/r4/Rubber_Fruit_Icon.png"},
+        {n: "Light", p: 156000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/l/l0/Light_Fruit_Icon.png"},
+        {n: "Diamond", p: 142000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/d/d4/Diamond_Fruit_Icon.png"},
+        {n: "Ghost", p: 137000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/g/g4/Ghost_Fruit_Icon.png"},
+        {n: "Dark", p: 134000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/d/d4/Dark_Fruit_Icon.png"},
+        {n: "Sand", p: 121000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Sand_Fruit_Icon.png"},
+        {n: "Falcon", p: 121000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/f/f4/Falcon_Fruit_Icon.png"},
+        {n: "Ice", p: 108000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/i/i0/Ice_Fruit_Icon.png"},
+        {n: "Flame", p: 76000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/f/f0/Flame_Fruit_Icon.png"},
+        {n: "Spike", p: 52000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spike_Fruit_Icon.png"},
+        {n: "Smoke", p: 35000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Smoke_Fruit_Icon.png"},
+        {n: "Bomb", p: 31000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Bomb_Fruit_Icon.png"},
+        {n: "Spring", p: 26000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spring_Fruit_Icon.png"},
+        {n: "Chop", p: 15000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/c/c4/Chop_Fruit_Icon.png"},
+        {n: "Spin", p: 12000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spin_Fruit_Icon.png"},
+        {n: "Rocket", p: 8000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/5/5e/Rocket_Fruit_Icon.png"}
+    ];
+
+    window.buyItem = async (n, p) => {
+        if(!auth.currentUser) return window.openAuthModal();
+        try {
+            const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+            const s = await get(userRef);
+            const b = s.val()?.balance || 0;
+            
+            if(b < p) return showAlert("Số dư không đủ ní ơi!");
+            
+            if(confirm(`Mua ${n} giá ${p.toLocaleString()}đ?`)) {
+                await update(userRef, { balance: b - p });
+                showAlert("Mua thành công!");
+            }
+        } catch (err) { 
+            console.error(err);
+            showAlert("Lỗi: " + (err.message.includes("permission") ? "Chỉ Admin mới có quyền thực hiện!" : err.message));
+        }
+    };
+
+    function render() {
+        const gp = document.getElementById('gp-grid');
+        const fr = document.getElementById('fruit-grid');
+        allItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
+            if(item.t === 'f') fr.appendChild(card);
+            else gp.appendChild(card);
+        });
+    }
+    render();
+</script>
+</body>
+</html>
+ 
