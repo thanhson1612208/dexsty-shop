@@ -9,7 +9,7 @@
         /* GIỮ NGUYÊN CSS CỦA NÍ */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
-        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --text: #f8fafc; }
+        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
         body { margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
@@ -34,16 +34,30 @@
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
+        .btn-deposit { background: #22c55e; color: #fff; }
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
     </style>
 </head>
 <body>
+
 <div id="customAlert" class="modal">
-    <div class="modal-content" style="border-color: #ff4757; max-width: 320px;">
-        <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-circle"></i></div>
+    <div class="modal-content" id="alertBox" style="border-color: #ff4757; max-width: 320px;">
+        <div id="alertIcon" style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-circle"></i></div>
         <h3 id="alertTitle" style="color: #ff4757; margin-bottom: 10px;">THÔNG BÁO</h3>
         <p id="alertMessage" style="color: #cbd5e1; font-size: 15px; line-height: 1.5;"></p>
-        <button class="btn-submit" style="background: #ff4757; color: white; margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+        <button id="alertBtn" class="btn-submit" style="background: #ff4757; color: white; margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+    </div>
+</div>
+
+<div id="depositModal" class="modal">
+    <div class="modal-content" style="max-width: 350px;">
+        <h3 style="color: #22c55e;">NẠP TIỀN QUA VIETQR</h3>
+        <div style="background: white; padding: 10px; border-radius: 10px; margin: 15px 0;">
+            <img id="qrImg" src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%; height: auto;">
+        </div>
+        <p style="font-size: 13px; color: #cbd5e1;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
+        <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px;">(Tiền sẽ được cộng sau 1-5 phút khi shop kiểm tra đơn)</p>
+        <button class="btn-submit" onclick="window.closeModal('depositModal')">ĐÓNG</button>
     </div>
 </div>
 
@@ -99,7 +113,32 @@
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-    window.showAlert = (msg) => { document.getElementById('alertMessage').innerText = msg; document.getElementById('customAlert').style.display = 'flex'; };
+
+    // FIX: Hàm ShowAlert mới hỗ trợ đổi màu theo trạng thái
+    window.showAlert = (msg, isSuccess = false) => {
+        const box = document.getElementById('alertBox');
+        const icon = document.getElementById('alertIcon');
+        const title = document.getElementById('alertTitle');
+        const btn = document.getElementById('alertBtn');
+        const message = document.getElementById('alertMessage');
+
+        const color = isSuccess ? "#22c55e" : "#ff4757";
+        box.style.borderColor = color;
+        title.style.color = color;
+        title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
+        icon.style.color = color;
+        icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+        btn.style.background = color;
+        message.innerText = msg;
+        
+        document.getElementById('customAlert').style.display = 'flex';
+    };
+
+    window.openDeposit = () => {
+        if(!auth.currentUser) return window.openAuthModal();
+        document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
+        document.getElementById('depositModal').style.display = 'flex';
+    };
 
     let authMode = 'login';
     window.setAuthMode = (mode) => {
@@ -129,7 +168,10 @@
         if(u) {
             onValue(ref(rtdb, 'users/' + u.uid), (s) => {
                 const b = s.val()?.balance || 0;
-                ui.innerHTML = `<b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
+                ui.innerHTML = `
+                    <button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button>
+                    <b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b>
+                    <button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
             });
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
     });
@@ -196,11 +238,8 @@
             
             if(confirm(`Ní chắc chắn muốn mua ${n} giá ${p.toLocaleString()}đ?`)) {
                 const nb = b - p;
-                
-                // 1. Trừ tiền
                 await window.update(userRef, { balance: nb });
                 
-                // 2. Ghi đơn hàng vào Firebase
                 const orderId = Date.now();
                 await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
                     uid: auth.currentUser.uid, 
@@ -210,7 +249,6 @@
                     status: "Chờ phát đồ"
                 });
 
-                // 3. Gửi thông báo đến Discord Webhook
                 const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
                 await fetch(webhookURL, {
                     method: 'POST',
@@ -233,7 +271,8 @@
                     })
                 });
                 
-                showAlert(`Đặt mua thành công. Shop sẽ done đơn nhanh nhất có thể`);
+                // HIỆN THÔNG BÁO MÀU XANH LÁ
+                showAlert(`Đặt mua thành công. Shop sẽ done đơn nhanh nhất có thể`, true);
             }
         } catch (err) { 
             showAlert("Lỗi giao dịch: " + err.message); 
