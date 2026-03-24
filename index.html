@@ -12,11 +12,6 @@
             background: #0f172a; padding: 25px; border-radius: 20px; 
             width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; 
         }
-        .btn-alert { 
-            width: 100%; padding: 12px; border-radius: 12px; border: none; 
-            background: #38bdf8; color: #000; font-weight: 800; cursor: pointer; margin-top: 15px;
-        }
-
         :root { 
             --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; 
             --gold: #fbbf24; --hot: #ff4757; --text: #f8fafc;
@@ -27,14 +22,10 @@
             background-size: 400% 400%; animation: gradientBG 15s ease infinite;
         }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        /* NAVBAR & LOGO */
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
         .logo-container { display: flex; align-items: center; text-decoration: none; }
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
         .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
-        
-        /* GRID & CARDS */
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
@@ -42,71 +33,27 @@
         .card img { width: 85px; height: 85px; object-fit: contain; margin-bottom: 10px; }
         .price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
         .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; }
-
-        /* MODALS CHUNG */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-
-        /* STYLE RIÊNG CHO BẢNG CHÀO MỪNG */
-        .event-header { color: var(--gold); font-size: 20px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .reward-box { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); border-radius: 12px; padding: 15px; margin: 15px 0; text-align: left; }
-        .reward-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-        .reward-rank { font-weight: 800; color: var(--sky); }
-        .reward-value { font-weight: 700; color: var(--gold); }
-        .welcome-logo { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 10px; border: 2px solid var(--sky); mix-blend-mode: screen; }
-
-        /* TAB AUTH */
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; }
         .auth-tab.active { background: var(--sky); color: #000; }
         .modal-content input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
         .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
-
         .nav-right { display: flex; gap: 10px; align-items: center; }
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
-
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
     </style>
 </head>
 <body>
 <div id="customAlert" class="modal">
     <div class="modal-content" style="border-color: #ff4757; max-width: 320px;">
-        <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;">
-            <i class="fas fa-exclamation-circle"></i>
-        </div>
+        <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-circle"></i></div>
         <h3 id="alertTitle" style="color: #ff4757; margin-bottom: 10px;">THÔNG BÁO</h3>
         <p id="alertMessage" style="color: #cbd5e1; font-size: 15px; line-height: 1.5;"></p>
         <button class="btn-submit" style="background: #ff4757; color: white; margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
-    </div>
-</div>
-<div id="welcomeModal" class="modal" style="display: flex;">
-    <div class="modal-content">
-        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
-        <div class="event-header">
-            <i class="fas fa-crown"></i> THÔNG BÁO SỰ KIỆN <i class="fas fa-crown"></i>
-        </div>
-        <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 10px;">Chào mừng ní đến với <b>DEXSTY SHOP</b>! Hiện đang diễn ra sự kiện đua Top nạp thẻ tháng này:</p>
-        
-        <div class="reward-box">
-            <div style="text-align: center; font-weight: 900; color: var(--sky); margin-bottom: 10px; border-bottom: 1px solid rgba(56,189,248,0.3); padding-bottom: 5px;">🏆 PHẦN THƯỞNG TOP NẠP 🏆</div>
-            <div class="reward-item">
-                <span class="reward-rank">🥇 TOP 1:</span>
-                <span class="reward-value">1,000 Robux</span>
-            </div>
-            <div class="reward-item">
-                <span class="reward-rank">🥈 TOP 2:</span>
-                <span class="reward-value">1 Cây Yoru (Dark Blade)</span>
-            </div>
-            <div class="reward-item">
-                <span class="reward-rank">🥉 TOP 3:</span>
-                <span class="reward-value">+1 Slot chứa rương</span>
-            </div>
-        </div>
-
-        <p style="font-size: 12px; color: #94a3b8; font-style: italic; margin-bottom: 15px;">Hệ thống tự động 24/7 - Uy tín tạo nên thương hiệu!</p>
-        <button class="btn-submit" onclick="window.closeModal('welcomeModal')">VÀO SHOP ĐUA TOP NGAY</button>
     </div>
 </div>
 
@@ -154,16 +101,11 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    let authMode = 'login';
-
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    window.showAlert = (msg) => { document.getElementById('alertMessage').innerText = msg; document.getElementById('customAlert').style.display = 'flex'; };
 
-    window.showAlert = (msg) => {
-        document.getElementById('alertMessage').innerText = msg;
-        document.getElementById('customAlert').style.display = 'flex';
-    };
-
+    let authMode = 'login';
     window.setAuthMode = (mode) => {
         authMode = mode;
         document.getElementById('tab-login').className = `auth-tab ${mode === 'login' ? 'active' : ''}`;
@@ -172,13 +114,11 @@
     };
 
     window.processAuth = async () => {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
+        const e = document.getElementById('email').value, p = document.getElementById('password').value;
         if(!e || !p) return showAlert("Nhập đủ thông tin ní ơi!");
         try {
-            if(authMode === 'login') {
-                await signInWithEmailAndPassword(auth, e, p);
-            } else {
+            if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
+            else {
                 const res = await createUserWithEmailAndPassword(auth, e, p);
                 await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, email: e });
             }
@@ -191,20 +131,11 @@
     onAuthStateChanged(auth, (u) => {
         const ui = document.getElementById('auth-ui');
         if(u) {
-            // SỬA LỖI TẠI ĐÂY: Sử dụng onValue để lắng nghe sự thay đổi tiền ngay lập tức
-            onValue(ref(rtdb, 'users/' + u.uid), (snapshot) => {
-                const data = snapshot.val();
-                const b = data?.balance || 0;
-                ui.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b>
-                        <button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>
-                    </div>
-                `;
+            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
+                const b = s.val()?.balance || 0;
+                ui.innerHTML = `<b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
             });
-        } else {
-            ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`;
-        }
+        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
     });
 
     const allItems = [
@@ -262,34 +193,27 @@
         if(!auth.currentUser) return window.openAuthModal();
         try {
             const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
-            const s = await get(userRef);
-            const b = s.val()?.balance || 0;
-            
-            if(b < p) return showAlert("Số dư không đủ ní ơi!");
-            
+            const snapshot = await get(userRef);
+            const b = snapshot.val()?.balance || 0;
+            if(b < p) return showAlert(`Số dư không đủ!`);
             if(confirm(`Mua ${n} giá ${p.toLocaleString()}đ?`)) {
-                await update(userRef, { balance: b - p });
-                showAlert("Mua thành công!");
+                const nb = b - p;
+                await update(userRef, { balance: nb });
+                await set(ref(rtdb, 'orders/' + Date.now()), { uid: auth.currentUser.uid, email: auth.currentUser.email, item: n, price: p });
+                showAlert(`Mua thành công!`);
             }
-        } catch (err) { 
-            console.error(err);
-            showAlert("Lỗi: " + (err.message.includes("permission") ? "Chỉ Admin mới có quyền thực hiện!" : err.message));
-        }
+        } catch (err) { showAlert("Lỗi: " + err.message); }
     };
 
     function render() {
-        const gp = document.getElementById('gp-grid');
-        const fr = document.getElementById('fruit-grid');
+        const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid');
         allItems.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
+            const card = document.createElement('div'); card.className = 'card';
             card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
-            if(item.t === 'f') fr.appendChild(card);
-            else gp.appendChild(card);
+            if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
     }
     render();
 </script>
 </body>
 </html>
- 
