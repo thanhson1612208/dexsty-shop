@@ -10,7 +10,7 @@
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
         :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
-        body { margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        body { margin: 0; padding-bottom: 100px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
         .logo-container { display: flex; align-items: center; text-decoration: none; }
@@ -60,9 +60,35 @@
         
         /* CSS CHO ẢNH LOGO TRONG POPUP */
         .welcome-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 15px; box-shadow: 0 0 15px var(--gold); }
+
+        /* CSS THANH NGANG TRẠNG THÁI (MỚI THÊM) */
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--sky);
+            display: none; /* Chỉ hiện khi đăng nhập */
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .status-user { font-size: 13px; color: #94a3b8; }
+        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
     </style>
 </head>
 <body>
+
+<div id="bottomStatusBar" class="status-bar">
+    <div class="status-user"><i class="fas fa-user-circle"></i> <span id="status-email">...</span></div>
+    <div class="status-balance"><i class="fas fa-wallet"></i> <span id="status-money">0đ</span></div>
+</div>
 
 <div id="welcomeModal" class="modal" style="display: flex;">
     <div class="modal-content welcome-content" style="max-width: 420px;">
@@ -269,15 +295,26 @@
 
     onAuthStateChanged(auth, (u) => {
         const ui = document.getElementById('auth-ui');
+        const statusBar = document.getElementById('bottomStatusBar');
         if(u) {
             onValue(ref(rtdb, 'users/' + u.uid), (s) => {
                 const b = s.val()?.balance || 0;
+                const formattedEmail = u.email.split('@')[0];
+                
+                // Cập nhật UI Navbar
                 ui.innerHTML = `
                     <button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button>
-                    <b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b>
                     <button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
+                
+                // Cập nhật và hiển thị Thanh Trạng Thái (Bottom Bar)
+                statusBar.style.display = 'flex';
+                document.getElementById('status-email').innerText = formattedEmail;
+                document.getElementById('status-money').innerText = Number(b).toLocaleString() + 'đ';
             });
-        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
+        } else { 
+            ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`;
+            statusBar.style.display = 'none';
+        }
     });
 
     function loadTopDeposit() {
