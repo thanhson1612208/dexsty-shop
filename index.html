@@ -6,7 +6,7 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* GIỮ NGUYÊN CSS CỦA NÍ */
+        /* GIỮ NGUYÊN CSS CŨ CỦA NÍ */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
         :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
@@ -25,10 +25,13 @@
         .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; }
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+        
+        /* STYLE CHO TAB NẠP TIỀN */
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
-        .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; }
+        .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; text-align: center;}
         .auth-tab.active { background: var(--sky); color: #000; }
-        .modal-content input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
+        
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
         .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
         .nav-right { display: flex; gap: 10px; align-items: center; }
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
@@ -36,26 +39,11 @@
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
 
-        /* GIỮ NGUYÊN CSS KHÁC CỦA NÍ */
-        .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .rank { font-weight: 900; width: 30px; }
-        .rank-1 { color: var(--gold); }
-        .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
-        .amount { color: var(--success); font-weight: 700; }
-        .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
-        .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .welcome-content { background: linear-gradient(145deg, #0f172a, #1e1b4b); border: 2px solid var(--gold) !important; }
-        .event-item { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; margin: 10px 0; }
-        .welcome-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 15px; }
-
-        /* THANH TRẠNG THÁI BOTTOM */
         .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         .status-user { font-size: 13px; color: #94a3b8; }
         .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
         .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
 
-        /* CSS MỚI CHO BẢNG LỊCH SỬ */
         .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
         .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
         .history-item.done { border-left-color: var(--success); }
@@ -63,6 +51,12 @@
         .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
         .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
         .h-status.done { color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        
+        .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .rank { font-weight: 900; width: 30px; }
+        .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
+        .amount { color: var(--success); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -76,10 +70,52 @@
 <div id="historyModal" class="modal">
     <div class="modal-content" style="max-width: 450px;">
         <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3>
-        <div id="history-content" class="history-list">
-            <div style="text-align: center; color: gray; padding: 20px;">Đang tải...</div>
-        </div>
+        <div id="history-content" class="history-list"></div>
         <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
+    </div>
+</div>
+
+<div id="depositModal" class="modal">
+    <div class="modal-content" style="max-width: 420px;">
+        <div class="auth-tabs">
+            <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div>
+            <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div>
+        </div>
+
+        <div id="dep-bank-area">
+            <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                <img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;">
+            </div>
+            <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
+            <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+        </div>
+
+        <div id="dep-card-area" style="display: none; text-align: left;">
+            <div style="background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; color: #ff4757; text-align: center;">
+                <b>LƯU Ý:</b> Chỉ nhận được 15% mệnh giá thẻ cào.<br>(Ví dụ: Thẻ 100k nhận 15k vào shop)
+            </div>
+            <select id="cardType">
+                <option value="">-- Chọn loại thẻ --</option>
+                <option value="Viettel">Viettel</option>
+                <option value="Vinaphone">Vinaphone</option>
+                <option value="Mobifone">Mobifone</option>
+                <option value="Zing">Zing</option>
+            </select>
+            <select id="cardValue">
+                <option value="">-- Chọn mệnh giá --</option>
+                <option value="10000">10.000đ</option>
+                <option value="20000">20.000đ</option>
+                <option value="50000">50.000đ</option>
+                <option value="100000">100.000đ</option>
+                <option value="200000">200.000đ</option>
+                <option value="500000">500.000đ</option>
+            </select>
+            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)">
+            <input type="text" id="cardSeri" placeholder="Số Serial">
+            <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button>
+        </div>
+
+        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
 
@@ -114,18 +150,6 @@
         <h3 id="alertTitle" style="margin-bottom: 10px;"></h3>
         <p id="alertMessage" style="color: #cbd5e1; font-size: 15px;"></p>
         <button id="alertBtn" class="btn-submit" style="margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
-    </div>
-</div>
-
-<div id="depositModal" class="modal">
-    <div class="modal-content" style="max-width: 350px;">
-        <h3 style="color: #22c55e;">NẠP TIỀN QUA VIETQR</h3>
-        <div style="background: white; padding: 10px; border-radius: 10px; margin: 15px 0;">
-            <img id="qrImg" src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;">
-        </div>
-        <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
-        <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
-        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
 
@@ -177,13 +201,9 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    // Xuất ra window các biến cần thiết
-    window.rtdb = rtdb; window.ref = ref; window.set = set; window.get = get; window.update = update;
-
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    // Hàm thông báo
     window.showAlert = (msg, isSuccess = false) => {
         const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'), title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'), message = document.getElementById('alertMessage');
         const color = isSuccess ? "#22c55e" : "#ff4757";
@@ -193,48 +213,30 @@
         document.getElementById('customAlert').style.display = 'flex';
     };
 
-    // LOGIC LỊCH SỬ ĐƠN HÀNG
-    window.openHistory = () => {
-        if(!auth.currentUser) return window.openAuthModal();
-        const content = document.getElementById('history-content');
-        document.getElementById('historyModal').style.display = 'flex';
-        content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Đang tìm đơn hàng của ní...</div>';
+    // --- LOGIC NẠP TIỀN & THẺ ---
+    window.setDepMode = (mode) => {
+        document.getElementById('dep-bank-area').style.display = mode === 'bank' ? 'block' : 'none';
+        document.getElementById('dep-card-area').style.display = mode === 'card' ? 'block' : 'none';
+        document.getElementById('tab-dep-bank').className = `auth-tab ${mode === 'bank' ? 'active' : ''}`;
+        document.getElementById('tab-dep-card').className = `auth-tab ${mode === 'card' ? 'active' : ''}`;
+    }
 
-        const orderRef = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
-        onValue(orderRef, (snapshot) => {
-            const data = snapshot.val();
-            if(!data) { content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Ní chưa mua đơn nào hết trơn!</div>'; return; }
-            const orders = Object.values(data).reverse();
-            content.innerHTML = '';
-            orders.forEach(order => {
-                const isDone = (order.status === "Đã hoàn thành" || order.status === "Hoàn tất" || order.status === "Đã phát đồ");
-                content.innerHTML += `
-                    <div class="history-item ${isDone ? 'done' : ''}">
-                        <span class="h-status ${isDone ? 'done' : ''}">${order.status || 'Chờ xử lý'}</span>
-                        <span class="h-name">${order.item}</span>
-                        <div class="h-info">🎮 Roblox: <b>${order.robloxAccount}</b></div>
-                        <div class="h-info">💰 Giá: ${order.price.toLocaleString()}đ</div>
-                    </div>`;
-            });
-        });
-    };
-
-    // Nạp tiền & Webhook
     window.openDeposit = () => {
         if(!auth.currentUser) return window.openAuthModal();
         document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
         document.getElementById('depositModal').style.display = 'flex';
     };
 
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+
     window.sendDepositWebhook = async () => {
         const user = auth.currentUser; if(!user) return;
-        const webhookDeposit = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
         try {
-            await fetch(webhookDeposit, {
+            await fetch(WEBHOOK_URL, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: "Dexsty Shop - NẠP TIỀN", embeds: [{
-                        title: "💰 YÊU CẦU NẠP TIỀN!", color: 2278750,
+                    username: "Dexsty Shop - BANK", embeds: [{
+                        title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750,
                         fields: [{ name: "👤 Khách", value: user.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + user.email, inline: true }],
                         timestamp: new Date().toISOString()
                     }]
@@ -244,7 +246,42 @@
         } catch (e) { showAlert(e.message); }
     };
 
-    // Auth Logic
+    window.sendCardWebhook = async () => {
+        const type = document.getElementById('cardType').value;
+        const value = document.getElementById('cardValue').value;
+        const pin = document.getElementById('cardPin').value.trim();
+        const seri = document.getElementById('cardSeri').value.trim();
+        const user = auth.currentUser;
+
+        if(!user) return;
+        if(!type || !value || !pin || !seri) return showAlert("Vui lòng điền đủ thông tin thẻ!");
+
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - THẺ CÀO", embeds: [{
+                        title: "💳 THÔNG BÁO THẺ CÀO MỚI!", color: 16711767,
+                        fields: [
+                            { name: "👤 Khách", value: user.email, inline: true },
+                            { name: "🆔 Loại thẻ", value: type, inline: true },
+                            { name: "💰 Mệnh giá", value: Number(value).toLocaleString() + "đ", inline: true },
+                            { name: "🔑 Mã nạp (PIN)", value: `\`${pin}\``, inline: false },
+                            { name: "🔢 Seri", value: `\`${seri}\``, inline: false },
+                            { name: "📝 Ghi chú", value: "Chiết khấu 15%", inline: true }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+            window.closeModal('depositModal'); 
+            showAlert("Đã gửi thẻ thành công! AD sẽ kiểm tra và cộng tiền nhé.", true);
+            // Clear fields
+            document.getElementById('cardPin').value = ""; document.getElementById('cardSeri').value = "";
+        } catch (e) { showAlert(e.message); }
+    };
+
+    // --- LOGIC AUTH ---
     let authMode = 'login';
     window.setAuthMode = (mode) => {
         authMode = mode;
@@ -281,22 +318,32 @@
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; statusBar.style.display = 'none'; }
     });
 
-    // Top nạp
-    function loadTopDeposit() {
-        const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
-        onValue(topRef, (snapshot) => {
-            const listArea = document.getElementById('top-deposit-list'), data = snapshot.val();
-            if(!data) return;
-            const sorted = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
-            listArea.innerHTML = '';
-            sorted.forEach((u, i) => {
-                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-                listArea.innerHTML += `<div class="top-row"><div><span class="rank">${medal}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`;
+    // --- LOGIC LỊCH SỬ ---
+    window.openHistory = () => {
+        if(!auth.currentUser) return window.openAuthModal();
+        const content = document.getElementById('history-content');
+        document.getElementById('historyModal').style.display = 'flex';
+        content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Đang tải...</div>';
+
+        const orderRef = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+        onValue(orderRef, (snapshot) => {
+            const data = snapshot.val();
+            if(!data) { content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Chưa có đơn nào.</div>'; return; }
+            const orders = Object.values(data).reverse();
+            content.innerHTML = '';
+            orders.forEach(order => {
+                const isDone = (order.status === "Đã hoàn thành");
+                content.innerHTML += `
+                    <div class="history-item ${isDone ? 'done' : ''}">
+                        <span class="h-status ${isDone ? 'done' : ''}">${order.status || 'Chờ xử lý'}</span>
+                        <span class="h-name">${order.item}</span>
+                        <div class="h-info">🎮: ${order.robloxAccount} | 💰: ${order.price.toLocaleString()}đ</div>
+                    </div>`;
             });
         });
-    }
+    };
 
-    // Mua hàng
+    // --- LOGIC MUA HÀNG ---
     let pendingItem = null;
     window.buyItem = (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
@@ -307,17 +354,13 @@
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
-    // Lắng nghe sự kiện nhập liệu để mở nút mua
-    document.getElementById('robloxUser').addEventListener('input', () => {
+    document.getElementById('robloxUser').addEventListener('input', toggleBuyBtn);
+    document.getElementById('checkCorrect').addEventListener('change', toggleBuyBtn);
+    function toggleBuyBtn() {
         const user = document.getElementById('robloxUser').value.trim();
         const checked = document.getElementById('checkCorrect').checked;
         document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
-    });
-    document.getElementById('checkCorrect').addEventListener('change', () => {
-        const user = document.getElementById('robloxUser').value.trim();
-        const checked = document.getElementById('checkCorrect').checked;
-        document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
-    });
+    }
 
     window.confirmPurchase = async () => {
         const robloxName = document.getElementById('robloxUser').value.trim();
@@ -334,11 +377,11 @@
                 item: n, price: p, status: "Chờ phát đồ", timestamp: orderId
             });
             window.closeModal('robloxModal');
-            showAlert("Mua thành công! Check lịch sử để xem trạng thái nhé.", true);
+            showAlert("Mua thành công!", true);
         } catch (err) { showAlert(err.message); }
     };
 
-    // Danh sách đồ (Giữ nguyên của ní)
+    // --- RENDER DỮ LIỆU ---
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
@@ -397,7 +440,19 @@
             card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
-        loadTopDeposit();
+        
+        // Load Top Nạp
+        const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
+        onValue(topRef, (snapshot) => {
+            const listArea = document.getElementById('top-deposit-list'), data = snapshot.val();
+            if(!data) return;
+            const sorted = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
+            listArea.innerHTML = '';
+            sorted.forEach((u, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+                listArea.innerHTML += `<div class="top-row"><div><span class="rank">${medal}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`;
+            });
+        });
     }
     render();
 </script>
