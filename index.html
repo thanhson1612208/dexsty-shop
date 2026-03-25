@@ -45,10 +45,35 @@
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
 
+        /* CSS MỚI CHO BẢNG NHẬP TÊN ROBLOX */
+        .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .confirm-box input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .btn-submit:disabled { background: #475569; cursor: not-allowed; opacity: 0.6; }
+
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
     </style>
 </head>
 <body>
+
+<div id="robloxModal" class="modal">
+    <div class="modal-content" style="max-width: 380px;">
+        <h3 style="color: var(--sky); margin-bottom: 5px;">THÔNG TIN ĐƠN HÀNG</h3>
+        <p id="orderItemName" style="color: var(--gold); font-weight: bold; margin-bottom: 15px;"></p>
+        
+        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní..." oninput="window.validateOrder()">
+        
+        <div class="confirm-box">
+            <label>
+                <input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> 
+                Tôi xác nhận tên tài khoản trên đã đúng.
+            </label>
+        </div>
+
+        <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
+        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỎ</p>
+    </div>
+</div>
 
 <div id="customAlert" class="modal">
     <div class="modal-content" id="alertBox" style="border-color: #ff4757; max-width: 320px;">
@@ -199,7 +224,6 @@
             if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
             else {
                 const res = await createUserWithEmailAndPassword(auth, e, p);
-                // Khởi tạo cả balance và totalDeposit khi đăng ký mới
                 await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, totalDeposit: 0, email: e });
             }
             window.closeModal('authModal');
@@ -221,7 +245,6 @@
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
     });
 
-    // HÀM LOAD BẢNG XẾP HẠNG
     function loadTopDeposit() {
         const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
         onValue(topRef, (snapshot) => {
@@ -231,17 +254,14 @@
                 listArea.innerHTML = '<div style="text-align:center; color:gray; padding:10px;">Chưa có dữ liệu xếp hạng.</div>';
                 return;
             }
-
             const sorted = Object.entries(data)
                 .map(([id, val]) => ({ id, ...val }))
                 .filter(u => u.totalDeposit > 0)
                 .sort((a, b) => b.totalDeposit - a.totalDeposit);
-
             if(sorted.length === 0) {
                 listArea.innerHTML = '<div style="text-align:center; color:gray; padding:10px;">Hãy là người đầu tiên lên Top!</div>';
                 return;
             }
-
             listArea.innerHTML = '';
             sorted.forEach((u, i) => {
                 const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
@@ -258,6 +278,87 @@
             });
         });
     }
+
+    // BIẾN TẠM LƯU ĐƠN HÀNG ĐANG CHỌN
+    let pendingItem = null;
+
+    window.buyItem = (n, p) => {
+        if(!auth.currentUser) return window.openAuthModal();
+        pendingItem = { name: n, price: p };
+        
+        // Reset form nhập tên
+        document.getElementById('robloxUser').value = "";
+        document.getElementById('checkCorrect').checked = false;
+        document.getElementById('finalBuyBtn').disabled = true;
+        document.getElementById('orderItemName').innerText = `${n} - ${p.toLocaleString()}đ`;
+        
+        // Hiện Modal
+        document.getElementById('robloxModal').style.display = 'flex';
+    };
+
+    window.validateOrder = () => {
+        const user = document.getElementById('robloxUser').value.trim();
+        const checked = document.getElementById('checkCorrect').checked;
+        document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
+    };
+
+    window.confirmPurchase = async () => {
+        if(!pendingItem) return;
+        const robloxName = document.getElementById('robloxUser').value.trim();
+        const { name: n, price: p } = pendingItem;
+
+        try {
+            const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
+            const snapshot = await window.get(userRef);
+            const b = snapshot.val()?.balance || 0;
+            
+            if(b < p) {
+                window.closeModal('robloxModal');
+                return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`);
+            }
+
+            const nb = b - p;
+            await window.update(userRef, { balance: nb });
+            const orderId = Date.now();
+            
+            await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
+                uid: auth.currentUser.uid, 
+                email: auth.currentUser.email, 
+                robloxAccount: robloxName,
+                item: n, 
+                price: p,
+                status: "Chờ phát đồ"
+            });
+
+            const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
+            await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - ĐƠN MỚI",
+                    avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
+                    embeds: [{
+                        title: "🛒 CÓ ĐƠN HÀNG MỚI!",
+                        color: 5814783,
+                        fields: [
+                            { name: "👤 Khách hàng", value: auth.currentUser.email, inline: true },
+                            { name: "🎮 Roblox User", value: `**${robloxName}**`, inline: true },
+                            { name: "🎁 Vật phẩm", value: n, inline: true },
+                            { name: "💰 Giá tiền", value: p.toLocaleString() + "đ", inline: true },
+                            { name: "🆔 UID Khách", value: auth.currentUser.uid, inline: false }
+                        ],
+                        footer: { text: "Hệ thống tự động Dexsty Shop" },
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+
+            window.closeModal('robloxModal');
+            showAlert(`Đặt mua thành công cho tài khoản ${robloxName}. Shop sẽ done đơn nhanh nhất có thể nhé ní!`, true);
+            pendingItem = null;
+
+        } catch (err) { showAlert("Lỗi giao dịch: " + err.message); }
+    };
 
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://tr.rbxcdn.com/4f728c707d0f1710972410a823c4a631/150/150/Image/Png"},
@@ -300,7 +401,7 @@
         {n: "Sand", p: 121000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Sand_Fruit_Icon.png"},
         {n: "Ice", p: 108000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/i/i0/Ice_Fruit_Icon.png"},
         {n: "Flame", p: 76000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/f/f0/Flame_Fruit_Icon.png"},
-        {n: "Spike", p: 52000, t: "f", i: "https://static.wikia.nocookie.net/blo-fruits/images/s/s4/Spike_Fruit_Icon.png"},
+        {n: "Spike", p: 52000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spike_Fruit_Icon.png"},
         {n: "Smoke", p: 35000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Smoke_Fruit_Icon.png"},
         {n: "Bomb", p: 31000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/b/b4/Bomb_Fruit_Icon.png"},
         {n: "Spring", p: 26000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spring_Fruit_Icon.png"},
@@ -309,50 +410,6 @@
         {n: "Rocket", p: 8000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/5/5e/Rocket_Fruit_Icon.png"}
     ];
 
-    window.buyItem = async (n, p) => {
-        if(!auth.currentUser) return window.openAuthModal();
-        try {
-            const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
-            const snapshot = await window.get(userRef);
-            const b = snapshot.val()?.balance || 0;
-            if(b < p) return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`);
-            if(confirm(`Ní chắc chắn muốn mua ${n} giá ${p.toLocaleString()}đ?`)) {
-                const nb = b - p;
-                await window.update(userRef, { balance: nb });
-                const orderId = Date.now();
-                await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
-                    uid: auth.currentUser.uid, 
-                    email: auth.currentUser.email, 
-                    item: n, 
-                    price: p,
-                    status: "Chờ phát đồ"
-                });
-                const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
-                await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: "Dexsty Shop - ĐƠN MỚI",
-                        avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
-                        embeds: [{
-                            title: "🛒 CÓ ĐƠN HÀNG MỚI!",
-                            color: 5814783,
-                            fields: [
-                                { name: "👤 Khách hàng", value: auth.currentUser.email, inline: true },
-                                { name: "🎁 Vật phẩm", value: n, inline: true },
-                                { name: "💰 Giá tiền", value: p.toLocaleString() + "đ", inline: false },
-                                { name: "🆔 UID Khách", value: auth.currentUser.uid, inline: false }
-                            ],
-                            footer: { text: "Hệ thống tự động Dexsty Shop" },
-                            timestamp: new Date().toISOString()
-                        }]
-                    })
-                });
-                showAlert(`Đặt mua thành công. Shop sẽ done đơn nhanh nhất có thể`, true);
-            }
-        } catch (err) { showAlert("Lỗi giao dịch: " + err.message); }
-    };
-
     function render() {
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid');
         allItems.forEach(item => {
@@ -360,7 +417,7 @@
             card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
-        loadTopDeposit(); // Khởi chạy bảng xếp hạng
+        loadTopDeposit();
     }
     render();
 </script>
