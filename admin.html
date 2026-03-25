@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Dexsty Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --sky: #38bdf8; --gold: #fbbf24; --bg: #030712; --card: #111827; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        .admin-container { max-width: 1000px; margin: auto; }
+        h1 { color: var(--sky); text-align: center; margin-bottom: 30px; text-transform: uppercase; }
+        
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: var(--card); border: 1px solid #1f2937; color: #94a3b8; cursor: pointer; border-radius: 10px; font-weight: bold; }
+        .tab-btn.active { background: var(--sky); color: #000; border-color: var(--sky); }
+
+        /* PHẦN CỘNG TIỀN */
+        .user-manager { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--sky); margin-bottom: 20px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; }
+        .btn-action { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-plus { background: #22c55e; color: white; }
+
+        /* PHẦN ĐƠN HÀNG */
+        .order-card { background: var(--card); border: 1px solid #1f2937; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .info p { margin: 5px 0; font-size: 14px; color: #94a3b8; }
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 5px; display: inline-block; }
+        .pending { background: rgba(251, 191, 36, 0.1); color: var(--gold); }
+        .completed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h1><i class="fas fa-tools"></i> DEXSTY ADMIN PANEL</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('orders')">📦 QUẢN LÝ ĐƠN HÀNG</button>
+        <button class="tab-btn" onclick="switchTab('users')">💰 CỘNG TIỀN KHÁCH</button>
+    </div>
+
+    <div id="tab-orders">
+        <div id="admin-order-list"><p style="text-align: center; color: gray;">Đang tải đơn hàng...</p></div>
+    </div>
+
+    <div id="tab-users" class="hidden">
+        <div class="user-manager">
+            <h3><i class="fas fa-coins"></i> Cộng tiền theo Email</h3>
+            <div class="search-box">
+                <input type="text" id="userEmailSearch" placeholder="Nhập email khách (Ví dụ: abc@gmail.com)">
+                <button class="btn-action btn-plus" onclick="findUserAndAddMoney()">KIỂM TRA & CỘNG</button>
+            </div>
+            <div id="user-info-result" style="margin-top: 15px; border-top: 1px solid #1f2937; padding-top: 15px;" class="hidden">
+                <p>Khách: <b id="res-email" style="color:var(--sky)"></b></p>
+                <p>Số dư hiện tại: <b id="res-balance" style="color:var(--gold)">0đ</b></p>
+                <input type="number" id="amountToAdd" placeholder="Nhập số tiền muốn cộng (Ví dụ: 50000)">
+                <button class="btn-action btn-plus" style="width: 100%; margin-top: 10px;" onclick="confirmAddMoney()">XÁC NHẬN CỘNG TIỀN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const rtdb = getDatabase(app);
+
+    // Chuyển Tab
+    window.switchTab = (tab) => {
+        document.getElementById('tab-orders').classList.toggle('hidden', tab !== 'orders');
+        document.getElementById('tab-users').classList.toggle('hidden', tab !== 'users');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // --- LOGIC ĐƠN HÀNG ---
+    onValue(ref(rtdb, 'orders'), (snapshot) => {
+        const data = snapshot.val();
+        const listArea = document.getElementById('admin-order-list');
+        if(!data) { listArea.innerHTML = "Chưa có đơn nào."; return; }
+        const orders = Object.entries(data).reverse();
+        listArea.innerHTML = '';
+        orders.forEach(([id, order]) => {
+            const isDone = order.status === "Đã hoàn thành";
+            listArea.innerHTML += `
+                <div class="order-card">
+                    <div class="info">
+                        <span class="status-badge ${isDone ? 'completed' : 'pending'}">${order.status || 'Chờ xử lý'}</span>
+                        <p>📦 <b>${order.item}</b> - 🎮 <b>${order.robloxAccount}</b></p>
+                        <p>📧 ${order.email} | 💰 ${order.price.toLocaleString()}đ</p>
+                    </div>
+                    <button class="btn-action btn-plus" ${isDone ? 'disabled' : ''} onclick="approveOrder('${id}')">
+                        ${isDone ? 'XONG' : 'DUYỆT'}
+                    </button>
+                </div>`;
+        });
+    });
+
+    window.approveOrder = (id) => {
+        if(confirm("Xác nhận đã phát đồ?")) update(ref(rtdb, `orders/${id}`), { status: "Đã hoàn thành" });
+    }
+
+    // --- LOGIC CỘNG TIỀN ---
+    let targetUid = null;
+    window.findUserAndAddMoney = async () => {
+        const email = document.getElementById('userEmailSearch').value.trim();
+        if(!email) return alert("Nhập email ní ơi!");
+        
+        const userRef = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
+        const snap = await get(userRef);
+        
+        if(snap.exists()){
+            const data = snap.val();
+            targetUid = Object.keys(data)[0];
+            const user = data[targetUid];
+            document.getElementById('res-email').innerText = user.email;
+            document.getElementById('res-balance').innerText = (user.balance || 0).toLocaleString() + "đ";
+            document.getElementById('user-info-result').classList.remove('hidden');
+        } else {
+            alert("Không tìm thấy khách này! Nhắc khách đăng ký tài khoản đã ní.");
+            document.getElementById('user-info-result').classList.add('hidden');
+        }
+    }
+
+    window.confirmAddMoney = async () => {
+        const amount = parseInt(document.getElementById('amountToAdd').value);
+        if(!amount || amount <= 0) return alert("Nhập số tiền hợp lệ!");
+
+        try {
+            const userRef = ref(rtdb, `users/${targetUid}`);
+            const snap = await get(userRef);
+            const currentData = snap.val();
+            
+            const newBalance = (currentData.balance || 0) + amount;
+            const newTotalDeposit = (currentData.totalDeposit || 0) + amount;
+
+            await update(userRef, { 
+                balance: newBalance,
+                totalDeposit: newTotalDeposit 
+            });
+
+            alert(`Đã cộng ${amount.toLocaleString()}đ thành công cho ${currentData.email}!`);
+            document.getElementById('amountToAdd').value = "";
+            findUserAndAddMoney(); // Tải lại thông tin mới
+        } catch (e) { alert(e.message); }
+    }
+</script>
+</body>
+</html>
