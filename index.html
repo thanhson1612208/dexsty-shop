@@ -36,25 +36,22 @@
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
 
-        /* NÚT 3 GẠCH */
+        /* NÚT 3 GẠCH & TAB LỊCH SỬ */
         .btn-menu { background: rgba(56, 189, 248, 0.1); color: var(--sky); border: 1px solid var(--sky); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; }
+        .history-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px; }
+        .h-tab { flex: 1; padding: 8px; font-size: 12px; font-weight: 800; cursor: pointer; color: #64748b; border-radius: 5px; }
+        .h-tab.active { background: rgba(56, 189, 248, 0.2); color: var(--sky); }
 
-        /* CSS LỊCH SỬ ĐƠN HÀNG */
-        .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
-        .history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--sky); }
-        .history-item div { font-size: 13px; margin-bottom: 3px; }
-        .status-badge { font-size: 11px; padding: 2px 8px; border-radius: 5px; background: var(--gold); color: #000; font-weight: bold; }
-
+        /* CSS DANH SÁCH LỊCH SỬ */
+        .history-list { max-height: 350px; overflow-y: auto; text-align: left; }
+        .history-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-left: 3px solid var(--sky); border: 1px solid rgba(255,255,255,0.05); }
+        .history-item div { font-size: 13px; margin-bottom: 2px; }
+        .status-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
         /* CSS BẢNG TOP */
         .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .rank { font-weight: 900; width: 30px; }
-        .rank-1 { color: var(--gold); }
-        .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
-        .amount { color: var(--success); font-weight: 700; }
         .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
-        .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-submit:disabled { background: #475569; cursor: not-allowed; opacity: 0.6; }
         .welcome-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 15px; box-shadow: 0 0 15px var(--gold); }
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
     </style>
@@ -62,12 +59,15 @@
 <body>
 
 <div id="historyModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
-        <h3 style="color: var(--sky);"><i class="fas fa-history"></i> LỊCH SỬ ĐƠN HÀNG</h3>
-        <div id="historyContent" class="history-list">
-            <p style="text-align: center; color: gray;">Đang tải dữ liệu...</p>
+    <div class="modal-content" style="max-width: 450px; width: 95%;">
+        <div class="history-tabs">
+            <div id="tabOrder" class="h-tab active" onclick="window.switchHistory('order')">ĐƠN HÀNG</div>
+            <div id="tabDeposit" class="h-tab" onclick="window.switchHistory('deposit')">LỊCH SỬ NẠP</div>
         </div>
-        <button class="btn-submit" style="background: #475569; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
+        <div id="historyContent" class="history-list">
+            <p style="text-align: center; color: gray; padding: 20px;">Đang tải...</p>
+        </div>
+        <button class="btn-submit" style="background: #1e2937; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
     </div>
 </div>
 
@@ -76,11 +76,6 @@
         <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
         <h2 style="color: var(--gold); margin: 0;">KHAI TRƯƠNG SHOP</h2>
         <p style="color: #cbd5e1;">"Nạp càng nhiều càng có thưởng cao"</p>
-        <div style="text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 15px 0;">
-            <div style="margin-bottom: 10px;">🥇 <b>TOP 1:</b> 1 cây Yoru (Dark Blade) ⚔️</div>
-            <div style="margin-bottom: 10px;">🥈 <b>TOP 2:</b> X2 Beli (Money) 💰</div>
-            <div>🥉 <b>TOP 3:</b> +1 slot chứa rương 📦</div>
-        </div>
         <button class="btn-submit" style="background: var(--gold); color: #000;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
     </div>
 </div>
@@ -91,7 +86,7 @@
         <p id="orderItemName" style="color: var(--gold); font-weight: bold;"></p>
         <input type="text" id="robloxUser" placeholder="Tên tài khoản Roblox..." oninput="window.validateOrder()">
         <div class="confirm-box">
-            <label><input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> Tôi xác nhận tên đã đúng.</label>
+            <label style="font-size: 12px;"><input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> Tôi xác nhận tên đã đúng.</label>
         </div>
         <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỔ</p>
@@ -150,7 +145,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
@@ -170,41 +165,69 @@
         document.getElementById('alertBox').style.borderColor = color;
         document.getElementById('alertTitle').innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
         document.getElementById('alertTitle').style.color = color;
-        document.getElementById('alertIcon').innerHTML = isSuccess ? `<i class="fas fa-check-circle" style="color:${color}"></i>` : `<i class="fas fa-exclamation-circle" style="color:${color}"></i>`;
+        document.getElementById('alertIcon').innerHTML = `<i class="fas fa-${isSuccess?'check':'exclamation'}-circle" style="color:${color}"></i>`;
         document.getElementById('alertMessage').innerText = msg;
         document.getElementById('alertBtn').style.background = color;
         document.getElementById('customAlert').style.display = 'flex';
     };
 
-    window.openHistory = async () => {
-        if(!auth.currentUser) return window.openAuthModal();
-        document.getElementById('historyModal').style.display = 'flex';
-        const hContent = document.getElementById('historyContent');
-        hContent.innerHTML = '<p style="text-align:center;">Đang tải...</p>';
-        
-        const ordersRef = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
-        const snapshot = await get(ordersRef);
-        
-        if(!snapshot.exists()) {
-            hContent.innerHTML = '<p style="text-align:center; color:gray;">Ní chưa có đơn hàng nào.</p>';
-            return;
-        }
+    // CHUYỂN ĐỔI TAB LỊCH SỬ
+    let currentHistoryTab = 'order';
+    window.switchHistory = (type) => {
+        currentHistoryTab = type;
+        document.getElementById('tabOrder').className = `h-tab ${type === 'order' ? 'active' : ''}`;
+        document.getElementById('tabDeposit').className = `h-tab ${type === 'deposit' ? 'active' : ''}`;
+        window.loadHistoryData();
+    };
 
-        let html = '';
-        const data = snapshot.val();
-        Object.values(data).reverse().forEach(order => {
-            html += `
-                <div class="history-item">
-                    <div style="font-weight:bold; color:var(--gold);">${order.item}</div>
-                    <div>Roblox: <b>${order.robloxAccount}</b></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Giá: ${order.price.toLocaleString()}đ</span>
-                        <span class="status-badge" style="background:${order.status === 'Hoàn thành' ? '#22c55e' : '#fbbf24'}">${order.status}</span>
-                    </div>
-                </div>
-            `;
-        });
-        hContent.innerHTML = html;
+    window.openHistory = () => {
+        if(!auth.currentUser) return document.getElementById('authModal').style.display='flex';
+        document.getElementById('historyModal').style.display = 'flex';
+        window.switchHistory('order');
+    };
+
+    window.loadHistoryData = async () => {
+        const hContent = document.getElementById('historyContent');
+        hContent.innerHTML = '<p style="text-align:center; padding:20px;">Đang tải...</p>';
+        
+        try {
+            if(currentHistoryTab === 'order') {
+                const q = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+                const snap = await get(q);
+                if(!snap.exists()) return hContent.innerHTML = '<p style="text-align:center; color:gray; padding:20px;">Chưa có đơn hàng nào.</p>';
+                
+                let html = '';
+                Object.values(snap.val()).reverse().forEach(o => {
+                    html += `<div class="history-item">
+                        <div style="font-weight:bold; color:var(--gold);">${o.item}</div>
+                        <div>Roblox: <b>${o.robloxAccount}</b></div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span>${o.price.toLocaleString()}đ</span>
+                            <span class="status-badge" style="background:${o.status === 'Hoàn thành' ? '#22c55e' : '#fbbf24'}">${o.status}</span>
+                        </div>
+                    </div>`;
+                });
+                hContent.innerHTML = html;
+            } else {
+                // LỊCH SỬ NẠP TIỀN
+                const q = query(ref(rtdb, 'deposits'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+                const snap = await get(q);
+                if(!snap.exists()) return hContent.innerHTML = '<p style="text-align:center; color:gray; padding:20px;">Chưa có lịch sử nạp tiền.</p>';
+                
+                let html = '';
+                Object.values(snap.val()).reverse().forEach(d => {
+                    html += `<div class="history-item" style="border-left-color: #22c55e;">
+                        <div style="font-weight:bold; color:#22c55e;">+ ${d.amount.toLocaleString()}đ</div>
+                        <div style="font-size:11px; color:gray;">Nội dung: ${d.content || 'Nạp tiền'}</div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-size:11px;">${d.date || ''}</span>
+                            <span class="status-badge" style="background:#22c55e; color:white;">Thành công</span>
+                        </div>
+                    </div>`;
+                });
+                hContent.innerHTML = html;
+            }
+        } catch (e) { hContent.innerHTML = '<p style="text-align:center; color:red;">Lỗi tải dữ liệu.</p>'; }
     };
 
     onAuthStateChanged(auth, (u) => {
@@ -221,6 +244,7 @@
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="document.getElementById('authModal').style.display='flex'">Đăng nhập / Đăng ký</button>`; }
     });
 
+    // CÁC HÀM XỬ LÝ AUTH & MUA HÀNG GIỮ NGUYÊN
     window.processAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
         try {
@@ -269,7 +293,21 @@
             item: pendingItem.n, price: pendingItem.p, status: "Chờ phát đồ"
         });
         window.closeModal('robloxModal');
-        showAlert("Đặt đơn thành công! Xem lại trong Menu 3 gạch nhé.", true);
+        showAlert("Đặt đơn thành công! Kiểm tra trong Menu 3 gạch nhé.", true);
+    };
+
+    window.sendDepositWebhook = async () => {
+        const webhookURL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+        await fetch(webhookURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: "Dexsty Shop - NẠP TIỀN",
+                embeds: [{ title: "💰 YÊU CẦU NẠP TIỀN", color: 2278750, fields: [{ name: "Khách", value: auth.currentUser.email }, { name: "Nội dung", value: "NAP " + auth.currentUser.email }] }]
+            })
+        });
+        window.closeModal('depositModal');
+        showAlert("Đã gửi yêu cầu nạp! Shop sẽ cộng tiền sau khi check bank nhé ní.", true);
     };
 
     const allItems = [
@@ -334,4 +372,3 @@
 </script>
 </body>
 </html>
- 
