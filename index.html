@@ -26,6 +26,18 @@
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
         
+        /* FIX LỖI ẢNH POPUP TẠI ĐÂY */
+        .welcome-logo { 
+            width: 100%; 
+            max-width: 280px; /* Giới hạn độ rộng tối đa */
+            height: auto; 
+            border-radius: 15px; 
+            margin: 0 auto 15px; 
+            display: block; 
+            object-fit: contain;
+        }
+        .welcome-content { padding-top: 15px !important; }
+
         /* STYLE CHO TAB NẠP TIỀN */
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; text-align: center;}
@@ -99,6 +111,7 @@
                 <option value="Viettel">Viettel</option>
                 <option value="Vinaphone">Vinaphone</option>
                 <option value="Mobifone">Mobifone</option>
+                <option value="Garena">Garena</option>
                 <option value="Zing">Zing</option>
             </select>
             <select id="cardValue">
@@ -121,7 +134,9 @@
 
 <div id="welcomeModal" class="modal" style="display: flex;">
     <div class="modal-content welcome-content" style="max-width: 420px;">
-        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        <div style="width: 100%; text-align: center;">
+            <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        </div>
         <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
         <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
         <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
@@ -140,7 +155,7 @@
             <label><input type="checkbox" id="checkCorrect"> Tôi xác nhận tên tài khoản trên đã đúng.</label>
         </div>
         <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
-        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỔ</p>
+        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỎ</p>
     </div>
 </div>
 
