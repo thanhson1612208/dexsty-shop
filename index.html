@@ -126,7 +126,7 @@
             <img id="qrImg" src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%; height: auto;">
         </div>
         <p style="font-size: 13px; color: #cbd5e1;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
-        <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐẠI CHUYỂN</button>
+        <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
@@ -153,14 +153,14 @@
 </div>
 
 <div class="container">
-    <div class="section-title">🏆 Top Nạp Đại Gia</div>
+    <div class="section-title">🏆 Top Nạp Trong Tháng</div>
     <div id="top-deposit-list" class="top-deposit-card">
         <div style="text-align: center; color: gray; padding: 10px;">Đang tải bảng xếp hạng...</div>
     </div>
 
     <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
     <div id="gp-grid" class="grid"></div>
-    <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn (48 Trái)</div>
+    <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn</div>
     <div id="fruit-grid" class="grid"></div>
 </div>
 
@@ -384,13 +384,13 @@
     };
 
     const allItems = [
-        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://tr.rbxcdn.com/4f728c707d0f1710972410a823c4a631/150/150/Image/Png"},
-        {n: "Dark Blade", p: 170000, t: "gp", i: "https://tr.rbxcdn.com/17799d5059d486014e5900216790901e/150/150/Image/Png"},
-        {n: "x2 Money", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/264584283597a7388756c6970f90e386/150/150/Image/Png"},
-        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/626d70a3161f36471e49d68128331773/150/150/Image/Png"},
+        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
+        {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
+        {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg "},
+        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg "},
         {n: "+1 Storage", p: 62000, t: "gp", i: "https://tr.rbxcdn.com/7123497f1f77e68202537f80f7d54988/150/150/Image/Png"},
         {n: "Fast Boats", p: 55000, t: "gp", i: "https://tr.rbxcdn.com/47d81a8b988f57f6d2218868a29a0076/150/150/Image/Png"},
-        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://tr.rbxcdn.com/f04746688b150937c449197992985868/150/150/Image/Png"},
+        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg "},
         {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
         {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
         {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
@@ -411,7 +411,7 @@
         {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg "},
         {n: "Sound", p: 278000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s0/Sound_Fruit_Icon.png"},
         {n: "Spider", p: 264000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/s/s4/Spider_Fruit_Icon.png"},
-        {n: "Love", p: 244000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/l/l4/Love_Fruit_Icon.png"},
+        {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg "},
         {n: "Buddha", p: 239000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/1/17/Buddha_Fruit_Icon.png"},
         {n: "Quake", p: 220000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/q/q4/Quake_Fruit_Icon.png"},
         {n: "Magma", p: 200000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/d/df/Magma_Fruit_Icon.png"},
@@ -446,3 +446,5 @@
 </script>
 </body>
 </html>
+không thay đổi cấu trúc ban đầu
+gửi full code tạo thêm 1 nút 3 gạch bao gồm phần lịch sử đơn hàng để khách có thể xem lại mình đã đặt đơn gì
