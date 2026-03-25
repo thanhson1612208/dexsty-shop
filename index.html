@@ -57,9 +57,19 @@
         .welcome-content { background: linear-gradient(145deg, #0f172a, #1e1b4b); border: 2px solid var(--gold) !important; box-shadow: 0 0 30px rgba(251, 191, 36, 0.3) !important; }
         .event-item { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid rgba(251, 191, 36, 0.1); }
         .event-rank { font-weight: 900; font-size: 18px; min-width: 60px; }
-        
-        /* CSS CHO ẢNH LOGO TRONG POPUP */
         .welcome-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 15px; box-shadow: 0 0 15px var(--gold); }
+
+        /* CSS CHO MENU 3 GẠCH & LỊCH SỬ */
+        .menu-btn { font-size: 24px; color: var(--sky); cursor: pointer; padding: 5px 10px; transition: 0.3s; }
+        .menu-btn:hover { color: var(--gold); transform: scale(1.1); }
+        .history-item { background: rgba(255,255,255,0.05); margin-bottom: 10px; padding: 12px; border-radius: 12px; text-align: left; border-left: 3px solid var(--sky); }
+        .history-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+        .status-tag { padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
+        .status-pending { background: #fbbf24; color: #000; }
+        .status-done { background: #22c55e; color: #fff; }
+        #historyList { max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        #historyList::-webkit-scrollbar { width: 5px; }
+        #historyList::-webkit-scrollbar-thumb { background: var(--sky); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -67,12 +77,9 @@
 <div id="welcomeModal" class="modal" style="display: flex;">
     <div class="modal-content welcome-content" style="max-width: 420px;">
         <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo" alt="Dexsty Shop Logo">
-        
         <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px; letter-spacing: 1px;">Tưng Bừng Khai Trương</h2>
         <h3 style="color: #fff; margin-top: 5px; margin-bottom: 15px;">DEXSTY SHOP ROBLOX</h3>
-        
         <p style="color: #cbd5e1; font-style: italic; font-size: 14px; margin-bottom: 20px;">"Nạp càng nhiều càng có thưởng cao"</p>
-        
         <div class="event-item">
             <span class="event-rank" style="color: var(--gold);">TOP 1:</span>
             <span style="color: #fff; font-weight: bold;">1 cây Yoru (Dark Blade) ⚔️</span>
@@ -85,9 +92,18 @@
             <span class="event-rank" style="color: #cd7f32;">TOP 3:</span>
             <span style="color: #fff; font-weight: bold;">+1 slot chứa rương 📦</span>
         </div>
-
         <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
         <p style="color:rgba(255,255,255,0.3); font-size:10px; margin-top:15px;">Chương trình áp dụng cho tất cả khách hàng</p>
+    </div>
+</div>
+
+<div id="historyModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <h3 style="color: var(--sky); margin-bottom: 15px; text-transform: uppercase;">📜 Lịch Sử Đơn Hàng</h3>
+        <div id="historyList">
+            <p style="color:gray;">Đang tải lịch sử...</p>
+        </div>
+        <button class="btn-submit" style="background: #475569; color: white; margin-top: 20px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
     </div>
 </div>
 
@@ -95,16 +111,13 @@
     <div class="modal-content" style="max-width: 380px;">
         <h3 style="color: var(--sky); margin-bottom: 5px;">THÔNG TIN ĐƠN HÀNG</h3>
         <p id="orderItemName" style="color: var(--gold); font-weight: bold; margin-bottom: 15px;"></p>
-        
-        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní..." oninput="window.validateOrder()">
-        
+        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní...">
         <div class="confirm-box">
             <label>
                 <input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> 
                 Tôi xác nhận tên tài khoản trên đã đúng.
             </label>
         </div>
-
         <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỔ</p>
     </div>
@@ -132,10 +145,13 @@
 </div>
 
 <nav class="navbar">
-    <a href="#" class="logo-container">
-        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img">
-        <span class="logo-text">DEXSTY SHOP</span>
-    </a>
+    <div style="display: flex; align-items: center; gap: 5px;">
+        <div class="menu-btn" onclick="window.openHistory()"><i class="fas fa-bars"></i></div>
+        <a href="#" class="logo-container">
+            <img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img">
+            <span class="logo-text">DEXSTY SHOP</span>
+        </a>
+    </div>
     <div id="auth-ui" class="nav-right"></div>
 </nav>
 
@@ -207,6 +223,56 @@
         document.getElementById('customAlert').style.display = 'flex';
     };
 
+    // HÀM MỞ LỊCH SỬ ĐƠN HÀNG
+    window.openHistory = async () => {
+        if(!auth.currentUser) return window.showAlert("Vui lòng đăng nhập để xem lịch sử đơn hàng!");
+        document.getElementById('historyModal').style.display = 'flex';
+        const listArea = document.getElementById('historyList');
+        listArea.innerHTML = '<p style="color:gray;">Đang tìm đơn hàng của ní...</p>';
+
+        try {
+            const ordersRef = query(ref(rtdb, 'orders'), orderByChild('uid'));
+            const snapshot = await get(ordersRef);
+            const data = snapshot.val();
+            
+            if(!data) {
+                listArea.innerHTML = '<p style="color:gray; padding:20px;">Ní chưa có đơn hàng nào hết!</p>';
+                return;
+            }
+
+            const myOrders = Object.values(data)
+                .filter(order => order.uid === auth.currentUser.uid)
+                .reverse();
+
+            if(myOrders.length === 0) {
+                listArea.innerHTML = '<p style="color:gray; padding:20px;">Ní chưa có đơn hàng nào hết!</p>';
+                return;
+            }
+
+            listArea.innerHTML = '';
+            myOrders.forEach(order => {
+                const statusClass = order.status === "Chờ phát đồ" ? "status-pending" : "status-done";
+                listArea.innerHTML += `
+                    <div class="history-item">
+                        <div class="history-header">
+                            <span style="color:var(--gold)">${order.item}</span>
+                            <span class="status-tag ${statusClass}">${order.status}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #cbd5e1;">
+                            <div>🎮 Tài khoản: <b>${order.robloxAccount}</b></div>
+                            <div>💰 Giá: ${order.price.toLocaleString()}đ</div>
+                            <div style="font-size: 10px; color: gray; margin-top: 5px;">
+                                Mã đơn: ${new Date(order.uid).getTime().toString().slice(-6)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            listArea.innerHTML = '<p style="color:red;">Lỗi tải dữ liệu!</p>';
+        }
+    };
+
     window.openDeposit = () => {
         if(!auth.currentUser) return window.openAuthModal();
         document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
@@ -218,7 +284,6 @@
         if(!user) return;
         const depositContent = "NAP " + user.email;
         const webhookDeposit = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
-        
         try {
             await fetch(webhookDeposit, {
                 method: 'POST',
