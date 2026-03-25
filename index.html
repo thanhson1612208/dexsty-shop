@@ -36,22 +36,7 @@
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
 
-        /* THANH TRẠNG THÁI (BOTTOM BAR) */
-        .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .status-user { font-size: 13px; color: #94a3b8; }
-        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
-        .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
-
-        /* CSS CHO BẢNG LỊCH SỬ ĐƠN HÀNG */
-        .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
-        .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); }
-        .history-item.done { border-left-color: var(--success); }
-        .h-name { font-weight: bold; font-size: 14px; display: block; }
-        .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
-        .h-status { font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
-        .h-status.done { color: var(--success); background: rgba(34, 197, 94, 0.1); }
-
-        /* GIỮ CÁC CSS KHÁC */
+        /* GIỮ NGUYÊN CSS KHÁC CỦA NÍ */
         .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .rank { font-weight: 900; width: 30px; }
@@ -63,6 +48,21 @@
         .welcome-content { background: linear-gradient(145deg, #0f172a, #1e1b4b); border: 2px solid var(--gold) !important; }
         .event-item { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; margin: 10px 0; }
         .welcome-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 15px; }
+
+        /* THANH TRẠNG THÁI BOTTOM */
+        .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .status-user { font-size: 13px; color: #94a3b8; }
+        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
+        .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
+
+        /* CSS MỚI CHO BẢNG LỊCH SỬ */
+        .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
+        .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
+        .history-item.done { border-left-color: var(--success); }
+        .h-name { font-weight: bold; font-size: 14px; display: block; color: #fff; }
+        .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
+        .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
+        .h-status.done { color: var(--success); background: rgba(34, 197, 94, 0.1); }
     </style>
 </head>
 <body>
@@ -76,9 +76,8 @@
 <div id="historyModal" class="modal">
     <div class="modal-content" style="max-width: 450px;">
         <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3>
-        <p style="font-size: 11px; color: gray;">Kiểm tra trạng thái đơn hàng của ní tại đây</p>
         <div id="history-content" class="history-list">
-            <div style="text-align: center; color: gray; padding: 20px;">Đang tải đơn hàng...</div>
+            <div style="text-align: center; color: gray; padding: 20px;">Đang tải...</div>
         </div>
         <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
     </div>
@@ -89,9 +88,9 @@
         <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
         <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
         <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
-        <div class="event-item"><span style="color: var(--gold); font-weight: 900;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
-        <div class="event-item"><span style="color: #e5e7eb; font-weight: 900;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div>
-        <div class="event-item"><span style="color: #cd7f32; font-weight: 900;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div>
+        <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
+        <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div>
+        <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div>
         <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
     </div>
 </div>
@@ -100,9 +99,9 @@
     <div class="modal-content" style="max-width: 380px;">
         <h3 style="color: var(--sky);">THÔNG TIN ĐƠN HÀNG</h3>
         <p id="orderItemName" style="color: var(--gold); font-weight: bold;"></p>
-        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní..." oninput="window.validateOrder()">
+        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní...">
         <div class="confirm-box">
-            <label><input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> Tôi xác nhận tên tài khoản trên đã đúng.</label>
+            <label><input type="checkbox" id="checkCorrect"> Tôi xác nhận tên tài khoản trên đã đúng.</label>
         </div>
         <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỔ</p>
@@ -178,64 +177,49 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    window.rtdb = rtdb;
-    window.ref = ref;
-    window.set = set;
-    window.get = get;
-    window.update = update;
+    // Xuất ra window các biến cần thiết
+    window.rtdb = rtdb; window.ref = ref; window.set = set; window.get = get; window.update = update;
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
+    // Hàm thông báo
     window.showAlert = (msg, isSuccess = false) => {
-        const box = document.getElementById('alertBox');
-        const icon = document.getElementById('alertIcon');
-        const title = document.getElementById('alertTitle');
-        const btn = document.getElementById('alertBtn');
-        const message = document.getElementById('alertMessage');
+        const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'), title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'), message = document.getElementById('alertMessage');
         const color = isSuccess ? "#22c55e" : "#ff4757";
-        box.style.borderColor = color;
-        title.style.color = color;
-        title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
-        icon.style.color = color;
-        icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-        btn.style.background = color;
-        message.innerText = msg;
+        box.style.borderColor = color; title.style.color = color; title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
+        icon.style.color = color; icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+        btn.style.background = color; message.innerText = msg;
         document.getElementById('customAlert').style.display = 'flex';
     };
 
-    // LOGIC LỊCH SỬ ĐƠN HÀNG (MỚI)
+    // LOGIC LỊCH SỬ ĐƠN HÀNG
     window.openHistory = () => {
         if(!auth.currentUser) return window.openAuthModal();
-        const historyModal = document.getElementById('historyModal');
         const content = document.getElementById('history-content');
-        historyModal.style.display = 'flex';
+        document.getElementById('historyModal').style.display = 'flex';
         content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Đang tìm đơn hàng của ní...</div>';
 
         const orderRef = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
         onValue(orderRef, (snapshot) => {
             const data = snapshot.val();
-            if(!data) {
-                content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Ní chưa mua đơn nào hết trơn!</div>';
-                return;
-            }
-            const orders = Object.values(data).reverse(); // Hiện đơn mới nhất lên đầu
+            if(!data) { content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Ní chưa mua đơn nào hết trơn!</div>'; return; }
+            const orders = Object.values(data).reverse();
             content.innerHTML = '';
             orders.forEach(order => {
-                const isDone = order.status === "Đã phát đồ" || order.status === "Hoàn tất";
+                const isDone = (order.status === "Đã hoàn thành" || order.status === "Hoàn tất" || order.status === "Đã phát đồ");
                 content.innerHTML += `
                     <div class="history-item ${isDone ? 'done' : ''}">
                         <span class="h-status ${isDone ? 'done' : ''}">${order.status || 'Chờ xử lý'}</span>
                         <span class="h-name">${order.item}</span>
                         <div class="h-info">🎮 Roblox: <b>${order.robloxAccount}</b></div>
                         <div class="h-info">💰 Giá: ${order.price.toLocaleString()}đ</div>
-                        <div style="font-size:10px; color:#475569;">ID: ${new Date(order.timestamp || Date.now()).toLocaleString()}</div>
-                    </div>
-                `;
+                    </div>`;
             });
         });
     };
 
+    // Nạp tiền & Webhook
     window.openDeposit = () => {
         if(!auth.currentUser) return window.openAuthModal();
         document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
@@ -243,34 +227,24 @@
     };
 
     window.sendDepositWebhook = async () => {
-        const user = auth.currentUser;
-        if(!user) return;
-        const depositContent = "NAP " + user.email;
+        const user = auth.currentUser; if(!user) return;
         const webhookDeposit = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
         try {
             await fetch(webhookDeposit, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: "Dexsty Shop - NẠP TIỀN",
-                    avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
-                    embeds: [{
-                        title: "💰 YÊU CẦU NẠP TIỀN MỚI!",
-                        color: 2278750,
-                        fields: [
-                            { name: "👤 Khách hàng", value: user.email, inline: true },
-                            { name: "📝 Nội dung CK", value: depositContent, inline: true }
-                        ],
-                        footer: { text: "Vui lòng check bank" },
+                    username: "Dexsty Shop - NẠP TIỀN", embeds: [{
+                        title: "💰 YÊU CẦU NẠP TIỀN!", color: 2278750,
+                        fields: [{ name: "👤 Khách", value: user.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + user.email, inline: true }],
                         timestamp: new Date().toISOString()
                     }]
                 })
             });
-            window.closeModal('depositModal');
-            showAlert("Đã gửi yêu cầu nạp tiền!", true);
+            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
         } catch (e) { showAlert(e.message); }
     };
 
+    // Auth Logic
     let authMode = 'login';
     window.setAuthMode = (mode) => {
         authMode = mode;
@@ -281,7 +255,7 @@
 
     window.processAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        if(!e || !p) return showAlert("Nhập đủ thông tin ní ơi!");
+        if(!e || !p) return showAlert("Nhập đủ thông tin!");
         try {
             if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
             else {
@@ -295,8 +269,7 @@
     window.logout = () => signOut(auth).then(() => location.reload());
 
     onAuthStateChanged(auth, (u) => {
-        const ui = document.getElementById('auth-ui');
-        const statusBar = document.getElementById('bottomStatusBar');
+        const ui = document.getElementById('auth-ui'), statusBar = document.getElementById('bottomStatusBar');
         if(u) {
             onValue(ref(rtdb, 'users/' + u.uid), (s) => {
                 const b = s.val()?.balance || 0;
@@ -305,17 +278,14 @@
                 document.getElementById('status-email').innerText = u.email.split('@')[0];
                 document.getElementById('status-money').innerText = Number(b).toLocaleString() + 'đ';
             });
-        } else { 
-            ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`;
-            statusBar.style.display = 'none';
-        }
+        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; statusBar.style.display = 'none'; }
     });
 
+    // Top nạp
     function loadTopDeposit() {
         const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
         onValue(topRef, (snapshot) => {
-            const listArea = document.getElementById('top-deposit-list');
-            const data = snapshot.val();
+            const listArea = document.getElementById('top-deposit-list'), data = snapshot.val();
             if(!data) return;
             const sorted = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
             listArea.innerHTML = '';
@@ -326,22 +296,28 @@
         });
     }
 
+    // Mua hàng
     let pendingItem = null;
     window.buyItem = (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p };
-        document.getElementById('robloxUser').value = "";
-        document.getElementById('checkCorrect').checked = false;
+        document.getElementById('robloxUser').value = ""; document.getElementById('checkCorrect').checked = false;
         document.getElementById('finalBuyBtn').disabled = true;
         document.getElementById('orderItemName').innerText = `${n} - ${p.toLocaleString()}đ`;
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
-    window.validateOrder = () => {
+    // Lắng nghe sự kiện nhập liệu để mở nút mua
+    document.getElementById('robloxUser').addEventListener('input', () => {
         const user = document.getElementById('robloxUser').value.trim();
         const checked = document.getElementById('checkCorrect').checked;
         document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
-    };
+    });
+    document.getElementById('checkCorrect').addEventListener('change', () => {
+        const user = document.getElementById('robloxUser').value.trim();
+        const checked = document.getElementById('checkCorrect').checked;
+        document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
+    });
 
     window.confirmPurchase = async () => {
         const robloxName = document.getElementById('robloxUser').value.trim();
@@ -350,31 +326,27 @@
             const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
             const snapshot = await get(userRef);
             const b = snapshot.val()?.balance || 0;
-            if(b < p) {
-                window.closeModal('robloxModal');
-                return showAlert("Số dư không đủ!");
-            }
+            if(b < p) { window.closeModal('robloxModal'); return showAlert("Số dư không đủ!"); }
             await update(userRef, { balance: b - p });
             const orderId = Date.now();
             await set(ref(rtdb, 'orders/' + orderId), { 
-                uid: auth.currentUser.uid, 
-                email: auth.currentUser.email, 
-                robloxAccount: robloxName,
-                item: n, 
-                price: p,
-                status: "Chờ phát đồ",
-                timestamp: orderId
+                uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName,
+                item: n, price: p, status: "Chờ phát đồ", timestamp: orderId
             });
             window.closeModal('robloxModal');
             showAlert("Mua thành công! Check lịch sử để xem trạng thái nhé.", true);
         } catch (err) { showAlert(err.message); }
     };
 
+    // Danh sách đồ (Giữ nguyên của ní)
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
         {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg "},
         {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg "},
+        {n: "+1 Storage", p: 62000, t: "gp", i: "https://tr.rbxcdn.com/7123497f1f77e68202537f80f7d54988/150/150/Image/Png"},
+        {n: "Fast Boats", p: 55000, t: "gp", i: "https://tr.rbxcdn.com/47d81a8b988f57f6d2218868a29a0076/150/150/Image/Png"},
+        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg "},
         {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
         {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
         {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
