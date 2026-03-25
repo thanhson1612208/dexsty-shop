@@ -23,8 +23,29 @@
         .card img { width: 85px; height: 85px; object-fit: contain; margin-bottom: 10px; }
         .price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
         .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; }
+
+        /* MODAL GỐC CỦA NÍ */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+        
+        /* HIỆU ỨNG XUẤT HIỆN MỚI CHO BẢNG POPUP */
+        @keyframes popupShow {
+            from { opacity: 0; transform: scale(0.7) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-content { 
+            background: #111827; 
+            padding: 25px; 
+            border-radius: 15px; 
+            width: 90%; 
+            max-width: 400px; 
+            border: 1px solid var(--sky); 
+            text-align: center; 
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            /* Áp dụng hiệu ứng */
+            animation: popupShow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; }
         .auth-tab.active { background: var(--sky); color: #000; }
@@ -36,7 +57,6 @@
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
 
-        /* CSS CHO BẢNG TOP NẠP */
         .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .top-row:last-child { border: none; }
@@ -45,7 +65,6 @@
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
 
-        /* CSS MỚI CHO BẢNG NHẬP TÊN ROBLOX */
         .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
         .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .confirm-box input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
@@ -60,16 +79,13 @@
     <div class="modal-content" style="max-width: 380px;">
         <h3 style="color: var(--sky); margin-bottom: 5px;">THÔNG TIN ĐƠN HÀNG</h3>
         <p id="orderItemName" style="color: var(--gold); font-weight: bold; margin-bottom: 15px;"></p>
-        
         <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní..." oninput="window.validateOrder()">
-        
         <div class="confirm-box">
             <label>
                 <input type="checkbox" id="checkCorrect" onchange="window.validateOrder()"> 
                 Tôi xác nhận tên tài khoản trên đã đúng.
             </label>
         </div>
-
         <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỎ</p>
     </div>
@@ -279,20 +295,15 @@
         });
     }
 
-    // BIẾN TẠM LƯU ĐƠN HÀNG ĐANG CHỌN
     let pendingItem = null;
 
     window.buyItem = (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p };
-        
-        // Reset form nhập tên
         document.getElementById('robloxUser').value = "";
         document.getElementById('checkCorrect').checked = false;
         document.getElementById('finalBuyBtn').disabled = true;
         document.getElementById('orderItemName').innerText = `${n} - ${p.toLocaleString()}đ`;
-        
-        // Hiện Modal
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
@@ -306,21 +317,17 @@
         if(!pendingItem) return;
         const robloxName = document.getElementById('robloxUser').value.trim();
         const { name: n, price: p } = pendingItem;
-
         try {
             const userRef = window.ref(window.rtdb, 'users/' + auth.currentUser.uid);
             const snapshot = await window.get(userRef);
             const b = snapshot.val()?.balance || 0;
-            
             if(b < p) {
                 window.closeModal('robloxModal');
                 return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`);
             }
-
             const nb = b - p;
             await window.update(userRef, { balance: nb });
             const orderId = Date.now();
-            
             await window.set(window.ref(window.rtdb, 'orders/' + orderId), { 
                 uid: auth.currentUser.uid, 
                 email: auth.currentUser.email, 
@@ -329,7 +336,6 @@
                 price: p,
                 status: "Chờ phát đồ"
             });
-
             const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
             await fetch(webhookURL, {
                 method: 'POST',
@@ -352,11 +358,9 @@
                     }]
                 })
             });
-
             window.closeModal('robloxModal');
             showAlert(`Đặt mua thành công cho tài khoản ${robloxName}. Shop sẽ done đơn nhanh nhất có thể nhé ní!`, true);
             pendingItem = null;
-
         } catch (err) { showAlert("Lỗi giao dịch: " + err.message); }
     };
 
@@ -418,6 +422,11 @@
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
         loadTopDeposit();
+        
+        // CHÀO MỪNG KHÁCH HÀNG KHI VÀO TRANG (POPUP TỰ ĐỘNG)
+        setTimeout(() => {
+            window.showAlert("Chào mừng ní đã ghé thăm Dexsty Shop Roblox! Chúc ní một ngày tốt lành và săn được đồ ngon nhé ❤️", true);
+        }, 1000);
     }
     render();
 </script>
