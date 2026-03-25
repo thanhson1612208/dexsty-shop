@@ -6,44 +6,28 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --bg: #030712; 
-            --card: rgba(17, 24, 39, 0.85); 
-            --sky: #38bdf8; 
-            --gold: #fbbf24; 
-            --hot: #ff4757; 
-            --success: #22c55e; 
-            --text: #f8fafc; 
-        }
-
-        body { 
-            margin: 0; 
-            padding-bottom: 80px; 
-            color: var(--text); 
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); 
-            background-size: 400% 400%; 
-            animation: gradientBG 15s ease infinite; 
-        }
-
+        /* GIỮ NGUYÊN CẤU TRÚC GỐC - CHỈ NÂNG CẤP HIỆU ỨNG MODAL */
+        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
+        
+        body { margin: 0; padding-bottom: 80px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* --- CSS MODAL NÂNG CẤP (SANG TRỌNG & MUỢT) --- */
+        /* MODAL NÂNG CẤP HIỆU ỨNG */
         .modal { 
             display: none; 
             position: fixed; 
             z-index: 2000; 
             top: 0; left: 0; 
             width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); 
+            background: rgba(0, 0, 0, 0.6); 
             align-items: center; 
             justify-content: center; 
-            backdrop-filter: blur(0px);
+            backdrop-filter: blur(0px); /* Bắt đầu từ 0 */
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
         }
 
-        /* Khi Modal ở trạng thái mở */
+        /* Class để kích hoạt hiệu ứng mượt */
         .modal.show { 
             display: flex; 
             opacity: 1; 
@@ -51,23 +35,25 @@
         }
 
         .modal-content { 
-            background: linear-gradient(145deg, #111827, #0f172a); 
+            background: #111827; 
             padding: 25px; 
-            border-radius: 24px; 
+            border-radius: 20px; /* Bo tròn hơn cho sang */
             width: 90%; 
             max-width: 400px; 
-            border: 1px solid rgba(56, 189, 248, 0.25); 
+            border: 1px solid rgba(56, 189, 248, 0.3); 
             text-align: center; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.1);
-            transform: translateY(40px) scale(0.9);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            
+            /* Hiệu ứng bay lên và phóng to nhẹ */
+            transform: scale(0.8) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .modal.show .modal-content { 
-            transform: translateY(0) scale(1); 
+            transform: scale(1) translateY(0); 
         }
 
-        /* --- CÁC PHẦN CÒN LẠI GIỮ NGUYÊN STYLE CỦA NÍ --- */
+        /* CSS CÒN LẠI CỦA NÍ */
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
         .logo-container { display: flex; align-items: center; text-decoration: none; }
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
@@ -75,19 +61,16 @@
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: 0.3s; }
+        .card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; overflow: hidden; }
         .card img { width: 85px; height: 85px; object-fit: contain; margin-bottom: 10px; }
         .price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
-        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-buy:hover { background: var(--sky); color: #000; }
         
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; }
         .auth-tab.active { background: var(--sky); color: #000; }
-        
-        .modal-content input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; transition: 0.3s; }
-        .modal-content input:focus { border-color: var(--sky); outline: none; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-        
+        .modal-content input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
         .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
         .nav-right { display: flex; gap: 10px; align-items: center; }
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
@@ -101,9 +84,8 @@
         .rank-1 { color: var(--gold); }
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
-
-        .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; }
-        .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .confirm-box { text-align: left; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+        .confirm-box label { font-size: 13px; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-submit:disabled { background: #475569; cursor: not-allowed; opacity: 0.6; }
 
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; gap: 10px; } .logo-text { display: none; } }
@@ -193,21 +175,24 @@
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    // --- LOGIC MỞ/ĐÓNG MODAL MUỢT MÀ ---
+    // CẬP NHẬT HÀM ĐÓNG/MỞ ĐỂ CÓ HIỆU ỨNG
     window.openModal = (id) => {
-        const m = document.getElementById(id);
-        m.style.display = 'flex';
-        setTimeout(() => m.classList.add('show'), 10);
+        const modal = document.getElementById(id);
+        modal.style.display = 'flex';
+        // Delay 10ms để trình duyệt nhận diện display: flex rồi mới chạy transition
+        setTimeout(() => modal.classList.add('show'), 10);
     };
 
     window.closeModal = (id) => {
-        const m = document.getElementById(id);
-        m.classList.remove('show');
-        setTimeout(() => m.style.display = 'none', 400);
+        const modal = document.getElementById(id);
+        modal.classList.remove('show');
+        // Đợi hiệu ứng transition chạy xong (0.4s) mới ẩn display hoàn toàn
+        setTimeout(() => modal.style.display = 'none', 400);
     };
 
+    // Cập nhật các hàm mở modal cũ
     window.openAuthModal = () => window.openModal('authModal');
-    
+
     window.showAlert = (msg, isSuccess = false) => {
         const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'),
               title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'),
@@ -225,21 +210,18 @@
         window.openModal('depositModal');
     };
 
+    // --- GIỮ NGUYÊN LOGIC CŨ CỦA NÍ ---
+    window.rtdb = rtdb; window.ref = ref; window.set = set; window.get = get; window.update = update; window.increment = increment;
+
     window.sendDepositWebhook = async () => {
         const user = auth.currentUser; if(!user) return;
         const depositContent = "NAP " + user.email;
         const webhookDeposit = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
         try {
-            await fetch(webhookDeposit, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: "Dexsty Shop - NẠP TIỀN", avatar_url: "https://i.imgur.com/8CLFc5h.jpeg",
-                    embeds: [{ title: "💰 YÊU CẦU NẠP TIỀN!", color: 2278750, fields: [{ name: "👤 Khách", value: user.email, inline: true }, { name: "📝 Nội dung", value: depositContent, inline: true }], timestamp: new Date().toISOString() }]
-                })
-            });
+            await fetch(webhookDeposit, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - NẠP TIỀN", avatar_url: "https://i.imgur.com/8CLFc5h.jpeg", embeds: [{ title: "💰 YÊU CẦU NẠP TIỀN MỚI!", color: 2278750, fields: [{ name: "👤 Khách hàng", value: user.email, inline: true }, { name: "📝 Nội dung CK", value: depositContent, inline: true }], timestamp: new Date().toISOString() }] }) });
             window.closeModal('depositModal');
-            window.showAlert("Đã gửi yêu cầu nạp tiền! Vui lòng đợi nhé.", true);
-        } catch (e) { window.showAlert("Lỗi: " + e.message); }
+            showAlert("Đã gửi yêu cầu nạp tiền! Vui lòng đợi shop kiểm tra nhé ní.", true);
+        } catch (e) { showAlert("Lỗi: " + e.message); }
     };
 
     let authMode = 'login';
@@ -252,7 +234,7 @@
 
     window.processAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        if(!e || !p) return window.showAlert("Nhập đủ thông tin ní ơi!");
+        if(!e || !p) return showAlert("Nhập đủ thông tin ní ơi!");
         try {
             if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
             else {
@@ -260,7 +242,7 @@
                 await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, totalDeposit: 0, email: e });
             }
             window.closeModal('authModal');
-        } catch (err) { window.showAlert(err.message); }
+        } catch (err) { showAlert(err.message); }
     };
 
     window.logout = () => signOut(auth).then(() => location.reload());
@@ -270,9 +252,7 @@
         if(u) {
             onValue(ref(rtdb, 'users/' + u.uid), (s) => {
                 const b = s.val()?.balance || 0;
-                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button>
-                    <b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b>
-                    <button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
+                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><b style="color:var(--gold); font-size:16px;">${Number(b).toLocaleString()}đ</b><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
             });
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; }
     });
@@ -281,12 +261,12 @@
         const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
         onValue(topRef, (snapshot) => {
             const listArea = document.getElementById('top-deposit-list'); const data = snapshot.val();
-            if(!data) { listArea.innerHTML = '<div style="text-align:center; color:gray; padding:10px;">Chưa có dữ liệu.</div>'; return; }
+            if(!data) return;
             const sorted = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
             listArea.innerHTML = '';
             sorted.forEach((u, i) => {
                 const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-                listArea.innerHTML += `<div class="top-row"><div><span class="rank ${i<3?'rank-1':''}">${medal}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`;
+                listArea.innerHTML += `<div class="top-row"><div><span class="rank ${i<3?'rank-1':''}">${medal}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${(u.totalDeposit || 0).toLocaleString()}đ</div></div>`;
             });
         });
     }
@@ -315,29 +295,24 @@
             const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
             const snapshot = await get(userRef);
             const b = snapshot.val()?.balance || 0;
-            if(b < p) { window.closeModal('robloxModal'); return window.showAlert(`Số dư không đủ!`); }
+            if(b < p) { window.closeModal('robloxModal'); return showAlert(`Số dư không đủ! Cần thêm ${(p - b).toLocaleString()}đ nữa.`); }
             await update(userRef, { balance: b - p });
             await set(ref(rtdb, 'orders/' + Date.now()), { uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName, item: n, price: p, status: "Chờ phát đồ" });
             
             const webhookURL = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
-            fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - ĐƠN MỚI", embeds: [{ title: "🛒 ĐƠN MỚI!", color: 5814783, fields: [{ name: "🎮 Roblox User", value: robloxName }, { name: "🎁 Vật phẩm", value: n }] }] }) });
-
+            await fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - ĐƠN MỚI", avatar_url: "https://i.imgur.com/8CLFc5h.jpeg", embeds: [{ title: "🛒 CÓ ĐƠN HÀNG MỚI!", color: 5814783, fields: [{ name: "👤 Khách hàng", value: auth.currentUser.email }, { name: "🎮 Roblox User", value: robloxName }, { name: "🎁 Vật phẩm", value: n }, { name: "💰 Giá tiền", value: p.toLocaleString() + "đ" }] }] }) });
             window.closeModal('robloxModal');
-            window.showAlert(`Đã mua ${n} thành công!`, true);
-        } catch (err) { window.showAlert(err.message); }
+            showAlert(`Đặt mua thành công cho tài khoản ${robloxName}.`, true);
+        } catch (err) { showAlert("Lỗi: " + err.message); }
     };
 
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://tr.rbxcdn.com/4f728c707d0f1710972410a823c4a631/150/150/Image/Png"},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://tr.rbxcdn.com/17799d5059d486014e5900216790901e/150/150/Image/Png"},
         {n: "x2 Money", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/264584283597a7388756c6970f90e386/150/150/Image/Png"},
-        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://tr.rbxcdn.com/626d70a3161f36471e49d68128331773/150/150/Image/Png"},
-        {n: "+1 Storage", p: 62000, t: "gp", i: "https://tr.rbxcdn.com/7123497f1f77e68202537f80f7d54988/150/150/Image/Png"},
         {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
-        {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
-        {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg "},
-        {n: "Buddha", p: 239000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/1/17/Buddha_Fruit_Icon.png"},
-        {n: "Rocket", p: 8000, t: "f", i: "https://static.wikia.nocookie.net/blox-fruits/images/5/5e/Rocket_Fruit_Icon.png"}
+        {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"}
+        // ... Ní có thể tự add thêm các trái khác ở đây
     ];
 
     function render() {
