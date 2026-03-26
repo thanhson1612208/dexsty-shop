@@ -6,35 +6,104 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* GIỮ NGUYÊN TOÀN BỘ CSS GỐC CỦA NÍ */
+        /* --- GIỮ NGUYÊN CSS GỐC VÀ CẬP NHẬT TRANG TRÍ --- */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
-        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.85); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
+        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
+        
         body { margin: 0; padding-bottom: 100px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
         .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
         .logo-container { display: flex; align-items: center; text-decoration: none; }
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
         .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
+        
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; transition: 0.3s; overflow: hidden; }
-        .card img { width: 85px; height: 85px; object-fit: contain; margin-bottom: 10px; }
-        .price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
-        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--sky); background: transparent; color: var(--sky); font-weight: 700; cursor: pointer; }
+        
+        /* CẬP NHẬT GRID VÀ CARD SANG TRỌNG */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        
+        .card { 
+            background: var(--card); 
+            border-radius: 18px; 
+            padding: 20px 15px; 
+            border: 1px solid rgba(56, 189, 248, 0.1); 
+            text-align: center; 
+            position: relative; 
+            transition: all 0.3s ease; 
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--sky);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+            background: rgba(17, 24, 39, 0.9);
+        }
+        .card img { 
+            width: 85px; 
+            height: 85px; 
+            object-fit: contain; 
+            margin-bottom: 15px; 
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            transition: 0.3s;
+        }
+        .card:hover img { transform: scale(1.15); }
+        
+        .card h3 { 
+            font-size: 14px; 
+            margin: 10px 0; 
+            color: #fff; 
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .price { 
+            color: var(--gold); 
+            font-weight: 900; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            display: block;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .btn-buy { 
+            width: 100%; 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: none; 
+            background: linear-gradient(135deg, var(--sky), #0284c7); 
+            color: #000; 
+            font-weight: 800; 
+            cursor: pointer; 
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+        .btn-buy:hover { filter: brightness(1.2); box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+
+        /* GIỮ CÁC MODAL VÀ STATUS BAR CŨ */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }
-
-        /* CSS CHO BẢNG MUA HÀNG MỚI */
         .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
         .order-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; color: #334155; }
         .order-table td { padding: 12px; border: 1px solid #e2e8f0; font-size: 14px; text-align: left; }
         .order-table .label { font-weight: 600; background: #f1f5f9; width: 45%; }
         .order-table .value { font-weight: 800; text-align: right; }
         .pay-input { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-top: 5px; box-sizing: border-box; outline: none; background: #fff !important; color: #000 !important; }
+        
+        .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .status-user { font-size: 13px; color: #94a3b8; }
+        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
+        .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
 
-        /* CÁC THÀNH PHẦN KHÁC */
+        /* WELCOME & OTHERS */
         .welcome-logo { width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin: 0 auto 15px; display: block; object-fit: contain; }
         .event-item { display: flex; justify-content: center; gap: 10px; margin: 5px 0; font-size: 14px; }
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
@@ -47,17 +116,13 @@
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
-        .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .status-user { font-size: 13px; color: #94a3b8; }
-        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
-        .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
         .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
         .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
         .history-item.done { border-left-color: var(--success); }
         .h-name { font-weight: bold; font-size: 14px; display: block; color: #fff; }
         .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
         .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
-        .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
+        .top-deposit-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .rank { font-weight: 900; width: 30px; }
         .amount { color: var(--success); font-weight: 700; }
@@ -109,9 +174,7 @@
 
 <div id="welcomeModal" class="modal" style="display: flex;">
     <div class="modal-content" style="max-width: 420px;">
-        <div style="width: 100%; text-align: center;">
-            <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
-        </div>
+        <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo"></div>
         <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
         <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
         <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
@@ -124,24 +187,15 @@
 <div id="robloxModal" class="modal">
     <div class="modal-content payment-modal" style="max-width: 420px;">
         <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3>
-        
         <table class="order-table">
             <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr>
             <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr>
-            <tr>
-                <td class="label">Tên Roblox:</td>
-                <td class="value"><input type="text" id="robloxUser" placeholder="Nhập tên..." class="pay-input"></td>
-            </tr>
+            <tr><td class="label">Tên Roblox:</td><td class="value"><input type="text" id="robloxUser" placeholder="Nhập tên..." class="pay-input"></td></tr>
             <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr>
         </table>
-        
         <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;">
-            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
-                <input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> 
-                <span>Tôi xác nhận tên tài khoản đã chính xác. Shop không hoàn tiền nếu ní nhập sai.</span>
-            </label>
+            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận tên chính xác. Sai không hoàn tiền.</span></label>
         </div>
-        
         <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>
         <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p>
     </div>
@@ -191,7 +245,6 @@
 
     const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
-
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
@@ -204,8 +257,7 @@
         btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';
     };
 
-    let pendingItem = null;
-    let currentBalance = 0;
+    let pendingItem = null; let currentBalance = 0;
 
     window.buyItem = async (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
@@ -215,8 +267,7 @@
         document.getElementById('orderItemName').innerText = n;
         document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
         document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
-        document.getElementById('robloxUser').value = "";
-        document.getElementById('checkCorrect').checked = false;
+        document.getElementById('robloxUser').value = ""; document.getElementById('checkCorrect').checked = false;
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
@@ -279,7 +330,6 @@
         });
     };
 
-    // --- GIỮ NGUYÊN 100% DANH SÁCH 48 VẬT PHẨM ---
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
@@ -333,9 +383,10 @@
 
     function render() {
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid');
+        gp.innerHTML = ''; fr.innerHTML = '';
         allItems.forEach(item => {
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
+            card.innerHTML = `<img src="${item.i}" loading="lazy"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA NGAY</button>`;
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
         onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {
