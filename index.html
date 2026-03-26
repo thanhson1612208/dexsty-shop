@@ -27,15 +27,7 @@
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
         
         /* FIX LỖI ẢNH POPUP TẠI ĐÂY */
-        .welcome-logo { 
-            width: 100%; 
-            max-width: 280px; /* Giới hạn độ rộng tối đa */
-            height: auto; 
-            border-radius: 15px; 
-            margin: 0 auto 15px; 
-            display: block; 
-            object-fit: contain;
-        }
+        .welcome-logo { width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin: 0 auto 15px; display: block; object-fit: contain; }
         .welcome-content { padding-top: 15px !important; }
 
         /* STYLE CHO TAB NẠP TIỀN */
@@ -69,6 +61,16 @@
         .rank { font-weight: 900; width: 30px; }
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
+
+        /* CSS MỚI CHO BẢNG CỘNG ĐỒNG */
+        .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .community-card h3 { color: #0f172a; margin-top: 0; font-weight: 800; }
+        .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
+        .comm-discord { background: #5865F2; }
+        .comm-zalo { background: #0068ff; }
+        .comm-messenger { background: #0084ff; }
+        .comm-link:hover { opacity: 0.9; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -104,7 +106,7 @@
 
         <div id="dep-card-area" style="display: none; text-align: left;">
             <div style="background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; color: #ff4757; text-align: center;">
-                <b>LƯU Ý:</b> Chỉ nhận được 85% mệnh giá thẻ cào.<br>(Ví dụ: Thẻ 100k nhận 15k vào shop)
+                <b>LƯU Ý:</b> Chỉ nhận được 85% mệnh giá thẻ cào.<br>(Ví dụ: Thẻ 100k nhận 85k vào shop)
             </div>
             <select id="cardType">
                 <option value="">-- Chọn loại thẻ --</option>
@@ -194,6 +196,23 @@
     <div id="top-deposit-list" class="top-deposit-card">
         <div style="text-align: center; color: gray; padding: 10px;">Đang tải bảng xếp hạng...</div>
     </div>
+
+    <div class="community-card">
+        <h3>🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
+        <p>Kết nối với AD và anh em để nhận thông báo mới nhất!</p>
+        <div class="community-grid">
+            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord">
+                <i class="fab fa-discord"></i> Link Server Discord
+            </a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo">
+                <i class="fas fa-comment"></i> Nhóm Săn Levi Zalo
+            </a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger">
+                <i class="fab fa-facebook-messenger"></i> Nhóm Săn Levi Messenger
+            </a>
+        </div>
+    </div>
+
     <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
     <div id="gp-grid" class="grid"></div>
     <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn</div>
@@ -291,7 +310,6 @@
             });
             window.closeModal('depositModal'); 
             showAlert("Đã gửi thẻ thành công! AD sẽ kiểm tra và cộng tiền nhé.", true);
-            // Clear fields
             document.getElementById('cardPin').value = ""; document.getElementById('cardSeri').value = "";
         } catch (e) { showAlert(e.message); }
     };
@@ -456,7 +474,6 @@
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
         
-        // Load Top Nạp
         const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
         onValue(topRef, (snapshot) => {
             const listArea = document.getElementById('top-deposit-list'), data = snapshot.val();
