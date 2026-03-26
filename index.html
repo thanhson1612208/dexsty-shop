@@ -26,22 +26,15 @@
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
         
-        /* CSS MỚI CHO BẢNG THANH TOÁN (LIGHT MODE) */
-        .payment-content { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
-        .order-table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #fff; border-radius: 10px; overflow: hidden; color: #333; text-align: left; }
-        .order-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        .order-table td:first-child { font-weight: bold; color: #64748b; width: 45%; }
-        .order-table td:last-child { text-align: right; font-weight: 900; }
-        .qty-box { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-        .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; font-weight: bold; color: #334155; }
-        .total-price { color: #2563eb; font-size: 18px; }
-        .pay-input { background: #fff !important; color: #1e293b !important; border: 1px solid #e2e8f0 !important; margin: 5px 0 !important; }
-
-        /* CÁC CSS CÒN LẠI GIỮ NGUYÊN */
+        /* FIX LỖI ẢNH POPUP TẠI ĐÂY */
         .welcome-logo { width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin: 0 auto 15px; display: block; object-fit: contain; }
+        .welcome-content { padding-top: 15px !important; }
+
+        /* STYLE CHO TAB NẠP TIỀN */
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; text-align: center;}
         .auth-tab.active { background: var(--sky); color: #000; }
+        
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
         .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
         .nav-right { display: flex; gap: 10px; align-items: center; }
@@ -49,10 +42,12 @@
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
+
         .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         .status-user { font-size: 13px; color: #94a3b8; }
         .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
         .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
+
         .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
         .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
         .history-item.done { border-left-color: var(--success); }
@@ -60,11 +55,14 @@
         .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
         .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
         .h-status.done { color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        
         .top-deposit-card { background: var(--card); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .rank { font-weight: 900; width: 30px; }
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
+
+        /* CSS MỚI CHO BẢNG CỘNG ĐỒNG */
         .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .community-card h3 { color: #0f172a; margin-top: 0; font-weight: 800; }
         .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
@@ -72,6 +70,7 @@
         .comm-discord { background: #5865F2; }
         .comm-zalo { background: #0068ff; }
         .comm-messenger { background: #0084ff; }
+        .comm-link:hover { opacity: 0.9; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -96,6 +95,7 @@
             <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div>
             <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div>
         </div>
+
         <div id="dep-bank-area">
             <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
                 <img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;">
@@ -103,69 +103,89 @@
             <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
             <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
         </div>
+
         <div id="dep-card-area" style="display: none; text-align: left;">
-            <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
-            <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select>
-            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial">
+            <div style="background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; color: #ff4757; text-align: center;">
+                <b>LƯU Ý:</b> Chỉ nhận được 85% mệnh giá thẻ cào.<br>(Ví dụ: Thẻ 100k nhận 85k vào shop)
+            </div>
+            <select id="cardType">
+                <option value="">-- Chọn loại thẻ --</option>
+                <option value="Viettel">Viettel</option>
+                <option value="Vinaphone">Vinaphone</option>
+                <option value="Mobifone">Mobifone</option>
+                <option value="Garena">Garena</option>
+                <option value="Zing">Zing</option>
+            </select>
+            <select id="cardValue">
+                <option value="">-- Chọn mệnh giá --</option>
+                <option value="10000">10.000đ</option>
+                <option value="20000">20.000đ</option>
+                <option value="50000">50.000đ</option>
+                <option value="100000">100.000đ</option>
+                <option value="200000">200.000đ</option>
+                <option value="500000">500.000đ</option>
+            </select>
+            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)">
+            <input type="text" id="cardSeri" placeholder="Số Serial">
             <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button>
         </div>
+
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
 
 <div id="welcomeModal" class="modal" style="display: flex;">
     <div class="modal-content welcome-content" style="max-width: 420px;">
-        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        <div style="width: 100%; text-align: center;">
+            <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        </div>
         <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
         <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
+        <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
+        <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div>
+        <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div>
         <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
     </div>
 </div>
 
 <div id="robloxModal" class="modal">
-    <div class="modal-content payment-content" style="max-width: 420px;">
-        <h3 style="color: #0f172a; margin: 0; font-weight: 800;">THÔNG TIN THANH TOÁN</h3>
-        <table class="order-table">
-            <tr><td>Sản phẩm:</td><td id="orderItemName" style="color: #2563eb;">---</td></tr>
-            <tr><td>Số dư hiện tại:</td><td id="det-my-balance" style="color: #f43f5e;">0đ</td></tr>
-            <tr>
-                <td>Số lượng:</td>
-                <td>
-                    <div class="qty-box">
-                        <button class="qty-btn" onclick="window.changeQty(-1)">-</button>
-                        <span id="det-qty" style="min-width: 20px; text-align: center;">1</span>
-                        <button class="qty-btn" onclick="window.changeQty(1)">+</button>
-                    </div>
-                </td>
-            </tr>
-            <tr><td>Thành tiền:</td><td id="det-subtotal">0đ</td></tr>
-            <tr><td>Tổng thanh toán:</td><td id="det-total" class="total-price">0đ</td></tr>
-        </table>
-        
-        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox..." class="pay-input">
-        <div style="text-align: left; color: #64748b; font-size: 12px; margin: 10px 0;">
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> Tôi xác nhận tên tài khoản đã đúng.
-            </label>
+    <div class="modal-content" style="max-width: 380px;">
+        <h3 style="color: var(--sky);">THÔNG TIN ĐƠN HÀNG</h3>
+        <p id="orderItemName" style="color: var(--gold); font-weight: bold;"></p>
+        <input type="text" id="robloxUser" placeholder="Nhập tên tài khoản Roblox của ní...">
+        <div class="confirm-box">
+            <label><input type="checkbox" id="checkCorrect"> Tôi xác nhận tên tài khoản trên đã đúng.</label>
         </div>
-        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN MUA NGAY</button>
+        <button id="finalBuyBtn" class="btn-submit" disabled onclick="window.confirmPurchase()">XÁC NHẬN ĐẶT ĐƠN</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỎ</p>
     </div>
 </div>
 
 <div id="customAlert" class="modal">
-    <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div>
+    <div class="modal-content" id="alertBox" style="max-width: 320px;">
+        <div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div>
+        <h3 id="alertTitle" style="margin-bottom: 10px;"></h3>
+        <p id="alertMessage" style="color: #cbd5e1; font-size: 15px;"></p>
+        <button id="alertBtn" class="btn-submit" style="margin-top: 20px;" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+    </div>
 </div>
 
 <nav class="navbar">
-    <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>
+    <a href="#" class="logo-container">
+        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img">
+        <span class="logo-text">DEXSTY SHOP</span>
+    </a>
     <div id="auth-ui" class="nav-right"></div>
 </nav>
 
 <div id="authModal" class="modal">
     <div class="modal-content">
-        <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div>
-        <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu...">
+        <div class="auth-tabs">
+            <div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div>
+            <div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div>
+        </div>
+        <input type="email" id="email" placeholder="Email...">
+        <input type="password" id="password" placeholder="Mật khẩu...">
         <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p>
     </div>
@@ -173,15 +193,23 @@
 
 <div class="container">
     <div class="section-title">🏆 Top Nạp Trong Tháng</div>
-    <div id="top-deposit-list" class="top-deposit-card"><div style="text-align: center; color: gray; padding: 10px;">Đang tải...</div></div>
-    
+    <div id="top-deposit-list" class="top-deposit-card">
+        <div style="text-align: center; color: gray; padding: 10px;">Đang tải bảng xếp hạng...</div>
+    </div>
+
     <div class="community-card">
         <h3>🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
         <p>Kết nối với AD và anh em để nhận thông báo mới nhất!</p>
         <div class="community-grid">
-            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Link Server Discord</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Săn Levi Messenger</a>
+            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord">
+                <i class="fab fa-discord"></i> Link Server Discord
+            </a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo">
+                <i class="fas fa-comment"></i> Nhóm Săn Levi Zalo
+            </a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger">
+                <i class="fab fa-facebook-messenger"></i> Nhóm Săn Levi Messenger
+            </a>
         </div>
     </div>
 
@@ -196,93 +224,197 @@
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
     import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d",
+    };
 
-    // GIỮ NGUYÊN CÁC BIẾN DỮ LIỆU CỦA NÍ
-    let currentBalance = 0; let pendingItem = null; let currentQty = 1;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
     window.showAlert = (msg, isSuccess = false) => {
         const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'), title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'), message = document.getElementById('alertMessage');
         const color = isSuccess ? "#22c55e" : "#ff4757";
         box.style.borderColor = color; title.style.color = color; title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
         icon.style.color = color; icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-        btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';
+        btn.style.background = color; message.innerText = msg;
+        document.getElementById('customAlert').style.display = 'flex';
     };
 
-    // LOGIC MUA HÀNG & TÍNH TOÁN
+    // --- LOGIC NẠP TIỀN & THẺ ---
+    window.setDepMode = (mode) => {
+        document.getElementById('dep-bank-area').style.display = mode === 'bank' ? 'block' : 'none';
+        document.getElementById('dep-card-area').style.display = mode === 'card' ? 'block' : 'none';
+        document.getElementById('tab-dep-bank').className = `auth-tab ${mode === 'bank' ? 'active' : ''}`;
+        document.getElementById('tab-dep-card').className = `auth-tab ${mode === 'card' ? 'active' : ''}`;
+    }
+
+    window.openDeposit = () => {
+        if(!auth.currentUser) return window.openAuthModal();
+        document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email;
+        document.getElementById('depositModal').style.display = 'flex';
+    };
+
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+
+    window.sendDepositWebhook = async () => {
+        const user = auth.currentUser; if(!user) return;
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - BANK", embeds: [{
+                        title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750,
+                        fields: [{ name: "👤 Khách", value: user.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + user.email, inline: true }],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
+        } catch (e) { showAlert(e.message); }
+    };
+
+    window.sendCardWebhook = async () => {
+        const type = document.getElementById('cardType').value;
+        const value = document.getElementById('cardValue').value;
+        const pin = document.getElementById('cardPin').value.trim();
+        const seri = document.getElementById('cardSeri').value.trim();
+        const user = auth.currentUser;
+
+        if(!user) return;
+        if(!type || !value || !pin || !seri) return showAlert("Vui lòng điền đủ thông tin thẻ!");
+
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - THẺ CÀO", embeds: [{
+                        title: "💳 THÔNG BÁO THẺ CÀO MỚI!", color: 16711767,
+                        fields: [
+                            { name: "👤 Khách", value: user.email, inline: true },
+                            { name: "🆔 Loại thẻ", value: type, inline: true },
+                            { name: "💰 Mệnh giá", value: Number(value).toLocaleString() + "đ", inline: true },
+                            { name: "🔑 Mã nạp (PIN)", value: `\`${pin}\``, inline: false },
+                            { name: "🔢 Seri", value: `\`${seri}\``, inline: false },
+                            { name: "📝 Ghi chú", value: "Chiết khấu 15%", inline: true }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+            window.closeModal('depositModal'); 
+            showAlert("Đã gửi thẻ thành công! AD sẽ kiểm tra và cộng tiền nhé.", true);
+            document.getElementById('cardPin').value = ""; document.getElementById('cardSeri').value = "";
+        } catch (e) { showAlert(e.message); }
+    };
+
+    // --- LOGIC AUTH ---
+    let authMode = 'login';
+    window.setAuthMode = (mode) => {
+        authMode = mode;
+        document.getElementById('tab-login').className = `auth-tab ${mode === 'login' ? 'active' : ''}`;
+        document.getElementById('tab-register').className = `auth-tab ${mode === 'register' ? 'active' : ''}`;
+        document.getElementById('auth-btn-text').innerText = mode === 'login' ? 'XÁC NHẬN ĐĂNG NHẬP' : 'XÁC NHẬN ĐĂNG KÝ';
+    };
+
+    window.processAuth = async () => {
+        const e = document.getElementById('email').value, p = document.getElementById('password').value;
+        if(!e || !p) return showAlert("Nhập đủ thông tin!");
+        try {
+            if(authMode === 'login') await signInWithEmailAndPassword(auth, e, p);
+            else {
+                const res = await createUserWithEmailAndPassword(auth, e, p);
+                await set(ref(rtdb, 'users/' + res.user.uid), { balance: 0, totalDeposit: 0, email: e });
+            }
+            window.closeModal('authModal');
+        } catch (err) { showAlert(err.message); }
+    };
+
+    window.logout = () => signOut(auth).then(() => location.reload());
+
+    onAuthStateChanged(auth, (u) => {
+        const ui = document.getElementById('auth-ui'), statusBar = document.getElementById('bottomStatusBar');
+        if(u) {
+            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
+                const b = s.val()?.balance || 0;
+                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
+                statusBar.style.display = 'flex';
+                document.getElementById('status-email').innerText = u.email.split('@')[0];
+                document.getElementById('status-money').innerText = Number(b).toLocaleString() + 'đ';
+            });
+        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; statusBar.style.display = 'none'; }
+    });
+
+    // --- LOGIC LỊCH SỬ ---
+    window.openHistory = () => {
+        if(!auth.currentUser) return window.openAuthModal();
+        const content = document.getElementById('history-content');
+        document.getElementById('historyModal').style.display = 'flex';
+        content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Đang tải...</div>';
+
+        const orderRef = query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+        onValue(orderRef, (snapshot) => {
+            const data = snapshot.val();
+            if(!data) { content.innerHTML = '<div style="text-align: center; color: gray; padding: 20px;">Chưa có đơn nào.</div>'; return; }
+            const orders = Object.values(data).reverse();
+            content.innerHTML = '';
+            orders.forEach(order => {
+                const isDone = (order.status === "Đã hoàn thành");
+                content.innerHTML += `
+                    <div class="history-item ${isDone ? 'done' : ''}">
+                        <span class="h-status ${isDone ? 'done' : ''}">${order.status || 'Chờ xử lý'}</span>
+                        <span class="h-name">${order.item}</span>
+                        <div class="h-info">🎮: ${order.robloxAccount} | 💰: ${order.price.toLocaleString()}đ</div>
+                    </div>`;
+            });
+        });
+    };
+
+    // --- LOGIC MUA HÀNG ---
+    let pendingItem = null;
     window.buyItem = (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p };
-        currentQty = 1;
-        document.getElementById('robloxUser').value = "";
-        document.getElementById('checkCorrect').checked = false;
-        updatePaymentUI();
+        document.getElementById('robloxUser').value = ""; document.getElementById('checkCorrect').checked = false;
+        document.getElementById('finalBuyBtn').disabled = true;
+        document.getElementById('orderItemName').innerText = `${n} - ${p.toLocaleString()}đ`;
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
-    window.changeQty = (val) => {
-        currentQty += val; if(currentQty < 1) currentQty = 1;
-        updatePaymentUI();
-    };
-
-    function updatePaymentUI() {
-        const total = pendingItem.price * currentQty;
-        document.getElementById('orderItemName').innerText = pendingItem.name;
-        document.getElementById('det-my-balance').innerText = currentBalance.toLocaleString() + 'đ';
-        document.getElementById('det-qty').innerText = currentQty;
-        document.getElementById('det-subtotal').innerText = total.toLocaleString() + 'đ';
-        document.getElementById('det-total').innerText = total.toLocaleString() + 'đ';
+    document.getElementById('robloxUser').addEventListener('input', toggleBuyBtn);
+    document.getElementById('checkCorrect').addEventListener('change', toggleBuyBtn);
+    function toggleBuyBtn() {
+        const user = document.getElementById('robloxUser').value.trim();
+        const checked = document.getElementById('checkCorrect').checked;
+        document.getElementById('finalBuyBtn').disabled = !(user.length >= 3 && checked);
     }
 
     window.confirmPurchase = async () => {
         const robloxName = document.getElementById('robloxUser').value.trim();
-        const checkbox = document.getElementById('checkCorrect').checked;
-        const total = pendingItem.price * currentQty;
-        if(!robloxName || !checkbox) return showAlert("Vui lòng điền đủ thông tin!");
-        if(currentBalance < total) return showAlert("Số dư không đủ!");
-
+        const { name: n, price: p } = pendingItem;
         try {
             const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
-            await update(userRef, { balance: currentBalance - total });
+            const snapshot = await get(userRef);
+            const b = snapshot.val()?.balance || 0;
+            if(b < p) { window.closeModal('robloxModal'); return showAlert("Số dư không đủ!"); }
+            await update(userRef, { balance: b - p });
             const orderId = Date.now();
             await set(ref(rtdb, 'orders/' + orderId), { 
                 uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName,
-                item: `${pendingItem.name} (x${currentQty})`, price: total, status: "Chờ phát đồ", timestamp: orderId
+                item: n, price: p, status: "Chờ phát đồ", timestamp: orderId
             });
-            window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
-        } catch (e) { showAlert(e.message); }
+            window.closeModal('robloxModal');
+            showAlert("Mua thành công!", true);
+        } catch (err) { showAlert(err.message); }
     };
 
-    // CÁC HÀM CÒN LẠI GIỮ NGUYÊN HOÀN TOÀN
-    window.setDepMode = (m) => { document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; }
-    window.openDeposit = () => { if(!auth.currentUser) return window.openAuthModal(); document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email; document.getElementById('depositModal').style.display = 'flex'; };
-    window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };
-    window.processAuth = async () => { const e = document.getElementById('email').value, p = document.getElementById('password').value; try { if(document.getElementById('auth-btn-text').innerText.includes('NHẬP')) await signInWithEmailAndPassword(auth, e, p); else { const r = await createUserWithEmailAndPassword(auth, e, p); await set(ref(rtdb, 'users/'+r.user.uid), {balance:0, totalDeposit:0, email:e}); } window.closeModal('authModal'); } catch(err) { showAlert(err.message); } };
-    window.logout = () => signOut(auth).then(() => location.reload());
-
-    onAuthStateChanged(auth, (u) => {
-        const ui = document.getElementById('auth-ui'), sb = document.getElementById('bottomStatusBar');
-        if(u) {
-            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
-                currentBalance = s.val()?.balance || 0;
-                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
-                sb.style.display = 'flex'; document.getElementById('status-email').innerText = u.email.split('@')[0]; document.getElementById('status-money').innerText = currentBalance.toLocaleString() + 'đ';
-            });
-        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }
-    });
-
-    window.openHistory = () => {
-        const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex';
-        onValue(query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid)), (snap) => {
-            const data = snap.val(); if(!data) { content.innerHTML = '<div style="text-align:center;color:gray;padding:20px;">Trống</div>'; return; }
-            content.innerHTML = Object.values(data).reverse().map(o => `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}"><span class="h-status ${o.status==='Đã hoàn thành'?'done':''}">${o.status||'Chờ'}</span><span class="h-name">${o.item}</span><div class="h-info">🎮: ${o.robloxAccount} | 💰: ${o.price.toLocaleString()}đ</div></div>`).join('');
-        });
-    };
-
-    // DỮ LIỆU VẬT PHẨM GIỮ NGUYÊN CỦA NÍ
+    // --- RENDER DỮ LIỆU ---
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
@@ -341,14 +473,21 @@
             card.innerHTML = `<img src="${item.i}"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA</button>`;
             if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
         });
-        onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {
-            const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;
-            const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
-            list.innerHTML = sorted.map((u, i) => `<div class="top-row"><div><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`).join('');
+        
+        const topRef = query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5));
+        onValue(topRef, (snapshot) => {
+            const listArea = document.getElementById('top-deposit-list'), data = snapshot.val();
+            if(!data) return;
+            const sorted = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
+            listArea.innerHTML = '';
+            sorted.forEach((u, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+                listArea.innerHTML += `<div class="top-row"><div><span class="rank">${medal}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`;
+            });
         });
     }
     render();
 </script>
 </body>
 </html>
- 
+làm theo yêu cầu và đừng thay đổi bất cứ cấu trúc nội dung nào cả
