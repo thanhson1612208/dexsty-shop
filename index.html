@@ -26,8 +26,8 @@
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
         
-        /* CSS CHO BẢNG MUA HÀNG KIỂU MỚI (LIGHT MODE) */
-        .payment-content { background: #f8fafc !important; color: #1e293b !important; border: none !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3) !important; }
+        /* CSS MỚI CHO BẢNG THANH TOÁN (LIGHT MODE) */
+        .payment-content { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
         .order-table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #fff; border-radius: 10px; overflow: hidden; color: #333; text-align: left; }
         .order-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
         .order-table td:first-child { font-weight: bold; color: #64748b; width: 45%; }
@@ -37,7 +37,7 @@
         .total-price { color: #2563eb; font-size: 18px; }
         .pay-input { background: #fff !important; color: #1e293b !important; border: 1px solid #e2e8f0 !important; margin: 5px 0 !important; }
 
-        /* GIỮ NGUYÊN CÁC CSS CÒN LẠI */
+        /* CÁC CSS CÒN LẠI GIỮ NGUYÊN */
         .welcome-logo { width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin: 0 auto 15px; display: block; object-fit: contain; }
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; transition: 0.3s; text-align: center;}
@@ -65,7 +65,7 @@
         .rank { font-weight: 900; width: 30px; }
         .user-name { flex: 1; color: #cbd5e1; font-size: 14px; }
         .amount { color: var(--success); font-weight: 700; }
-        .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; }
+        .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .community-card h3 { color: #0f172a; margin-top: 0; font-weight: 800; }
         .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
@@ -106,20 +106,28 @@
         <div id="dep-card-area" style="display: none; text-align: left;">
             <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
             <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select>
-            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)">
-            <input type="text" id="cardSeri" placeholder="Số Serial">
+            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial">
             <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button>
         </div>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
     </div>
 </div>
 
+<div id="welcomeModal" class="modal" style="display: flex;">
+    <div class="modal-content welcome-content" style="max-width: 420px;">
+        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
+        <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
+        <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
+        <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
+    </div>
+</div>
+
 <div id="robloxModal" class="modal">
     <div class="modal-content payment-content" style="max-width: 420px;">
-        <h3 style="color: #0f172a; margin: 0; font-weight: 800; letter-spacing: -0.5px;">THÔNG TIN MUA HÀNG</h3>
+        <h3 style="color: #0f172a; margin: 0; font-weight: 800;">THÔNG TIN THANH TOÁN</h3>
         <table class="order-table">
             <tr><td>Sản phẩm:</td><td id="orderItemName" style="color: #2563eb;">---</td></tr>
-            <tr><td>Số dư của tôi:</td><td id="det-my-balance" style="color: #f43f5e;">0đ</td></tr>
+            <tr><td>Số dư hiện tại:</td><td id="det-my-balance" style="color: #f43f5e;">0đ</td></tr>
             <tr>
                 <td>Số lượng:</td>
                 <td>
@@ -130,7 +138,6 @@
                     </div>
                 </td>
             </tr>
-            <tr><td>Mã giảm giá:</td><td><input type="text" placeholder="Nhập mã..." class="pay-input" style="width: 100px; padding: 4px 8px; font-size: 12px; margin: 0 !important; text-align: right;"></td></tr>
             <tr><td>Thành tiền:</td><td id="det-subtotal">0đ</td></tr>
             <tr><td>Tổng thanh toán:</td><td id="det-total" class="total-price">0đ</td></tr>
         </table>
@@ -141,18 +148,8 @@
                 <input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> Tôi xác nhận tên tài khoản đã đúng.
             </label>
         </div>
-
-        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>
+        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN MUA NGAY</button>
         <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('robloxModal')">HỦY BỎ</p>
-    </div>
-</div>
-
-<div id="welcomeModal" class="modal" style="display: flex;">
-    <div class="modal-content welcome-content" style="max-width: 420px;">
-        <img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo">
-        <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
-        <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
-        <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
     </div>
 </div>
 
@@ -177,7 +174,7 @@
 <div class="container">
     <div class="section-title">🏆 Top Nạp Trong Tháng</div>
     <div id="top-deposit-list" class="top-deposit-card"><div style="text-align: center; color: gray; padding: 10px;">Đang tải...</div></div>
-
+    
     <div class="community-card">
         <h3>🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
         <p>Kết nối với AD và anh em để nhận thông báo mới nhất!</p>
@@ -202,6 +199,7 @@
     const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
 
+    // GIỮ NGUYÊN CÁC BIẾN DỮ LIỆU CỦA NÍ
     let currentBalance = 0; let pendingItem = null; let currentQty = 1;
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
@@ -214,7 +212,7 @@
         btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';
     };
 
-    // --- LOGIC MUA HÀNG KIỂU MỚI ---
+    // LOGIC MUA HÀNG & TÍNH TOÁN
     window.buyItem = (n, p) => {
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p };
@@ -243,8 +241,7 @@
         const robloxName = document.getElementById('robloxUser').value.trim();
         const checkbox = document.getElementById('checkCorrect').checked;
         const total = pendingItem.price * currentQty;
-
-        if(!robloxName || !checkbox) return showAlert("Vui lòng nhập tên Roblox và xác nhận!");
+        if(!robloxName || !checkbox) return showAlert("Vui lòng điền đủ thông tin!");
         if(currentBalance < total) return showAlert("Số dư không đủ!");
 
         try {
@@ -255,11 +252,11 @@
                 uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName,
                 item: `${pendingItem.name} (x${currentQty})`, price: total, status: "Chờ phát đồ", timestamp: orderId
             });
-            window.closeModal('robloxModal'); showAlert("Mua thành công! Đang chờ AD xử lý.", true);
+            window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
 
-    // --- GIỮ NGUYÊN TOÀN BỘ LOGIC CÒN LẠI ---
+    // CÁC HÀM CÒN LẠI GIỮ NGUYÊN HOÀN TOÀN
     window.setDepMode = (m) => { document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; }
     window.openDeposit = () => { if(!auth.currentUser) return window.openAuthModal(); document.getElementById('depositMsg').innerText = "NAP " + auth.currentUser.email; document.getElementById('depositModal').style.display = 'flex'; };
     window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };
@@ -285,6 +282,7 @@
         });
     };
 
+    // DỮ LIỆU VẬT PHẨM GIỮ NGUYÊN CỦA NÍ
     const allItems = [
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
@@ -353,3 +351,4 @@
 </script>
 </body>
 </html>
+ 
