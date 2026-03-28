@@ -6,7 +6,7 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- GIỮ NGUYÊN CSS GỐC --- */
+        /* --- CSS GỐC & CƠ BẢN --- */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
         :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
@@ -22,25 +22,32 @@
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
         
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; } }
+        /* TỐI ƯU GIAO DIỆN MỤC RIÊNG (TABS) */
+        .shop-tabs { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 5px; scrollbar-width: none; }
+        .shop-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 0 0 auto; padding: 12px 25px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(56, 189, 248, 0.2); color: #94a3b8; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
+        .tab-btn.active { background: var(--sky); color: #000; border-color: var(--sky); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; display: none; }
+        .grid.active { display: grid; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; } }
         
         .card { background: var(--card); border-radius: 18px; padding: 15px 10px; border: 1px solid rgba(56, 189, 248, 0.1); text-align: center; position: relative; transition: all 0.3s ease; overflow: hidden; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }
         .card:hover { transform: translateY(-8px); border-color: var(--sky); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2); background: rgba(17, 24, 39, 0.9); }
-        .card img { width: 75px; height: 75px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: 0.3s; }
+        .card img { width: 85px; height: 85px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: 0.3s; }
         .card:hover img { transform: scale(1.1); }
-        .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; }
         .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }
-        .btn-buy { width: 100%; padding: 8px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 10px; }
+        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 11px; }
 
-        /* ROBUX CALCULATOR STYLING */
+        /* ROBUX CALCULATOR */
         .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .robux-input-group div { flex: 1; min-width: 140px; }
         .calc-note { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); padding: 10px; border-radius: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
         .calc-note b { color: var(--hot); }
 
-        /* MODALS & OTHERS GIỮ NGUYÊN */
+        /* MODALS */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }
         .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
@@ -49,33 +56,41 @@
         .order-table .label { font-weight: 600; background: #f1f5f9; width: 45%; }
         .order-table .value { font-weight: 800; text-align: right; }
         .pay-input { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-top: 5px; box-sizing: border-box; outline: none; background: #fff !important; color: #000 !important; }
+        
         .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         .status-user { font-size: 13px; color: #94a3b8; }
         .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
         .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
+        
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
+        .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
+        
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; text-align: center;}
         .auth-tab.active { background: var(--sky); color: #000; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
-        .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
+        
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
         .btn-deposit { background: #22c55e; color: #fff; }
+
         .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
         .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
         .history-item.done { border-left-color: var(--success); }
         .h-name { font-weight: bold; font-size: 14px; display: block; color: #fff; }
         .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
         .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
+        
         .top-deposit-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .rank { font-weight: 900; width: 30px; }
         .amount { color: var(--success); font-weight: 700; }
+
         .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
         .comm-discord { background: #5865F2; } .comm-zalo { background: #0068ff; } .comm-messenger { background: #0084ff; }
+        .event-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -140,6 +155,17 @@
         <button class="btn-buy" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>
     </div>
 
+    <div class="section-title">🔥 DANH MỤC DỊCH VỤ</div>
+    <div class="shop-tabs">
+        <div class="tab-btn active" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>
+        <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>
+        <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Ác Quỷ</div>
+    </div>
+
+    <div id="service-grid" class="grid active"></div>
+    <div id="gp-grid" class="grid"></div>
+    <div id="fruit-grid" class="grid"></div>
+
     <div class="community-card" style="margin-top: 30px;">
         <h3 style="color: #0f172a; margin-top: 0; font-weight: 800;">🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
         <div class="community-grid">
@@ -148,14 +174,6 @@
             <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
         </div>
     </div>
-
-    <div class="section-title">🔥 Dịch Vụ Cày Thuê</div>
-    <div id="service-grid" class="grid"></div>
-
-    <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
-    <div id="gp-grid" class="grid"></div>
-    <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn</div>
-    <div id="fruit-grid" class="grid"></div>
 </div>
 
 <script type="module">
@@ -166,6 +184,15 @@
     const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+
+    // --- LOGIC CHUYỂN TAB ---
+    window.switchTab = (type) => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.grid').forEach(grid => grid.classList.remove('active'));
+        
+        event.currentTarget.classList.add('active');
+        document.getElementById(type + '-grid').classList.add('active');
+    };
 
     // --- LOGIC TÍNH TOÁN ROBUX ---
     const RATE = 171;
@@ -185,7 +212,7 @@
         window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price, 'robux');
     };
 
-    // --- GIỮ NGUYÊN TOÀN BỘ LOGIC CŨ ---
+    // --- LOGIC MUA HÀNG ---
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
     window.showAlert = (msg, isSuccess = false) => {
@@ -207,13 +234,11 @@
         document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
         document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
         
-        // Reset form
         document.getElementById('robloxUser').value = ""; 
         document.getElementById('robloxPass').value = "";
         document.getElementById('roblox2fa').value = "";
         document.getElementById('checkCorrect').checked = false;
 
-        // Hiển thị ô nhập pass nếu là cày thuê
         if(type === 'service') {
             document.getElementById('row-pass').style.display = 'table-row';
             document.getElementById('row-2fa').style.display = 'table-row';
@@ -221,7 +246,6 @@
             document.getElementById('row-pass').style.display = 'none';
             document.getElementById('row-2fa').style.display = 'none';
         }
-
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
@@ -256,7 +280,7 @@
         } catch (e) { showAlert(e.message); }
     };
 
-    // --- WEBHOOKS ---
+    // --- WEBHOOKS & AUTH ---
     window.sendDepositWebhook = async () => {
         const u = auth.currentUser; if(!u) return;
         try {
@@ -302,7 +326,7 @@
     };
 
     const allItems = [
-        // SERVICE - CÀY THUÊ
+        // SERVICE
         {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
         {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
         {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
@@ -425,3 +449,4 @@
 </script>
 </body>
 </html>
+ 
