@@ -70,8 +70,6 @@
         .comm-discord { background: #5865F2; }
         .comm-zalo { background: #0068ff; }
         .comm-messenger { background: #0084ff; }
-        /* Style cho ghi chú Robux */
-        .rb-note { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 8px; border-radius: 6px; font-size: 11px; margin-top: 8px; text-align: left; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -147,9 +145,6 @@
             <label style="font-weight: bold; font-size: 13px;">Số Robux muốn mua:</label>
             <input type="number" id="buyRbAmount" class="pay-input" placeholder="Ví dụ: 100" oninput="window.calcRobux()">
             <p style="margin: 5px 0 0; font-size: 11px; color: #475569;">Bạn sẽ nhận được: <b id="afterTaxRb" style="color: #16a34a;">0</b> Robux (đã trừ 30% thuế)</p>
-            <div class="rb-note">
-                <i class="fas fa-info-circle"></i> <b>Lưu ý:</b> Vui lòng tạo Gamepass đúng theo số Robux <b>chưa thuế</b> đã nhập và <b>tắt định giá theo khu vực</b>.
-            </div>
         </div>
 
         <table class="order-table">
@@ -200,8 +195,8 @@
     <div class="section-title">💎 Gói Robux Chính Hãng (120H)</div>
     <div class="grid">
         <div class="card">
-            <img src="https://i.imgur.com/mEK8jDL.jpeg" loading="lazy">
-            <h3>Nạp Robux Qua Gamepass</h3>
+            <img src="https://i.imgur.com/3ifB2RS.jpeg" loading="lazy">
+            <h3>Nạp Robux Chính Hãng</h3>
             <div class="price">171đ / 1 Robux</div>
             <button class="btn-buy" onclick="window.buyItem('Robux 120H', 0, true)">NẠP NGAY</button>
         </div>
@@ -346,6 +341,9 @@
             });
         } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }
     });
+
+    window.openDeposit = () => document.getElementById('depositModal').style.display = 'flex';
+    window.setDepMode = (m) => { document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; };
 
     window.openHistory = () => {
         const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex';
