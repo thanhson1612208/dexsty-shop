@@ -140,6 +140,13 @@
 <div id="robloxModal" class="modal">
     <div class="modal-content payment-modal" style="max-width: 420px;">
         <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3>
+        
+        <div id="robux-input-group" style="display: none; margin-top: 15px; text-align: left; background: #f1f5f9; padding: 10px; border-radius: 8px;">
+            <label style="font-weight: bold; font-size: 13px;">Số Robux muốn mua:</label>
+            <input type="number" id="buyRbAmount" class="pay-input" placeholder="Ví dụ: 100" oninput="window.calcRobux()">
+            <p style="margin: 5px 0 0; font-size: 11px; color: #475569;">Bạn sẽ nhận được: <b id="afterTaxRb" style="color: #16a34a;">0</b> Robux (đã trừ 30% thuế)</p>
+        </div>
+
         <table class="order-table">
             <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr>
             <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr>
@@ -185,6 +192,16 @@
         </div>
     </div>
 
+    <div class="section-title">💎 Gói Robux Chính Hãng (120H)</div>
+    <div class="grid">
+        <div class="card">
+            <img src="https://i.imgur.com/mEK8jDL.jpeg" loading="lazy">
+            <h3>Nạp Robux Qua Gamepass</h3>
+            <div class="price">171đ / 1 Robux</div>
+            <button class="btn-buy" onclick="window.buyItem('Robux 120H', 0, true)">NẠP NGAY</button>
+        </div>
+    </div>
+
     <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
     <div id="gp-grid" class="grid"></div>
     <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn</div>
@@ -200,7 +217,6 @@
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
 
-    // --- CẤU HÌNH API NẠP THẺ ---
     const MY_PARTNER_ID = "89840681079 "; 
     const MY_PARTNER_KEY = "3a4be57d5a9af55b0cc094c5191cff0c"; 
 
@@ -214,31 +230,66 @@
         btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';
     };
 
-    let pendingItem = null; let currentBalance = 0;
+    let pendingItem = null; let currentBalance = 0; let isRobuxMode = false;
 
-    window.buyItem = async (n, p) => {
+    // HÀM TÍNH TOÁN ROBUX
+    window.calcRobux = () => {
+        const amount = parseInt(document.getElementById('buyRbAmount').value) || 0;
+        const price = amount * 171;
+        const afterTax = Math.floor(amount * 0.7);
+        document.getElementById('itemPriceText').innerText = price.toLocaleString() + 'đ';
+        document.getElementById('afterTaxRb').innerText = afterTax.toLocaleString();
+        pendingItem.price = price;
+        pendingItem.rbAmount = amount;
+        pendingItem.rbNet = afterTax;
+    };
+
+    window.buyItem = async (n, p, isRb = false) => {
         if(!auth.currentUser) return window.openAuthModal();
+        isRobuxMode = isRb;
         pendingItem = { name: n, price: p };
+        
         const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));
         currentBalance = snapshot.val()?.balance || 0;
+        
         document.getElementById('orderItemName').innerText = n;
         document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
         document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
         document.getElementById('robloxUser').value = ""; document.getElementById('checkCorrect').checked = false;
+        
+        // Hiện/Ẩn ô nhập số Robux
+        document.getElementById('robux-input-group').style.display = isRb ? 'block' : 'none';
+        if(isRb) {
+            document.getElementById('buyRbAmount').value = "";
+            document.getElementById('afterTaxRb').innerText = "0";
+        }
+
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
     window.confirmPurchase = async () => {
         const robloxName = document.getElementById('robloxUser').value.trim();
         if(!robloxName || !document.getElementById('checkCorrect').checked) return showAlert("Vui lòng nhập tên và tích xác nhận!");
+        if(isRobuxMode && (!pendingItem.rbAmount || pendingItem.rbAmount <= 0)) return showAlert("Vui lòng nhập số Robux hợp lệ!");
         if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");
+        
         try {
             await update(ref(rtdb, 'users/' + auth.currentUser.uid), { balance: currentBalance - pendingItem.price });
             const orderId = Date.now();
-            await set(ref(rtdb, 'orders/' + orderId), { 
+            
+            const orderData = { 
                 uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName,
                 item: pendingItem.name, price: pendingItem.price, status: "Chờ phát đồ", timestamp: orderId
-            });
+            };
+            
+            // Nếu là Robux thì lưu thêm thông tin số lượng
+            if(isRobuxMode) {
+                orderData.rbAmount = pendingItem.rbAmount;
+                orderData.rbNet = pendingItem.rbNet;
+                orderData.item = `Mua ${pendingItem.rbAmount} Robux (Nhận ${pendingItem.rbNet})`;
+            }
+
+            await set(ref(rtdb, 'orders/' + orderId), orderData);
             window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
@@ -251,74 +302,28 @@
         } catch (e) { showAlert(e.message); }
     };
 
-    // --- HÀM GỬI THẺ CẬP NHẬT API KEY ---
     window.sendCardWebhook = async () => {
         const telco = document.getElementById('cardType').value;
         const amount = document.getElementById('cardValue').value;
         const pin = document.getElementById('cardPin').value.trim();
         const serial = document.getElementById('cardSeri').value.trim();
         const u = auth.currentUser;
-
         if(!telco || !amount || !pin || !serial) return showAlert("Vui lòng điền đủ thông tin!");
-        
-        // Tạo mã đơn ngẫu nhiên
         const requestId = Math.floor(Math.random() * 99999999).toString();
-        
-        // Tạo chữ ký bảo mật MD5: md5(partner_key + pin + serial)
         const sign = CryptoJS.MD5(MY_PARTNER_KEY + pin + serial).toString();
-
         try {
-            // 1. Gửi dữ liệu lên hệ thống gạch thẻ
             const response = await fetch("https://doithecao.com/chargingws/v2", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    telco: telco,
-                    code: pin,
-                    serial: serial,
-                    amount: amount,
-                    request_id: requestId,
-                    partner_id: MY_PARTNER_ID,
-                    sign: sign,
-                    command: "charging"
-                })
+                body: JSON.stringify({ telco, code: pin, serial, amount, request_id: requestId, partner_id: MY_PARTNER_ID, sign, command: "charging" })
             });
-
             const result = await response.json();
-
-            // 2. Nếu gửi thẻ thành công (status 1 hoặc 99 là đang chờ)
             if (result.status === 1 || result.status === 99) {
                 window.closeModal('depositModal');
                 showAlert("Gửi thẻ thành công! Vui lòng đợi 1-3 phút để hệ thống check.", true);
-
-                // 3. Gửi thông báo lên Discord để Sơn biết
-                await fetch(WEBHOOK_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ 
-                        username: "Dexsty Shop - THẺ CÀO", 
-                        embeds: [{ 
-                            title: "💳 THẺ CÀO MỚI (CHỜ DUYỆT)", 
-                            color: 16711767, 
-                            fields: [
-                                { name: "👤 Khách", value: u.email, inline: true }, 
-                                { name: "🆔 Loại", value: telco, inline: true }, 
-                                { name: "💰 Mệnh giá", value: Number(amount).toLocaleString() + "đ", inline: true }, 
-                                { name: "🔑 PIN", value: `\`${pin}\`` }, 
-                                { name: "🔢 Seri", value: `\`${serial}\`` },
-                                { name: "🎫 Mã đơn", value: requestId }
-                            ], 
-                            timestamp: new Date().toISOString() 
-                        }] 
-                    }) 
-                });
-            } else {
-                showAlert("Lỗi: " + (result.message || "Không thể gửi thẻ"));
-            }
-        } catch (e) { 
-            showAlert("Lỗi kết nối API!"); 
-            console.error(e);
-        }
+                await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - THẺ CÀO", embeds: [{ title: "💳 THẺ CÀO MỚI (CHỜ DUYỆT)", color: 16711767, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "🆔 Loại", value: telco, inline: true }, { name: "💰 Mệnh giá", value: Number(amount).toLocaleString() + "đ", inline: true }, { name: "🔑 PIN", value: `\`${pin}\`` }, { name: "🔢 Seri", value: `\`${serial}\`` }, { name: "🎫 Mã đơn", value: requestId }], timestamp: new Date().toISOString() }] }) });
+            } else showAlert("Lỗi: " + (result.message || "Không thể gửi thẻ"));
+        } catch (e) { showAlert("Lỗi kết nối API!"); }
     };
 
     window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };
@@ -417,3 +422,4 @@
 </script>
 </body>
 </html>
+ 
