@@ -89,7 +89,26 @@
 <div id="historyModal" class="modal"> <div class="modal-content" style="max-width: 450px;"> <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3> <div id="history-content" class="history-list"></div> <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button> </div> </div>
 <div id="depositModal" class="modal"> <div class="modal-content" style="max-width: 420px;"> <div class="auth-tabs"> <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div> <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div> </div> <div id="dep-bank-area"> <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;"></div> <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p> <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button> </div> <div id="dep-card-area" style="display: none; text-align: left;"> <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select> <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select> <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial"> <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button> </div> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p> </div> </div>
 <div id="welcomeModal" class="modal" style="display: flex;"> <div class="modal-content" style="max-width: 420px;"> <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" style="width:100%; max-width:280px; border-radius:15px; margin-bottom:15px;"></div> <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2> <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3> <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div> <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div> <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div> <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button> </div> </div>
-<div id="robloxModal" class="modal"> <div class="modal-content payment-modal" style="max-width: 420px;"> <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3> <table class="order-table"> <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr> <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr> <tr><td class="label">Tên Roblox:</td><td class="value"><input type="text" id="robloxUser" placeholder="Nhập tên..." class="pay-input"></td></tr> <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr> </table> <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;"> <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận tên/link chính xác. Sai không hoàn tiền.</span></label> </div> <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button> <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p> </div> </div>
+
+<div id="robloxModal" class="modal"> 
+    <div class="modal-content payment-modal" style="max-width: 420px;"> 
+        <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3> 
+        <table class="order-table"> 
+            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr> 
+            <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr> 
+            <tr><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr> 
+            <tr id="row-pass" style="display: none;"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr> 
+            <tr id="row-2fa" style="display: none;"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr> 
+            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr> 
+        </table> 
+        <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;"> 
+            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận thông tin chính xác. Sai không hoàn tiền.</span></label> 
+        </div> 
+        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button> 
+        <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p> 
+    </div> 
+</div>
+
 <div id="customAlert" class="modal"> <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div> </div>
 <div id="authModal" class="modal"> <div class="modal-content"> <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div> <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu..."> <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p> </div> </div>
 
@@ -130,6 +149,9 @@
         </div>
     </div>
 
+    <div class="section-title">🔥 Dịch Vụ Cày Thuê</div>
+    <div id="service-grid" class="grid"></div>
+
     <div class="section-title">⚔️ Game Pass Vĩnh Viễn</div>
     <div id="gp-grid" class="grid"></div>
     <div class="section-title">🍎 Trái Ác Quỷ Vĩnh Viễn</div>
@@ -160,7 +182,7 @@
         if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");
         const price = rb * RATE;
         const totalWithTax = Math.ceil(rb / 0.7);
-        window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price);
+        window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price, 'robux');
     };
 
     // --- GIỮ NGUYÊN TOÀN BỘ LOGIC CŨ ---
@@ -176,33 +198,65 @@
 
     let pendingItem = null; let currentBalance = 0;
 
-    window.buyItem = async (n, p) => {
+    window.buyItem = async (n, p, type = 'gp') => {
         if(!auth.currentUser) return window.openAuthModal();
-        pendingItem = { name: n, price: p };
+        pendingItem = { name: n, price: p, type: type };
         const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));
         currentBalance = snapshot.val()?.balance || 0;
         document.getElementById('orderItemName').innerText = n;
         document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
         document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
-        document.getElementById('robloxUser').value = ""; document.getElementById('checkCorrect').checked = false;
+        
+        // Reset form
+        document.getElementById('robloxUser').value = ""; 
+        document.getElementById('robloxPass').value = "";
+        document.getElementById('roblox2fa').value = "";
+        document.getElementById('checkCorrect').checked = false;
+
+        // Hiển thị ô nhập pass nếu là cày thuê
+        if(type === 'service') {
+            document.getElementById('row-pass').style.display = 'table-row';
+            document.getElementById('row-2fa').style.display = 'table-row';
+        } else {
+            document.getElementById('row-pass').style.display = 'none';
+            document.getElementById('row-2fa').style.display = 'none';
+        }
+
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
     window.confirmPurchase = async () => {
         const robloxName = document.getElementById('robloxUser').value.trim();
-        if(!robloxName || !document.getElementById('checkCorrect').checked) return showAlert("Vui lòng nhập tên và tích xác nhận!");
+        const robloxPass = document.getElementById('robloxPass').value.trim();
+        const roblox2fa = document.getElementById('roblox2fa').value.trim();
+
+        if(!robloxName || !document.getElementById('checkCorrect').checked) return showAlert("Vui lòng điền đủ thông tin!");
+        if(pendingItem.type === 'service' && !robloxPass) return showAlert("Vui lòng nhập mật khẩu!");
         if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");
+
         try {
             await update(ref(rtdb, 'users/' + auth.currentUser.uid), { balance: currentBalance - pendingItem.price });
             const orderId = Date.now();
-            await set(ref(rtdb, 'orders/' + orderId), { 
-                uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName,
-                item: pendingItem.name, price: pendingItem.price, status: "Chờ phát đồ", timestamp: orderId
-            });
+            const orderData = { 
+                uid: auth.currentUser.uid, 
+                email: auth.currentUser.email, 
+                robloxAccount: robloxName,
+                item: pendingItem.name, 
+                price: pendingItem.price, 
+                status: "Chờ xử lý", 
+                timestamp: orderId
+            };
+            if(pendingItem.type === 'service') {
+                orderData.robloxPass = robloxPass;
+                orderData.roblox2fa = roblox2fa;
+            }
+
+            await set(ref(rtdb, 'orders/' + orderId), orderData);
             window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
 
+    // --- WEBHOOKS ---
     window.sendDepositWebhook = async () => {
         const u = auth.currentUser; if(!u) return;
         try {
@@ -248,6 +302,54 @@
     };
 
     const allItems = [
+        // SERVICE - CÀY THUÊ
+        {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "100.000 Fragment", p: 85000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "1M Beli", p: 2000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "50M Beli", p: 90000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "100M Beli", p: 170000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "10M Bounty/Honor", p: 70000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "30M Bounty/Honor", p: 150000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Up Tộc V1-V3", p: 8000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Up Tộc V4 (1 Bánh răng)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Up Tộc V4 Full Bánh răng", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Lấy Tộc Quỷ", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Lấy Tộc Cyborg", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Draco (Có đủ đai)", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Draco (Thiếu đai)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Draco V1-V3", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Draco V4 Full Bánh răng", p: 60000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Gạt cần (Có mảnh gương)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Gạt cần (Không mảnh gương)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Melee V2", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "God Human", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Sanguine Art", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Kiếm/Súng Rồng", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Tam Kiếm", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Mini Yoru", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Lưỡi Hái", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Tushita", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Yama", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Song Kiếm", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Mỏ Neo", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Soul Guitar", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Đinh Ba Gai", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Koko", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Haki Legendary", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Leviathan về Tiki", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Leviathan về Hydra", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Nguyên Thạch Bóng Tối", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Cổng Rip_Indra", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Chế 1 Giấy Mythical", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Chế 20 Giấy Mythical", p: 500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Chế 50 Giấy Mythical", p: 1000000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Chế 100 Giấy Mythical", p: 1500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Awaken Fruit Thường", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+        {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
+
+        // GAMEPASS
         {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
         {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
         {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg "},
@@ -255,6 +357,8 @@
         {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg "},
         {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg "},
         {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg "},
+        
+        // FRUITS
         {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
         {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
         {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
@@ -290,7 +394,7 @@
         {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg "},
         {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg "},
         {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg "},
-        {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73kH.jpeg "},
+        {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg "},
         {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg "},
         {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg "},
         {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg "},
@@ -299,13 +403,18 @@
     ];
 
     function render() {
-        const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid');
-        gp.innerHTML = ''; fr.innerHTML = '';
+        const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid');
+        gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = '';
         allItems.forEach(item => {
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<img src="${item.i}" loading="lazy"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p})">MUA NGAY</button>`;
-            if(item.t === 'f') fr.appendChild(card); else gp.appendChild(card);
+            const itemType = item.t === 's' ? 'service' : (item.t === 'f' ? 'fruit' : 'gp');
+            card.innerHTML = `<img src="${item.i}" loading="lazy"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p}, '${itemType}')">MUA NGAY</button>`;
+            
+            if(item.t === 'f') fr.appendChild(card); 
+            else if(item.t === 's') sv.appendChild(card);
+            else gp.appendChild(card);
         });
+        
         onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {
             const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;
             const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
@@ -316,4 +425,3 @@
 </script>
 </body>
 </html>
- 
