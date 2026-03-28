@@ -6,7 +6,7 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- GIỮ NGUYÊN CSS GỐC VÀ CẬP NHẬT TRANG TRÍ --- */
+        /* --- GIỮ NGUYÊN CSS GỐC --- */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
         :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
@@ -22,85 +22,25 @@
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
         
-        /* CẬP NHẬT GRID CHIA 2 CỘT TRÊN MOBILE */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* Mặc định chia 2 cột */
-            gap: 15px; 
-        }
-
-        /* Khi màn hình lớn hơn (Máy tính) thì chia nhiều cột hơn */
-        @media (min-width: 768px) {
-            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; } }
         
-        .card { 
-            background: var(--card); 
-            border-radius: 18px; 
-            padding: 15px 10px; 
-            border: 1px solid rgba(56, 189, 248, 0.1); 
-            text-align: center; 
-            position: relative; 
-            transition: all 0.3s ease; 
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: var(--sky);
-            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
-            background: rgba(17, 24, 39, 0.9);
-        }
-        .card img { 
-            width: 75px; 
-            height: 75px; 
-            object-fit: contain; 
-            margin: 0 auto 10px; 
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-            transition: 0.3s;
-        }
+        .card { background: var(--card); border-radius: 18px; padding: 15px 10px; border: 1px solid rgba(56, 189, 248, 0.1); text-align: center; position: relative; transition: all 0.3s ease; overflow: hidden; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }
+        .card:hover { transform: translateY(-8px); border-color: var(--sky); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2); background: rgba(17, 24, 39, 0.9); }
+        .card img { width: 75px; height: 75px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: 0.3s; }
         .card:hover img { transform: scale(1.1); }
-        
-        .card h3 { 
-            font-size: 13px; 
-            margin: 5px 0; 
-            color: #fff; 
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }
+        .btn-buy { width: 100%; padding: 8px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 10px; }
 
-        .price { 
-            color: var(--gold); 
-            font-weight: 900; 
-            font-size: 14px; 
-            margin-bottom: 10px; 
-            display: block;
-            background: rgba(251, 191, 36, 0.1);
-            padding: 4px;
-            border-radius: 8px;
-        }
+        /* ROBUX CALCULATOR STYLING */
+        .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .robux-input-group div { flex: 1; min-width: 140px; }
+        .calc-note { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); padding: 10px; border-radius: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+        .calc-note b { color: var(--hot); }
 
-        .btn-buy { 
-            width: 100%; 
-            padding: 8px; 
-            border-radius: 10px; 
-            border: none; 
-            background: linear-gradient(135deg, var(--sky), #0284c7); 
-            color: #000; 
-            font-weight: 800; 
-            cursor: pointer; 
-            transition: 0.3s;
-            text-transform: uppercase;
-            font-size: 10px;
-        }
-        .btn-buy:hover { filter: brightness(1.2); }
-
-        /* GIỮ CÁC MODAL VÀ STATUS BAR CŨ */
+        /* MODALS & OTHERS GIỮ NGUYÊN */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }
         .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
@@ -109,21 +49,15 @@
         .order-table .label { font-weight: 600; background: #f1f5f9; width: 45%; }
         .order-table .value { font-weight: 800; text-align: right; }
         .pay-input { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-top: 5px; box-sizing: border-box; outline: none; background: #fff !important; color: #000 !important; }
-        
         .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         .status-user { font-size: 13px; color: #94a3b8; }
         .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
         .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
-
-        /* WELCOME & OTHERS */
-        .welcome-logo { width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin: 0 auto 15px; display: block; object-fit: contain; }
-        .event-item { display: flex; justify-content: center; gap: 10px; margin: 5px 0; font-size: 14px; }
         .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
         .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; text-align: center;}
         .auth-tab.active { background: var(--sky); color: #000; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
         .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
-        .nav-right { display: flex; gap: 10px; align-items: center; }
         .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
         .btn-login { background: var(--sky); color: #000; }
         .btn-logout { background: #ff4757; color: #fff; }
@@ -139,12 +73,9 @@
         .rank { font-weight: 900; width: 30px; }
         .amount { color: var(--success); font-weight: 700; }
         .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .community-card h3 { color: #0f172a; margin-top: 0; font-weight: 800; }
         .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
-        .comm-discord { background: #5865F2; }
-        .comm-zalo { background: #0068ff; }
-        .comm-messenger { background: #0084ff; }
+        .comm-discord { background: #5865F2; } .comm-zalo { background: #0068ff; } .comm-messenger { background: #0084ff; }
     </style>
 </head>
 <body>
@@ -155,92 +86,47 @@
     <button class="btn-history-bottom" onclick="window.openHistory()">ĐƠN HÀNG</button>
 </div>
 
-<div id="historyModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
-        <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3>
-        <div id="history-content" class="history-list"></div>
-        <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
-    </div>
-</div>
-
-<div id="depositModal" class="modal">
-    <div class="modal-content" style="max-width: 420px;">
-        <div class="auth-tabs">
-            <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div>
-            <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div>
-        </div>
-        <div id="dep-bank-area">
-            <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;"></div>
-            <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p>
-            <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
-        </div>
-        <div id="dep-card-area" style="display: none; text-align: left;">
-            <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
-            <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select>
-            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial">
-            <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button>
-        </div>
-        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
-    </div>
-</div>
-
-<div id="welcomeModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 420px;">
-        <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="welcome-logo"></div>
-        <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2>
-        <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3>
-        <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div>
-        <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div>
-        <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div>
-        <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button>
-    </div>
-</div>
-
-<div id="robloxModal" class="modal">
-    <div class="modal-content payment-modal" style="max-width: 420px;">
-        <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3>
-        <table class="order-table">
-            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr>
-            <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr>
-            <tr><td class="label">Tên Roblox:</td><td class="value"><input type="text" id="robloxUser" placeholder="Nhập tên..." class="pay-input"></td></tr>
-            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr>
-        </table>
-        <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;">
-            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận tên chính xác. Sai không hoàn tiền.</span></label>
-        </div>
-        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>
-        <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p>
-    </div>
-</div>
-
-<div id="customAlert" class="modal">
-    <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div>
-</div>
+<div id="historyModal" class="modal"> <div class="modal-content" style="max-width: 450px;"> <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3> <div id="history-content" class="history-list"></div> <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button> </div> </div>
+<div id="depositModal" class="modal"> <div class="modal-content" style="max-width: 420px;"> <div class="auth-tabs"> <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div> <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div> </div> <div id="dep-bank-area"> <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;"></div> <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p> <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button> </div> <div id="dep-card-area" style="display: none; text-align: left;"> <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select> <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select> <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial"> <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button> </div> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p> </div> </div>
+<div id="welcomeModal" class="modal" style="display: flex;"> <div class="modal-content" style="max-width: 420px;"> <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" style="width:100%; max-width:280px; border-radius:15px; margin-bottom:15px;"></div> <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2> <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3> <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div> <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div> <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div> <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button> </div> </div>
+<div id="robloxModal" class="modal"> <div class="modal-content payment-modal" style="max-width: 420px;"> <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3> <table class="order-table"> <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr> <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr> <tr><td class="label">Tên Roblox:</td><td class="value"><input type="text" id="robloxUser" placeholder="Nhập tên..." class="pay-input"></td></tr> <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr> </table> <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;"> <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận tên/link chính xác. Sai không hoàn tiền.</span></label> </div> <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button> <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p> </div> </div>
+<div id="customAlert" class="modal"> <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div> </div>
+<div id="authModal" class="modal"> <div class="modal-content"> <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div> <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu..."> <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p> </div> </div>
 
 <nav class="navbar">
     <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>
     <div id="auth-ui" class="nav-right"></div>
 </nav>
 
-<div id="authModal" class="modal">
-    <div class="modal-content">
-        <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div>
-        <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu...">
-        <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button>
-        <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p>
-    </div>
-</div>
-
 <div class="container">
     <div class="section-title">🏆 Top Nạp Trong Tháng</div>
     <div id="top-deposit-list" class="top-deposit-card"></div>
     
-    <div class="community-card">
-        <h3>🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
+    <div class="section-title">💎 Nạp Robux Chính Hãng (120H)</div>
+    <div class="robux-container">
+        <div class="robux-input-group">
+            <div>
+                <label style="font-size: 12px; color: var(--sky);">Số Robux muốn nhận:</label>
+                <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">
+            </div>
+            <div>
+                <label style="font-size: 12px; color: var(--gold);">Số tiền cần trả (171đ/1rb):</label>
+                <input type="text" id="outputPrice" readonly style="background: rgba(255,255,255,0.05); color: var(--gold); font-weight: bold;">
+            </div>
+        </div>
+        <div class="calc-note">
+            🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>
+            ⚠️ <b>Lưu ý quan trọng:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực (Price of area)</b> và để công khai.
+        </div>
+        <button class="btn-buy" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>
+    </div>
+
+    <div class="community-card" style="margin-top: 30px;">
+        <h3 style="color: #0f172a; margin-top: 0; font-weight: 800;">🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
         <div class="community-grid">
             <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Link Server Discord</a>
             <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Săn Levi Messenger</a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
         </div>
     </div>
 
@@ -259,6 +145,25 @@
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
 
+    // --- LOGIC TÍNH TOÁN ROBUX ---
+    const RATE = 171;
+    window.calcRobux = () => {
+        const rb = parseInt(document.getElementById('inputRobux').value) || 0;
+        const price = rb * RATE;
+        const totalWithTax = Math.ceil(rb / 0.7);
+        document.getElementById('outputPrice').value = price.toLocaleString() + "đ";
+        document.getElementById('taxNote').innerText = totalWithTax.toLocaleString();
+    };
+
+    window.buyRobux = () => {
+        const rb = parseInt(document.getElementById('inputRobux').value) || 0;
+        if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");
+        const price = rb * RATE;
+        const totalWithTax = Math.ceil(rb / 0.7);
+        window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price);
+    };
+
+    // --- GIỮ NGUYÊN TOÀN BỘ LOGIC CŨ ---
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
     window.showAlert = (msg, isSuccess = false) => {
