@@ -3,63 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Dexsty Shop</title>
+    <title>Admin Panel - Dexsty Shop</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --sky: #38bdf8; --gold: #fbbf24; --bg: #030712; --card: #111827; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
-        .admin-container { max-width: 1000px; margin: auto; }
-        h1 { color: var(--sky); text-align: center; margin-bottom: 30px; text-transform: uppercase; }
+        :root { 
+            --sky: #38bdf8; --gold: #fbbf24; --bg: #030712; 
+            --card: #111827; --border: #1f2937; --success: #22c55e;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { 
+            background: var(--bg); color: #f3f4f6; 
+            font-family: 'Inter', sans-serif; margin: 0; padding: 20px; 
+        }
+        .admin-container { max-width: 1100px; margin: auto; }
         
+        /* HEADER & STATS */
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: var(--sky); font-size: 2rem; letter-spacing: 2px; margin-bottom: 20px; }
+        
+        .stats-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; margin-bottom: 30px; 
+        }
+        .stat-card { 
+            background: var(--card); padding: 20px; border-radius: 12px; 
+            border: 1px solid var(--border); text-align: center;
+        }
+        .stat-card i { font-size: 1.5rem; color: var(--sky); margin-bottom: 10px; }
+        .stat-card h3 { margin: 5px 0; font-size: 1.2rem; }
+        .stat-card p { color: #94a3b8; font-size: 0.9rem; margin: 0; }
+
         /* TABS */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; background: var(--card); border: 1px solid #1f2937; color: #94a3b8; cursor: pointer; border-radius: 10px; font-weight: bold; }
-        .tab-btn.active { background: var(--sky); color: #000; border-color: var(--sky); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--card); padding: 5px; border-radius: 12px; }
+        .tab-btn { 
+            flex: 1; padding: 12px; background: transparent; border: none; 
+            color: #94a3b8; cursor: pointer; border-radius: 8px; font-weight: bold; 
+        }
+        .tab-btn.active { background: var(--sky); color: #000; }
 
-        /* PHẦN CỘNG TIỀN */
-        .user-manager { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--sky); margin-bottom: 20px; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; }
-        .btn-action { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-plus { background: #22c55e; color: white; }
+        /* CONTENT AREAS */
+        .section-card { 
+            background: var(--card); border-radius: 15px; border: 1px solid var(--border); 
+            padding: 20px; animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* PHẦN ĐƠN HÀNG */
-        .order-card { background: var(--card); border: 1px solid #1f2937; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .info p { margin: 5px 0; font-size: 14px; color: #94a3b8; }
-        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 5px; display: inline-block; }
-        .pending { background: rgba(251, 191, 36, 0.1); color: var(--gold); }
-        .completed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        /* ORDER MANAGEMENT */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { 
+            padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--border);
+            background: #1f2937; color: white; cursor: pointer; white-space: nowrap;
+        }
+        .filter-btn.active { border-color: var(--sky); color: var(--sky); }
+
+        .order-item { 
+            background: #0f172a; border: 1px solid var(--border); border-radius: 12px; 
+            padding: 15px; margin-bottom: 12px; display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: center; gap: 15px;
+        }
+        .order-info b { color: var(--sky); }
+        .order-info p { margin: 3px 0; font-size: 0.9rem; }
         
-        .hidden { display: none; }
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .pending { background: #451a03; color: var(--gold); }
+        .completed { background: #064e3b; color: var(--success); }
+
+        /* INPUTS & BUTTONS */
+        input { 
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); 
+            background: #030712; color: white; margin-bottom: 10px; outline: none;
+        }
+        input:focus { border-color: var(--sky); }
+        
+        .btn { 
+            padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; 
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--sky); color: #000; }
+        .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-disabled { background: #374151; color: #94a3b8; cursor: not-allowed; }
+
+        .hidden { display: none !important; }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed; top: 20px; right: 20px; padding: 15px 25px; 
+            border-radius: 8px; color: white; font-weight: bold; z-index: 1000;
+            display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
+<div id="toast"></div>
+
 <div class="admin-container">
-    <h1><i class="fas fa-tools"></i> DEXSTY ADMIN PANEL</h1>
+    <header>
+        <h1><i class="fas fa-shield-cat"></i> DEXSTY ADMIN</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-shopping-cart"></i>
+                <h3 id="stat-total-orders">0</h3>
+                <p>Tổng đơn hàng</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-wallet"></i>
+                <h3 id="stat-revenue">0đ</h3>
+                <p>Doanh thu</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3 id="stat-users">0</h3>
+                <p>Thành viên</p>
+            </div>
+        </div>
+    </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('orders')">📦 QUẢN LÝ ĐƠN HÀNG</button>
-        <button class="tab-btn" onclick="switchTab('users')">💰 CỘNG TIỀN KHÁCH</button>
+        <button class="tab-btn active" data-tab="orders"><i class="fas fa-box"></i> ĐƠN HÀNG</button>
+        <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> CỘNG TIỀN</button>
     </div>
 
-    <div id="tab-orders">
-        <div id="admin-order-list"><p style="text-align: center; color: gray;">Đang tải đơn hàng...</p></div>
+    <div id="tab-orders" class="section-card">
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterOrders('Tất cả')">Tất cả</button>
+            <button class="filter-btn" onclick="filterOrders('Chờ xử lý')">Chờ xử lý</button>
+            <button class="filter-btn" onclick="filterOrders('Đã hoàn thành')">Đã xong</button>
+        </div>
+        <div id="order-list-container">
+            <p style="text-align: center; color: gray;">Đang đồng bộ dữ liệu...</p>
+        </div>
     </div>
 
-    <div id="tab-users" class="hidden">
-        <div class="user-manager">
-            <h3><i class="fas fa-coins"></i> Cộng tiền theo Email</h3>
-            <div class="search-box">
-                <input type="text" id="userEmailSearch" placeholder="Nhập email khách (Ví dụ: abc@gmail.com)">
-                <button class="btn-action btn-plus" onclick="findUserAndAddMoney()">KIỂM TRA & CỘNG</button>
+    <div id="tab-users" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-search"></i> Tìm kiếm khách hàng</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="userEmailSearch" placeholder="Nhập đúng email khách hàng...">
+            <button class="btn btn-primary" id="btn-find" style="height: 46px;">TÌM</button>
+        </div>
+
+        <div id="user-result-area" class="hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border);">
+            <div style="background: #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <p>📧 Email: <b id="res-email" style="color:var(--sky)"></b></p>
+                <p>💰 Số dư: <b id="res-balance" style="color:var(--gold)"></b></p>
+                <p>📈 Tổng nạp: <b id="res-total" style="color:var(--success)"></b></p>
             </div>
-            <div id="user-info-result" style="margin-top: 15px; border-top: 1px solid #1f2937; padding-top: 15px;" class="hidden">
-                <p>Khách: <b id="res-email" style="color:var(--sky)"></b></p>
-                <p>Số dư hiện tại: <b id="res-balance" style="color:var(--gold)">0đ</b></p>
-                <input type="number" id="amountToAdd" placeholder="Nhập số tiền muốn cộng (Ví dụ: 50000)">
-                <button class="btn-action btn-plus" style="width: 100%; margin-top: 10px;" onclick="confirmAddMoney()">XÁC NHẬN CỘNG TIỀN</button>
-            </div>
+            <label style="font-size: 0.8rem; color: #94a3b8;">SỐ TIỀN MUỐN CỘNG:</label>
+            <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
+            <button class="btn btn-success" id="btn-confirm-money">XÁC NHẬN CỘNG TIỀN</button>
         </div>
     </div>
 </div>
@@ -78,86 +171,130 @@
     const app = initializeApp(firebaseConfig);
     const rtdb = getDatabase(app);
 
-    // Chuyển Tab
-    window.switchTab = (tab) => {
-        document.getElementById('tab-orders').classList.toggle('hidden', tab !== 'orders');
-        document.getElementById('tab-users').classList.toggle('hidden', tab !== 'users');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+    // --- UTILS ---
+    const showToast = (msg, type = 'success') => {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.background = type === 'success' ? '#22c55e' : '#ef4444';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    // --- LOGIC ĐƠN HÀNG ---
-    onValue(ref(rtdb, 'orders'), (snapshot) => {
-        const data = snapshot.val();
-        const listArea = document.getElementById('admin-order-list');
-        if(!data) { listArea.innerHTML = "Chưa có đơn nào."; return; }
-        const orders = Object.entries(data).reverse();
-        listArea.innerHTML = '';
-        orders.forEach(([id, order]) => {
-            const isDone = order.status === "Đã hoàn thành";
-            listArea.innerHTML += `
-                <div class="order-card">
-                    <div class="info">
-                        <span class="status-badge ${isDone ? 'completed' : 'pending'}">${order.status || 'Chờ xử lý'}</span>
-                        <p>📦 <b>${order.item}</b> - 🎮 <b>${order.robloxAccount}</b></p>
-                        <p>📧 ${order.email} | 💰 ${order.price.toLocaleString()}đ</p>
-                    </div>
-                    <button class="btn-action btn-plus" ${isDone ? 'disabled' : ''} onclick="approveOrder('${id}')">
-                        ${isDone ? 'XONG' : 'DUYỆT'}
-                    </button>
-                </div>`;
-        });
+    // --- TAB SWITCHING ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-tab');
+            document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
+            document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
+        }
     });
 
-    window.approveOrder = (id) => {
-        if(confirm("Xác nhận đã phát đồ?")) update(ref(rtdb, `orders/${id}`), { status: "Đã hoàn thành" });
+    // --- RENDER ORDERS & STATS ---
+    let allOrders = [];
+    onValue(ref(rtdb, 'orders'), (snapshot) => {
+        const data = snapshot.val();
+        if(!data) return;
+        allOrders = Object.entries(data).reverse();
+        renderOrders(allOrders);
+        updateStats(allOrders);
+    });
+
+    onValue(ref(rtdb, 'users'), (snapshot) => {
+        const users = snapshot.val();
+        if(users) document.getElementById('stat-users').innerText = Object.keys(users).length;
+    });
+
+    function updateStats(orders) {
+        let revenue = 0;
+        orders.forEach(([id, order]) => {
+            if(order.status === "Đã hoàn thành") revenue += (order.price || 0);
+        });
+        document.getElementById('stat-total-orders').innerText = orders.length;
+        document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + "đ";
     }
 
-    // --- LOGIC CỘNG TIỀN ---
-    let targetUid = null;
-    window.findUserAndAddMoney = async () => {
-        const email = document.getElementById('userEmailSearch').value.trim();
-        if(!email) return alert("Nhập email ní ơi!");
+    window.filterOrders = (status) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if(status === 'Tất cả') renderOrders(allOrders);
+        else renderOrders(allOrders.filter(o => (o[1].status || 'Chờ xử lý') === status));
+    }
+
+    function renderOrders(orderArray) {
+        const container = document.getElementById('order-list-container');
+        if(orderArray.length === 0) { container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không có đơn hàng nào.</p>"; return; }
         
-        const userRef = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
-        const snap = await get(userRef);
-        
-        if(snap.exists()){
-            const data = snap.val();
-            targetUid = Object.keys(data)[0];
-            const user = data[targetUid];
-            document.getElementById('res-email').innerText = user.email;
-            document.getElementById('res-balance').innerText = (user.balance || 0).toLocaleString() + "đ";
-            document.getElementById('user-info-result').classList.remove('hidden');
-        } else {
-            alert("Không tìm thấy khách này! Nhắc khách đăng ký tài khoản đã ní.");
-            document.getElementById('user-info-result').classList.add('hidden');
+        container.innerHTML = orderArray.map(([id, order]) => {
+            const isDone = order.status === "Đã hoàn thành";
+            return `
+                <div class="order-item">
+                    <div class="order-info">
+                        <span class="status-pill ${isDone ? 'completed' : 'pending'}">${order.status || 'Chờ xử lý'}</span>
+                        <p style="margin-top:8px">📦 <b>${order.item}</b></p>
+                        <p><i class="fas fa-user-circle"></i> ${order.robloxAccount} | 💰 ${order.price.toLocaleString()}đ</p>
+                        <p style="font-size:12px; opacity:0.6"><i class="fas fa-envelope"></i> ${order.email}</p>
+                    </div>
+                    <button class="btn ${isDone ? 'btn-disabled' : 'btn-primary'}" onclick="approveOrder('${id}')" ${isDone ? 'disabled' : ''}>
+                        ${isDone ? '<i class="fas fa-check"></i> ĐÃ XONG' : 'DUYỆT ĐƠN'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.approveOrder = async (id) => {
+        if(confirm("Bạn đã thực hiện trao vật phẩm cho khách chưa?")) {
+            try {
+                await update(ref(rtdb, `orders/${id}`), { status: "Đã hoàn thành" });
+                showToast("Duyệt đơn thành công!");
+            } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
         }
     }
 
-    window.confirmAddMoney = async () => {
+    // --- USER MANAGEMENT LOGIC ---
+    let selectedUid = null;
+    document.getElementById('btn-find').onclick = async () => {
+        const email = document.getElementById('userEmailSearch').value.trim();
+        if(!email) return showToast("Vui lòng nhập email!", 'error');
+
+        const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
+        const snap = await get(userQuery);
+
+        if(snap.exists()) {
+            selectedUid = Object.keys(snap.val())[0];
+            const user = snap.val()[selectedUid];
+            document.getElementById('res-email').innerText = user.email;
+            document.getElementById('res-balance').innerText = (user.balance || 0).toLocaleString() + "đ";
+            document.getElementById('res-total').innerText = (user.totalDeposit || 0).toLocaleString() + "đ";
+            document.getElementById('user-result-area').classList.remove('hidden');
+            showToast("Đã tìm thấy khách!");
+        } else {
+            showToast("Không tìm thấy email này!", 'error');
+            document.getElementById('user-result-area').classList.add('hidden');
+        }
+    };
+
+    document.getElementById('btn-confirm-money').onclick = async () => {
         const amount = parseInt(document.getElementById('amountToAdd').value);
-        if(!amount || amount <= 0) return alert("Nhập số tiền hợp lệ!");
+        if(!amount || amount <= 0) return showToast("Số tiền không hợp lệ!", 'error');
 
         try {
-            const userRef = ref(rtdb, `users/${targetUid}`);
+            const userRef = ref(rtdb, `users/${selectedUid}`);
             const snap = await get(userRef);
-            const currentData = snap.val();
+            const user = snap.val();
             
-            const newBalance = (currentData.balance || 0) + amount;
-            const newTotalDeposit = (currentData.totalDeposit || 0) + amount;
-
-            await update(userRef, { 
-                balance: newBalance,
-                totalDeposit: newTotalDeposit 
+            await update(userRef, {
+                balance: (user.balance || 0) + amount,
+                totalDeposit: (user.totalDeposit || 0) + amount
             });
 
-            alert(`Đã cộng ${amount.toLocaleString()}đ thành công cho ${currentData.email}!`);
+            showToast(`Đã cộng ${amount.toLocaleString()}đ cho ${user.email}`);
             document.getElementById('amountToAdd').value = "";
-            findUserAndAddMoney(); // Tải lại thông tin mới
-        } catch (e) { alert(e.message); }
-    }
+            document.getElementById('btn-find').click(); // Refresh data
+        } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
+    };
 </script>
 </body>
 </html>
- 
