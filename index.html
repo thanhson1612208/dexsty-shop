@@ -144,7 +144,7 @@
                 <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">
             </div>
             <div>
-                <label style="font-size: 12px; color: var(--gold);">Số tiền cần trả (171đ/1rb):</label>
+                <label style="font-size: 12px; color: var(--gold);">Số tiền cần trả (230đ/1rb):</label>
                 <input type="text" id="outputPrice" readonly style="background: rgba(255,255,255,0.05); color: var(--gold); font-weight: bold;">
             </div>
         </div>
@@ -195,7 +195,7 @@
     };
 
     // --- LOGIC TÍNH TOÁN ROBUX ---
-    const RATE = 171;
+    const RATE = 230; // Đã sửa từ 171 thành 230
     window.calcRobux = () => {
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
         const price = rb * RATE;
@@ -449,4 +449,3 @@
 </script>
 </body>
 </html>
- 
