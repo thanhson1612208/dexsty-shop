@@ -19,9 +19,11 @@
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
         .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
 
-        /* --- TÍNH NĂNG STATUS MỚI --- */
-        .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 8px 5%; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; font-weight: 600; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
+        /* --- TÍNH NĂNG STATUS MỚI (ĐỒNG BỘ ADMIN) --- */
+        .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 10px 5%; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+        .status-header { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
+        .status-notice { font-size: 12px; color: #94a3b8; font-weight: 400; font-style: italic; max-width: 800px; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
@@ -43,6 +45,7 @@
         .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; }
         .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }
         .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 11px; }
+        .btn-buy:disabled { background: #374151; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
         .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -135,8 +138,11 @@
 </nav>
 
 <div class="system-status-bar">
-    <div class="status-dot" id="system-status-dot"></div>
-    <span id="system-status-text">Hệ thống: Đang tải trạng thái...</span>
+    <div class="status-header">
+        <div class="status-dot" id="system-status-dot"></div>
+        <span id="system-status-text">Đang tải trạng thái...</span>
+    </div>
+    <div class="status-notice" id="system-status-notice">Vui lòng chờ trong giây lát...</div>
 </div>
 
 <div class="container">
@@ -159,7 +165,7 @@
             🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>
             ⚠️ <b>Lưu ý quan trọng:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực (Price of area)</b> và để công khai.
         </div>
-        <button class="btn-buy" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>
+        <button class="btn-buy" id="btn-buy-robux" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>
     </div>
 
     <div class="section-title">🔥 DANH MỤC DỊCH VỤ</div>
@@ -192,19 +198,45 @@
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
 
-    // --- LOGIC STATUS HỆ THỐNG ---
+    // --- LOGIC ĐỒNG BỘ STATUS TỪ NHÁNH settings/shopStatus ---
+    let isMaintenance = false;
+
     function initSystemStatus() {
-        onValue(ref(rtdb, 'system/status'), (snap) => {
-            const status = snap.val() || "Hoạt động bình thường ✅";
-            document.getElementById('system-status-text').innerText = "Hệ thống: " + status;
+        onValue(ref(rtdb, 'settings/shopStatus'), (snap) => {
+            const data = snap.val();
+            if(!data) return;
+
+            const status = data.status || "Online";
+            const notice = data.notice || "Chào mừng bạn đến với Dexsty Shop!";
+            
+            document.getElementById('system-status-notice').innerText = notice;
             const dot = document.getElementById('system-status-dot');
-            if(status.toLowerCase().includes('bảo trì') || status.toLowerCase().includes('lỗi')) {
+            const statusLabel = document.getElementById('system-status-text');
+
+            if(status === "Maintenance") {
+                isMaintenance = true;
+                statusLabel.innerText = "Hệ thống: BẢO TRÌ";
                 dot.style.background = '#ff4757';
                 dot.style.boxShadow = '0 0 10px #ff4757';
+            } else if(status === "Slow") {
+                isMaintenance = false;
+                statusLabel.innerText = "Hệ thống: XỬ LÝ CHẬM";
+                dot.style.background = '#fbbf24';
+                dot.style.boxShadow = '0 0 10px #fbbf24';
             } else {
+                isMaintenance = false;
+                statusLabel.innerText = "Hệ thống: ĐANG HOẠT ĐỘNG";
                 dot.style.background = '#22c55e';
                 dot.style.boxShadow = '0 0 10px #22c55e';
             }
+
+            // Vô hiệu hóa/Kích hoạt các nút mua hàng toàn trang
+            document.querySelectorAll('.btn-buy').forEach(btn => {
+                btn.disabled = isMaintenance;
+                if(isMaintenance) btn.innerText = "BẢO TRÌ";
+                else if(btn.id !== "btn-buy-robux") btn.innerText = "MUA NGAY";
+                else btn.innerText = "MUA ROBUX NGAY";
+            });
         });
     }
 
@@ -228,6 +260,7 @@
     };
 
     window.buyRobux = () => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì, vui lòng quay lại sau!");
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
         if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");
         const price = rb * RATE;
@@ -249,6 +282,7 @@
     let pendingItem = null; let currentBalance = 0;
 
     window.buyItem = async (n, p, type = 'gp') => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì, không thể mua hàng!");
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p, type: type };
         const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));
@@ -349,7 +383,7 @@
     };
 
     const allItems = [
-        // SERVICE
+        // SERVICE (Cày thuê)
         {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
         {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
         {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
@@ -397,62 +431,63 @@
         {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
 
         // GAMEPASS
-        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg "},
-        {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg "},
-        {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg "},
-        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg "},
-        {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg "},
-        {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg "},
-        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg "},
+        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg"},
+        {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg"},
+        {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg"},
+        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg"},
+        {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg"},
+        {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg"},
+        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg"},
         
-        // FRUITS
+        // FRUITS (Trái ác quỷ)
         {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
         {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
         {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
         {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"},
-        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg "},
+        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"},
         {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"},
         {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"},
-        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg "},
-        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg  "},
-        {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg "},
-        {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg "},
-        {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg "},
-        {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg "},
-        {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg "},
-        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg "},
-        {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg "},
-        {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg "},
-        {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg "},
-        {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg "},
-        {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg "},
-        {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg  "},
-        {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg "},
-        {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg "},
-        {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg "},
-        {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg "},
-        {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg "},
-        {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg "},
-        {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg "},
-        {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg "},
-        {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg "},
-        {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg "},
-        {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg "},
-        {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg "},
-        {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg "},
-        {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg "},
-        {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg "},
-        {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg "},
-        {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg "},
-        {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg "},
-        {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg "},
-        {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg "}
+        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"},
+        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg"},
+        {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg"},
+        {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg"},
+        {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg"},
+        {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg"},
+        {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg"},
+        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"},
+        {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg"},
+        {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg"},
+        {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg"},
+        {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg"},
+        {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg"},
+        {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg"},
+        {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg"},
+        {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg"},
+        {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg"},
+        {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg"},
+        {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg"},
+        {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg"},
+        {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg"},
+        {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg"},
+        {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg"},
+        {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg"},
+        {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg"},
+        {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg"},
+        {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg"},
+        {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg"},
+        {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg"},
+        {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg"},
+        {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg"},
+        {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg"},
+        {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg"},
+        {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg"}
     ];
 
     function render() {
-        initSystemStatus(); // Khởi tạo status khi load trang
+        initSystemStatus(); // Kích hoạt đọc Status từ Firebase
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid');
         gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = '';
+        
         allItems.forEach(item => {
             const card = document.createElement('div'); card.className = 'card';
             const itemType = item.t === 's' ? 'service' : (item.t === 'f' ? 'fruit' : 'gp');
