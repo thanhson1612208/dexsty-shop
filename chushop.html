@@ -42,10 +42,10 @@
         .reset-link:hover { opacity: 0.7; }
 
         /* TABS */
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--card); padding: 5px; border-radius: 12px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--card); padding: 5px; border-radius: 12px; overflow-x: auto;}
         .tab-btn { 
             flex: 1; padding: 12px; background: transparent; border: none; 
-            color: #94a3b8; cursor: pointer; border-radius: 8px; font-weight: bold; 
+            color: #94a3b8; cursor: pointer; border-radius: 8px; font-weight: bold; white-space: nowrap;
         }
         .tab-btn.active { background: var(--sky); color: #000; }
 
@@ -77,11 +77,11 @@
         .completed { background: #064e3b; color: var(--success); }
 
         /* INPUTS & BUTTONS */
-        input { 
+        input, select, textarea { 
             width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); 
-            background: #030712; color: white; margin-bottom: 10px; outline: none;
+            background: #030712; color: white; margin-bottom: 15px; outline: none; font-family: inherit;
         }
-        input:focus { border-color: var(--sky); }
+        input:focus, select:focus, textarea:focus { border-color: var(--sky); }
         
         .btn { 
             padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; 
@@ -131,6 +131,7 @@
     <div class="tabs">
         <button class="tab-btn active" data-tab="orders"><i class="fas fa-box"></i> ĐƠN HÀNG</button>
         <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> CỘNG TIỀN</button>
+        <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> CÀI ĐẶT</button>
     </div>
 
     <div id="tab-orders" class="section-card">
@@ -162,11 +163,30 @@
             <button class="btn btn-success" id="btn-confirm-money">XÁC NHẬN CỘNG TIỀN</button>
         </div>
     </div>
+
+    <div id="tab-settings" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-bullhorn"></i> Trạng thái Website</h3>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Thay đổi thông báo hiển thị cho toàn bộ khách hàng khi truy cập Shop.</p>
+        
+        <label style="font-size: 0.8rem; color: var(--sky); font-weight: bold;">TRẠNG THÁI HIỆN TẠI:</label>
+        <select id="shop-status-select">
+            <option value="Online">🟢 Đang hoạt động (Online)</option>
+            <option value="Maintenance">🔴 Bảo trì hệ thống (Maintenance)</option>
+            <option value="Slow">🟡 Đang xử lý chậm (Slow)</option>
+        </select>
+
+        <label style="font-size: 0.8rem; color: var(--sky); font-weight: bold;">NỘI DUNG THÔNG BÁO:</label>
+        <textarea id="shop-announcement" rows="4" placeholder="Nhập nội dung thông báo cho khách hàng..."></textarea>
+        
+        <button class="btn btn-primary" id="btn-save-status" style="width: 100%;">
+            <i class="fas fa-save"></i> LƯU CẬP NHẬT TRẠNG THÁI
+        </button>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
@@ -195,6 +215,7 @@
             const target = btn.getAttribute('data-tab');
             document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
             document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
+            document.getElementById('tab-settings').classList.toggle('hidden', target !== 'settings');
         }
     });
 
@@ -328,6 +349,32 @@
             document.getElementById('amountToAdd').value = "";
             document.getElementById('btn-find').click(); // Refresh data
         } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
+    };
+
+    // --- SHOP SETTINGS LOGIC ---
+    // Tải dữ liệu status cũ lên form
+    onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
+        const statusData = snapshot.val();
+        if(statusData) {
+            document.getElementById('shop-status-select').value = statusData.status || 'Online';
+            document.getElementById('shop-announcement').value = statusData.notice || '';
+        }
+    });
+
+    document.getElementById('btn-save-status').onclick = async () => {
+        const status = document.getElementById('shop-status-select').value;
+        const notice = document.getElementById('shop-announcement').value.trim();
+
+        try {
+            await set(ref(rtdb, 'settings/shopStatus'), {
+                status: status,
+                notice: notice,
+                lastUpdate: new Date().toLocaleString()
+            });
+            showToast("Đã cập nhật trạng thái Shop!");
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
     };
 </script>
 </body>
