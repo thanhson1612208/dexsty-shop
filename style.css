@@ -1,0 +1,15 @@
+/* Khung hiển thị mã mời cho Dexsty Shop */
+.referral-box {
+    background: #1a1a1a;
+    border: 2px dashed #ff4757;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+}
+.promo-code {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffd32a;
+    letter-spacing: 2px;
+}
