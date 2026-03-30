@@ -18,11 +18,15 @@
         .logo-container { display: flex; align-items: center; text-decoration: none; }
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
         .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
+
+        /* --- TÍNH NĂNG STATUS MỚI --- */
+        .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 8px 5%; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         
         .container { padding: 0 5%; max-width: 1200px; margin: auto; }
         .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
         
-        /* TỐI ƯU GIAO DIỆN MỤC RIÊNG (TABS) */
         .shop-tabs { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 5px; scrollbar-width: none; }
         .shop-tabs::-webkit-scrollbar { display: none; }
         .tab-btn { flex: 0 0 auto; padding: 12px 25px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(56, 189, 248, 0.2); color: #94a3b8; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
@@ -40,14 +44,12 @@
         .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }
         .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 11px; }
 
-        /* ROBUX CALCULATOR */
         .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .robux-input-group div { flex: 1; min-width: 140px; }
         .calc-note { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); padding: 10px; border-radius: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
         .calc-note b { color: var(--hot); }
 
-        /* MODALS */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }
         .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
@@ -132,6 +134,11 @@
     <div id="auth-ui" class="nav-right"></div>
 </nav>
 
+<div class="system-status-bar">
+    <div class="status-dot" id="system-status-dot"></div>
+    <span id="system-status-text">Hệ thống: Đang tải trạng thái...</span>
+</div>
+
 <div class="container">
     <div class="section-title">🏆 Top Nạp Trong Tháng</div>
     <div id="top-deposit-list" class="top-deposit-card"></div>
@@ -185,6 +192,22 @@
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
 
+    // --- LOGIC STATUS HỆ THỐNG ---
+    function initSystemStatus() {
+        onValue(ref(rtdb, 'system/status'), (snap) => {
+            const status = snap.val() || "Hoạt động bình thường ✅";
+            document.getElementById('system-status-text').innerText = "Hệ thống: " + status;
+            const dot = document.getElementById('system-status-dot');
+            if(status.toLowerCase().includes('bảo trì') || status.toLowerCase().includes('lỗi')) {
+                dot.style.background = '#ff4757';
+                dot.style.boxShadow = '0 0 10px #ff4757';
+            } else {
+                dot.style.background = '#22c55e';
+                dot.style.boxShadow = '0 0 10px #22c55e';
+            }
+        });
+    }
+
     // --- LOGIC CHUYỂN TAB ---
     window.switchTab = (type) => {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -195,7 +218,7 @@
     };
 
     // --- LOGIC TÍNH TOÁN ROBUX ---
-    const RATE = 230; // Đã sửa từ 171 thành 230
+    const RATE = 230; 
     window.calcRobux = () => {
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
         const price = rb * RATE;
@@ -427,6 +450,7 @@
     ];
 
     function render() {
+        initSystemStatus(); // Khởi tạo status khi load trang
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid');
         gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = '';
         allItems.forEach(item => {
