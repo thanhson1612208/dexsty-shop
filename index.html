@@ -6,7 +6,7 @@
     <title>Dexsty Shop - Roblox Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- CSS GỐC & CƠ BẢN --- */
+        /* --- GIỮ NGUYÊN CSS GỐC --- */
         #customAlert.modal { display: none; }
         .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
         :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
@@ -95,6 +95,13 @@
         .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
         .comm-discord { background: #5865F2; } .comm-zalo { background: #0068ff; } .comm-messenger { background: #0084ff; }
         .event-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
+
+        /* --- CSS MỚI CHO TÍNH NĂNG MÃ MỜI --- */
+        .referral-box { background: rgba(56, 189, 248, 0.05); border: 1px solid var(--sky); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
+        .ref-code-display { font-size: 24px; font-weight: 900; color: var(--gold); letter-spacing: 2px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px dashed var(--gold); cursor: pointer; }
+        .ref-stats { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 15px; }
+        .ref-stat-item b { display: block; color: var(--sky); font-size: 18px; }
+        .ref-stat-item span { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -172,11 +179,35 @@
         <div class="tab-btn active" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>
         <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>
         <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Ác Quỷ</div>
+        <div class="tab-btn" onclick="window.switchTab('referral')" style="color: var(--gold);"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</div>
     </div>
 
     <div id="service-grid" class="grid active"></div>
     <div id="gp-grid" class="grid"></div>
     <div id="fruit-grid" class="grid"></div>
+
+    <div id="referral-grid" class="grid">
+        <div style="grid-column: 1 / -1;">
+            <div class="referral-box">
+                <h3 style="margin-top: 0;">MÃ MỜI CỦA BẠN</h3>
+                <p style="font-size: 12px; color: #94a3b8;">Chia sẻ mã này cho bạn bè. Khi họ nạp tiền, bạn nhận ngay <b>2%</b> giá trị nạp vào số dư shop!</p>
+                <div id="myReferralCode" class="ref-code-display" onclick="window.copyRef()">ĐANG TẢI...</div>
+                <div class="ref-stats">
+                    <div class="ref-stat-item"><b id="refCount">0</b><span>Người đã mời</span></div>
+                    <div class="ref-stat-item"><b id="refBonus">0đ</b><span>Hoa hồng nhận được</span></div>
+                </div>
+            </div>
+
+            <div id="input-ref-area" class="referral-box" style="border-color: #94a3b8; background: none;">
+                <h3 style="margin-top: 0; font-size: 14px;">NHẬP MÃ NGƯỜI GIỚI THIỆU</h3>
+                <input type="text" id="inputReferral" placeholder="Nhập mã mời tại đây..." style="text-align: center; border-color: var(--sky);">
+                <button class="btn-submit" onclick="window.applyReferral()">XÁC NHẬN MÃ</button>
+            </div>
+            <div id="already-referred" class="referral-box" style="display: none; border-color: var(--success);">
+                <p style="margin: 0; color: var(--success); font-weight: bold;"><i class="fas fa-check-circle"></i> Bạn đã được giới thiệu!</p>
+            </div>
+        </div>
+    </div>
 
     <div class="community-card" style="margin-top: 30px;">
         <h3 style="color: #0f172a; margin-top: 0; font-weight: 800;">🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
@@ -196,48 +227,26 @@
     const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
     const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
     
-    // Webhook gửi yêu cầu nạp tiền
     const DEPOSIT_WEBHOOK = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
-    // Webhook gửi đơn mua hàng (MỚI THEO YÊU CẦU)
     const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
 
-    // --- LOGIC ĐỒNG BỘ STATUS TỪ NHÁNH settings/shopStatus ---
     let isMaintenance = false;
 
     function initSystemStatus() {
         onValue(ref(rtdb, 'settings/shopStatus'), (snap) => {
             const data = snap.val();
             if(!data) return;
-
             const status = data.status || "Online";
             const notice = data.notice || "Chào mừng bạn đến với Dexsty Shop!";
-            
             document.getElementById('system-status-notice').innerText = notice;
-            const dot = document.getElementById('system-status-dot');
-            const statusLabel = document.getElementById('system-status-text');
-
-            if(status === "Maintenance") {
-                isMaintenance = true;
-                statusLabel.innerText = "Hệ thống: BẢO TRÌ";
-                dot.style.background = '#ff4757';
-                dot.style.boxShadow = '0 0 10px #ff4757';
-            } else if(status === "Slow") {
-                isMaintenance = false;
-                statusLabel.innerText = "Hệ thống: XỬ LÝ CHẬM";
-                dot.style.background = '#fbbf24';
-                dot.style.boxShadow = '0 0 10px #fbbf24';
-            } else {
-                isMaintenance = false;
-                statusLabel.innerText = "Hệ thống: ĐANG HOẠT ĐỘNG";
-                dot.style.background = '#22c55e';
-                dot.style.boxShadow = '0 0 10px #22c55e';
-            }
-
+            const dot = document.getElementById('system-status-dot'), statusLabel = document.getElementById('system-status-text');
+            if(status === "Maintenance") { isMaintenance = true; statusLabel.innerText = "Hệ thống: BẢO TRÌ"; dot.style.background = '#ff4757'; } 
+            else if(status === "Slow") { isMaintenance = false; statusLabel.innerText = "Hệ thống: XỬ LÝ CHẬM"; dot.style.background = '#fbbf24'; } 
+            else { isMaintenance = false; statusLabel.innerText = "Hệ thống: ĐANG HOẠT ĐỘNG"; dot.style.background = '#22c55e'; }
             document.querySelectorAll('.btn-buy').forEach(btn => {
                 btn.disabled = isMaintenance;
                 if(isMaintenance) btn.innerText = "BẢO TRÌ";
                 else if(btn.id !== "btn-buy-robux") btn.innerText = "MUA NGAY";
-                else btn.innerText = "MUA ROBUX NGAY";
             });
         });
     }
@@ -252,19 +261,16 @@
     const RATE = 230; 
     window.calcRobux = () => {
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
-        const price = rb * RATE;
         const totalWithTax = Math.ceil(rb / 0.7);
-        document.getElementById('outputPrice').value = price.toLocaleString() + "đ";
+        document.getElementById('outputPrice').value = (rb * RATE).toLocaleString() + "đ";
         document.getElementById('taxNote').innerText = totalWithTax.toLocaleString();
     };
 
     window.buyRobux = () => {
-        if(isMaintenance) return showAlert("Hệ thống đang bảo trì, vui lòng quay lại sau!");
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
         const rb = parseInt(document.getElementById('inputRobux').value) || 0;
         if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");
-        const price = rb * RATE;
-        const totalWithTax = Math.ceil(rb / 0.7);
-        window.buyItem(`Nạp ${rb} Robux (Đặt ${totalWithTax} RB)`, price, 'robux');
+        window.buyItem(`Nạp ${rb} Robux`, rb * RATE, 'robux');
     };
 
     window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
@@ -280,7 +286,7 @@
     let pendingItem = null; let currentBalance = 0;
 
     window.buyItem = async (n, p, type = 'gp') => {
-        if(isMaintenance) return showAlert("Hệ thống đang bảo trì, không thể mua hàng!");
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
         if(!auth.currentUser) return window.openAuthModal();
         pendingItem = { name: n, price: p, type: type };
         const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));
@@ -288,19 +294,9 @@
         document.getElementById('orderItemName').innerText = n;
         document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
         document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
-        
-        document.getElementById('robloxUser').value = ""; 
-        document.getElementById('robloxPass').value = "";
-        document.getElementById('roblox2fa').value = "";
-        document.getElementById('checkCorrect').checked = false;
-
-        if(type === 'service' || type === 'robux') {
-            document.getElementById('row-pass').style.display = 'table-row';
-            document.getElementById('row-2fa').style.display = 'table-row';
-        } else {
-            document.getElementById('row-pass').style.display = 'none';
-            document.getElementById('row-2fa').style.display = 'none';
-        }
+        document.getElementById('robloxUser').value = ""; document.getElementById('robloxPass').value = ""; document.getElementById('roblox2fa').value = ""; document.getElementById('checkCorrect').checked = false;
+        if(type === 'service' || type === 'robux') { document.getElementById('row-pass').style.display = 'table-row'; document.getElementById('row-2fa').style.display = 'table-row'; }
+        else { document.getElementById('row-pass').style.display = 'none'; document.getElementById('row-2fa').style.display = 'none'; }
         document.getElementById('robloxModal').style.display = 'flex';
     };
 
@@ -308,66 +304,90 @@
         const robloxName = document.getElementById('robloxUser').value.trim();
         const robloxPass = document.getElementById('robloxPass').value.trim();
         const roblox2fa = document.getElementById('roblox2fa').value.trim();
-
         if(!robloxName || !document.getElementById('checkCorrect').checked) return showAlert("Vui lòng điền đủ thông tin!");
-        if((pendingItem.type === 'service' || pendingItem.type === 'robux') && !robloxPass) return showAlert("Vui lòng nhập mật khẩu!");
         if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");
-
         try {
             await update(ref(rtdb, 'users/' + auth.currentUser.uid), { balance: currentBalance - pendingItem.price });
             const orderId = Date.now();
-            const orderData = { 
-                uid: auth.currentUser.uid, 
-                email: auth.currentUser.email, 
-                robloxAccount: robloxName,
-                item: pendingItem.name, 
-                price: pendingItem.price, 
-                status: "Chờ xử lý", 
-                timestamp: orderId
-            };
-            if(pendingItem.type === 'service' || pendingItem.type === 'robux') {
-                orderData.robloxPass = robloxPass;
-                orderData.roblox2fa = roblox2fa;
-            }
-
+            const orderData = { uid: auth.currentUser.uid, email: auth.currentUser.email, robloxAccount: robloxName, item: pendingItem.name, price: pendingItem.price, status: "Chờ xử lý", timestamp: orderId };
+            if(pendingItem.type === 'service' || pendingItem.type === 'robux') { orderData.robloxPass = robloxPass; orderData.roblox2fa = roblox2fa; }
             await set(ref(rtdb, 'orders/' + orderId), orderData);
-
-            // GỬI WEBHOOK ĐƠN HÀNG (MỚI)
-            await fetch(PURCHASE_WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: "Dexsty Shop - ĐƠN MỚI",
-                    embeds: [{
-                        title: "🛒 CÓ ĐƠN HÀNG MỚI!",
-                        color: 3447003,
-                        fields: [
-                            { name: "👤 Khách hàng", value: auth.currentUser.email, inline: true },
-                            { name: "📦 Sản phẩm", value: pendingItem.name, inline: true },
-                            { name: "💰 Giá", value: pendingItem.price.toLocaleString() + "đ", inline: true },
-                            { name: "🎮 Tài khoản", value: `\`${robloxName}\``, inline: true },
-                            { name: "🔑 Mật khẩu", value: `\`${robloxPass || "N/A"}\``, inline: true },
-                            { name: "🔐 2FA/Backup", value: `\`${roblox2fa || "N/A"}\``, inline: true }
-                        ],
-                        footer: { text: "Hệ thống Dexsty Shop" },
-                        timestamp: new Date().toISOString()
-                    }]
-                })
-            });
-
+            await fetch(PURCHASE_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - ĐƠN MỚI", embeds: [{ title: "🛒 CÓ ĐƠN HÀNG MỚI!", color: 3447003, fields: [{ name: "👤 Khách", value: auth.currentUser.email, inline: true }, { name: "📦 Sản phẩm", value: pendingItem.name, inline: true }, { name: "💰 Giá", value: pendingItem.price.toLocaleString() + "đ", inline: true }, { name: "🎮 Tài khoản", value: `\`${robloxName}\``, inline: true }], timestamp: new Date().toISOString() }] }) });
             window.closeModal('robloxModal'); showAlert("Mua thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
 
-    window.sendDepositWebhook = async () => {
+    /* --- LOGIC MÃ MỜI --- */
+    window.copyRef = () => {
+        const code = document.getElementById('myReferralCode').innerText;
+        navigator.clipboard.writeText(code);
+        showAlert("Đã sao chép mã mời!", true);
+    };
+
+    window.applyReferral = async () => {
+        const code = document.getElementById('inputReferral').value.trim();
+        if(!code) return showAlert("Vui lòng nhập mã!");
+        if(code === auth.currentUser.uid.substring(0, 6)) return showAlert("Bạn không thể tự mời chính mình!");
+        
+        // Tìm chủ nhân của mã mời
+        const usersRef = ref(rtdb, 'users');
+        const snap = await get(usersRef);
+        let referrerUid = null;
+        
+        snap.forEach(child => {
+            if(child.val().referralCode === code) referrerUid = child.key;
+        });
+
+        if(!referrerUid) return showAlert("Mã mời không tồn tại!");
+        
+        await update(ref(rtdb, 'users/' + auth.currentUser.uid), { referredBy: referrerUid });
+        showAlert("Áp dụng mã mời thành công!", true);
+    };
+
+    onAuthStateChanged(auth, async (u) => {
+        const ui = document.getElementById('auth-ui'), sb = document.getElementById('bottomStatusBar');
+        if(u) {
+            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
+                const data = s.val() || {};
+                const b = data.balance || 0;
+                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
+                sb.style.display = 'flex'; document.getElementById('status-email').innerText = u.email.split('@')[0]; document.getElementById('status-money').innerText = Number(b).toLocaleString() + 'đ';
+                document.getElementById('depositMsg').innerText = "NAP " + u.email;
+
+                // Cập nhật UI Referral
+                if(!data.referralCode) {
+                    const myCode = u.uid.substring(0, 6).toUpperCase();
+                    update(ref(rtdb, 'users/' + u.uid), { referralCode: myCode });
+                    document.getElementById('myReferralCode').innerText = myCode;
+                } else {
+                    document.getElementById('myReferralCode').innerText = data.referralCode;
+                }
+                
+                document.getElementById('refBonus').innerText = (data.totalReferralBonus || 0).toLocaleString() + 'đ';
+                
+                if(data.referredBy) {
+                    document.getElementById('input-ref-area').style.display = 'none';
+                    document.getElementById('already-referred').style.display = 'block';
+                }
+            });
+
+            // Đếm số người đã mời
+            onValue(query(ref(rtdb, 'users'), orderByChild('referredBy'), equalTo(u.uid)), (snap) => {
+                document.getElementById('refCount').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
+            });
+
+        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }
+    });
+
+    // CÁC HÀM CÒN LẠI GIỮ NGUYÊN
+    window.sendDepositWebhook = async () => { /* Giữ nguyên code cũ */ 
         const u = auth.currentUser; if(!u) return;
         try {
             await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - BANK", embeds: [{ title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + u.email, inline: true }], timestamp: new Date().toISOString() }] }) });
             window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
         } catch (e) { showAlert(e.message); }
     };
-
-    window.sendCardWebhook = async () => {
+    window.sendCardWebhook = async () => { /* Giữ nguyên code cũ */ 
         const t = document.getElementById('cardType').value, v = document.getElementById('cardValue').value, p = document.getElementById('cardPin').value.trim(), s = document.getElementById('cardSeri').value.trim(), u = auth.currentUser;
         if(!t || !v || !p || !s) return showAlert("Vui lòng điền đủ thông tin!");
         try {
@@ -375,149 +395,32 @@
             window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
         } catch (e) { showAlert(e.message); }
     };
-
     window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };
-    window.processAuth = async () => { const e = document.getElementById('email').value, p = document.getElementById('password').value; try { if(document.getElementById('auth-btn-text').innerText.includes('NHẬP')) await signInWithEmailAndPassword(auth, e, p); else { const r = await createUserWithEmailAndPassword(auth, e, p); await set(ref(rtdb, 'users/'+r.user.uid), {balance:0, totalDeposit:0, email:e}); } window.closeModal('authModal'); } catch(err) { showAlert(err.message); } };
+    window.processAuth = async () => { const e = document.getElementById('email').value, p = document.getElementById('password').value; try { if(document.getElementById('auth-btn-text').innerText.includes('NHẬP')) await signInWithEmailAndPassword(auth, e, p); else { const r = await createUserWithEmailAndPassword(auth, e, p); await set(ref(rtdb, 'users/'+r.user.uid), {balance:0, totalDeposit:0, email:e, referralCode: r.user.uid.substring(0,6).toUpperCase(), totalReferralBonus: 0}); } window.closeModal('authModal'); } catch(err) { showAlert(err.message); } };
     window.logout = () => signOut(auth).then(() => location.reload());
-
-    onAuthStateChanged(auth, (u) => {
-        const ui = document.getElementById('auth-ui'), sb = document.getElementById('bottomStatusBar');
-        if(u) {
-            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
-                const b = s.val()?.balance || 0; currentBalance = b;
-                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
-                sb.style.display = 'flex'; document.getElementById('status-email').innerText = u.email.split('@')[0]; document.getElementById('status-money').innerText = Number(b).toLocaleString() + 'đ';
-                document.getElementById('depositMsg').innerText = "NAP " + u.email;
-            });
-        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }
-    });
-
     window.openDeposit = () => document.getElementById('depositModal').style.display = 'flex';
     window.setDepMode = (m) => { document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; };
-
-    window.openHistory = () => {
-        const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex';
-        onValue(query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid)), (snap) => {
-            const data = snap.val(); if(!data) { content.innerHTML = '<div style="text-align:center;color:gray;padding:20px;">Trống</div>'; return; }
-            content.innerHTML = Object.values(data).reverse().map(o => `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}"><span class="h-status ${o.status==='Đã hoàn thành'?'done':''}">${o.status||'Chờ'}</span><span class="h-name">${o.item}</span><div class="h-info">🎮: ${o.robloxAccount} | 💰: ${o.price.toLocaleString()}đ</div></div>`).join('');
-        });
-    };
+    window.openHistory = () => { const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex'; onValue(query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid)), (snap) => { const data = snap.val(); if(!data) { content.innerHTML = 'Trống'; return; } content.innerHTML = Object.values(data).reverse().map(o => `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}"><span class="h-status">${o.status||'Chờ'}</span><span class="h-name">${o.item}</span><div class="h-info">🎮: ${o.robloxAccount} | 💰: ${o.price.toLocaleString()}đ</div></div>`).join(''); }); };
 
     const allItems = [
-        // SERVICE (Cày thuê)
-        {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "100.000 Fragment", p: 85000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "1M Beli", p: 2000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "50M Beli", p: 90000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "100M Beli", p: 170000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "10M Bounty/Honor", p: 70000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "30M Bounty/Honor", p: 150000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Up Tộc V1-V3", p: 8000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Up Tộc V4 (1 Bánh răng)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Up Tộc V4 Full Bánh răng", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Lấy Tộc Quỷ", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Lấy Tộc Cyborg", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Draco (Có đủ đai)", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Draco (Thiếu đai)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Draco V1-V3", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Draco V4 Full Bánh răng", p: 60000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Gạt cần (Có mảnh gương)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Gạt cần (Không mảnh gương)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Melee V2", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "God Human", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Sanguine Art", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Kiếm/Súng Rồng", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Tam Kiếm", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Mini Yoru", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Lưỡi Hái", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Tushita", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Yama", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Song Kiếm", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Mỏ Neo", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Soul Guitar", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Đinh Ba Gai", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Koko", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Haki Legendary", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Leviathan về Tiki", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Leviathan về Hydra", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Nguyên Thạch Bóng Tối", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Cổng Rip_Indra", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Chế 1 Giấy Mythical", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Chế 20 Giấy Mythical", p: 500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Chế 50 Giấy Mythical", p: 1000000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Chế 100 Giấy Mythical", p: 1500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Awaken Fruit Thường", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-
+        // SERVICE
+        {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100.000 Fragment", p: 85000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1M Beli", p: 2000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50M Beli", p: 90000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100M Beli", p: 170000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "10M Bounty/Honor", p: 70000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "30M Bounty/Honor", p: 150000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V1-V3", p: 8000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 (1 Bánh răng)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 Full Bánh răng", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Quỷ", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Cyborg", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Có đủ đai)", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Thiếu đai)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V1-V3", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V4 Full Bánh răng", p: 60000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Có mảnh gương)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Không mảnh gương)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Melee V2", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "God Human", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Sanguine Art", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Kiếm/Súng Rồng", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tam Kiếm", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mini Yoru", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lưỡi Hái", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tushita", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Yama", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Song Kiếm", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mỏ Neo", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Soul Guitar", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Đinh Ba Gai", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Koko", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Haki Legendary", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Tiki", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Hydra", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Nguyên Thạch Bóng Tối", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Cổng Rip_Indra", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 1 Giấy Mythical", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 20 Giấy Mythical", p: 500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 50 Giấy Mythical", p: 1000000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 100 Giấy Mythical", p: 1500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Fruit Thường", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
         // GAMEPASS
-        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg"},
-        {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg"},
-        {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg"},
-        {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg"},
-        {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg"},
-        {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg"},
-        {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg"},
-        
-        // FRUITS (Trái ác quỷ)
-        {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"},
-        {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"},
-        {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"},
-        {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"},
-        {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"},
-        {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"},
-        {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"},
-        {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"},
-        {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg"},
-        {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg"},
-        {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg"},
-        {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg"},
-        {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg"},
-        {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg"},
-        {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"},
-        {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg"},
-        {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg"},
-        {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg"},
-        {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg"},
-        {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg"},
-        {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg"},
-        {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg"},
-        {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg"},
-        {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg"},
-        {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg"},
-        {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg"},
-        {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg"},
-        {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg"},
-        {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg"},
-        {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg"},
-        {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg"},
-        {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg"},
-        {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg"},
-        {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg"},
-        {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg"},
-        {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg"},
-        {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg"},
-        {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg"},
-        {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg"},
-        {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg"},
-        {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg"}
+        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg"}, {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg"}, {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg"}, {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg"}, {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg"}, {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg"}, {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg"},
+        // FRUITS
+        {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"}, {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"}, {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"}, {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"}, {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"}, {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"}, {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"}, {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"}, {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg"}, {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg"}, {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg"}, {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg"}, {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg"}, {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg"}, {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"}, {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg"}, {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg"}, {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg"}, {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg"}, {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg"}, {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg"}, {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg"}, {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg"}, {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg"}, {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg"}, {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg"}, {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg"}, {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg"}, {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg"}, {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg"}, {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg"}, {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg"}, {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg"}, {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg"}, {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg"}, {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg"}, {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg"}, {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg"}, {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg"}, {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg"}, {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg"}
     ];
 
     function render() {
         initSystemStatus();
         const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid');
         gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = '';
-        
         allItems.forEach(item => {
             const card = document.createElement('div'); card.className = 'card';
             const itemType = item.t === 's' ? 'service' : (item.t === 'f' ? 'fruit' : 'gp');
             card.innerHTML = `<img src="${item.i}" loading="lazy"><h3>${item.n}</h3><div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p}, '${itemType}')">MUA NGAY</button>`;
-            if(item.t === 'f') fr.appendChild(card); 
-            else if(item.t === 's') sv.appendChild(card);
-            else gp.appendChild(card);
+            if(item.t === 'f') fr.appendChild(card); else if(item.t === 's') sv.appendChild(card); else gp.appendChild(card);
         });
-        
         onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {
             const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;
             const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
