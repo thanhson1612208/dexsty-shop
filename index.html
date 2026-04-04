@@ -1,495 +1,504 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dexsty Shop - Roblox Store</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* --- GIỮ NGUYÊN TOÀN BỘ CSS GỐC CỦA BẠN --- */
-        #customAlert.modal { display: none; }
-        .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }
-        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }
-        
-        body { margin: 0; padding-bottom: 100px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }
-        .logo-container { display: flex; align-items: center; text-decoration: none; }
-        .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }
-        .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }
+<!DOCTYPE html>  <html lang="vi">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Dexsty Shop - Roblox Store</title>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
+    <style>  
+        /* --- GIỮ NGUYÊN TOÀN BỘ CSS GỐC --- */  
+        #customAlert.modal { display: none; }  
+        .alert-content { background: #0f172a; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; border: 2px solid #38bdf8; text-align: center; }  
+        :root { --bg: #030712; --card: rgba(17, 24, 39, 0.7); --sky: #38bdf8; --gold: #fbbf24; --hot: #ff4757; --success: #22c55e; --text: #f8fafc; }  body { margin: 0; padding-bottom: 100px; color: var(--text); font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #030712, #0f172a, #030712, #1e1b4b); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }  
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }  
+      
+    .navbar { background: rgba(17, 24, 39, 0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(15px); }  
+    .logo-container { display: flex; align-items: center; text-decoration: none; }  
+    .logo-img { height: 45px; width: auto; object-fit: contain; margin-right: 10px; mix-blend-mode: screen; filter: brightness(1.2); }  
+    .logo-text { font-size: 18px; font-weight: 900; color: var(--sky); }  
 
-        .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 10px 5%; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
-        .status-header { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
-        .status-notice { font-size: 12px; color: #94a3b8; font-weight: 400; font-style: italic; max-width: 800px; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        
-        .container { padding: 0 5%; max-width: 1200px; margin: auto; }
-        .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }
-        
-        .shop-tabs { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 5px; scrollbar-width: none; }
-        .shop-tabs::-webkit-scrollbar { display: none; }
-        .tab-btn { flex: 0 0 auto; padding: 12px 25px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(56, 189, 248, 0.2); color: #94a3b8; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
-        .tab-btn.active { background: var(--sky); color: #000; border-color: var(--sky); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+    .system-status-bar { background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 10px 5%; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }  
+    .status-header { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; }  
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }  
+    .status-notice { font-size: 12px; color: #94a3b8; font-weight: 400; font-style: italic; max-width: 800px; }  
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }  
+      
+    .container { padding: 0 5%; max-width: 1200px; margin: auto; }  
+    .section-title { margin: 30px 0 15px; color: var(--sky); font-weight: 800; text-transform: uppercase; font-size: 16px; border-left: 4px solid var(--sky); padding-left: 12px; }  
+      
+    .shop-tabs { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 5px; scrollbar-width: none; }  
+    .shop-tabs::-webkit-scrollbar { display: none; }  
+    .tab-btn { flex: 0 0 auto; padding: 12px 25px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(56, 189, 248, 0.2); color: #94a3b8; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }  
+    .tab-btn.active { background: var(--sky); color: #000; border-color: var(--sky); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }  
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; display: none; }
-        .grid.active { display: grid; }
-        @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; } }
-        
-        .card { background: var(--card); border-radius: 18px; padding: 15px 10px; border: 1px solid rgba(56, 189, 248, 0.1); text-align: center; position: relative; transition: all 0.3s ease; overflow: hidden; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }
-        .card:hover { transform: translateY(-8px); border-color: var(--sky); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2); background: rgba(17, 24, 39, 0.9); }
-        .card img { width: 85px; height: 85px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: 0.3s; }
-        .card:hover img { transform: scale(1.1); }
-        .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; }
-        .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }
-        .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 11px; }
-        .btn-buy:disabled { background: #374151; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; display: none; }  
+    .grid.active { display: grid; }  
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; } }  
+      
+    .card { background: var(--card); border-radius: 18px; padding: 15px 10px; border: 1px solid rgba(56, 189, 248, 0.1); text-align: center; position: relative; transition: all 0.3s ease; overflow: hidden; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }  
+    .card:hover { transform: translateY(-8px); border-color: var(--sky); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2); background: rgba(17, 24, 39, 0.9); }  
+    .card img { width: 85px; height: 85px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: 0.3s; }  
+    .card:hover img { transform: scale(1.1); }  
+    .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; }  
+    .price { color: var(--gold); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: block; background: rgba(251, 191, 36, 0.1); padding: 4px; border-radius: 8px; }  
+    .btn-buy { width: 100%; padding: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--sky), #0284c7); color: #000; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 11px; }  
+    .btn-buy:disabled { background: #374151; color: #94a3b8; cursor: not-allowed; box-shadow: none; }  
 
-        .card-stats { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 10px; padding: 0 5px; font-weight: 600; }
-        .stat-sold { color: #f8fafc; }
-        .stat-stock { color: var(--success); }
+    .card-stats { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 10px; padding: 0 5px; font-weight: 600; }  
+    .stat-sold { color: #f8fafc; }  
+    .stat-stock { color: var(--success); }  
 
-        .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        .robux-input-group div { flex: 1; min-width: 140px; }
-        .calc-note { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); padding: 10px; border-radius: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
-        .calc-note b { color: var(--hot); }
+    .robux-container { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--sky); margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }  
+    .robux-input-group { display: flex; flex-wrap: wrap; gap: 10px; }  
+    .robux-input-group div { flex: 1; min-width: 140px; }  
+    .calc-note { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--sky); padding: 10px; border-radius: 10px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }  
+    .calc-note b { color: var(--hot); }  
 
-        .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }
-        .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
-        .order-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; color: #334155; }
-        .order-table td { padding: 12px; border: 1px solid #e2e8f0; font-size: 14px; text-align: left; }
-        .order-table .label { font-weight: 600; background: #f1f5f9; width: 45%; }
-        .order-table .value { font-weight: 800; text-align: right; }
-        .pay-input { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-top: 5px; box-sizing: border-box; outline: none; background: #fff !important; color: #000 !important; }
-        
-        .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .status-user { font-size: 13px; color: #94a3b8; }
-        .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }
-        .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
-        
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }
-        .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }
-        
-        .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }
-        .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; text-align: center;}
-        .auth-tab.active { background: var(--sky); color: #000; }
-        
-        .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }
-        .btn-login { background: var(--sky); color: #000; }
-        .btn-logout { background: #ff4757; color: #fff; }
-        .btn-deposit { background: #22c55e; color: #fff; }
+    .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(8px); }  
+    .modal-content { background: #111827; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--sky); text-align: center; }  
+    .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }  
+    .order-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; color: #334155; }  
+    .order-table td { padding: 12px; border: 1px solid #e2e8f0; font-size: 14px; text-align: left; }  
+    .order-table .label { font-weight: 600; background: #f1f5f9; width: 45%; }  
+    .order-table .value { font-weight: 800; text-align: right; }  
+    .pay-input { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-top: 5px; box-sizing: border-box; outline: none; background: #fff !important; color: #000 !important; }  
+      
+    .status-bar { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.9); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--sky); display: none; align-items: center; gap: 15px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }  
+    .status-user { font-size: 13px; color: #94a3b8; }  
+    .status-balance { font-size: 16px; font-weight: 900; color: var(--gold); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px; }  
+    .btn-history-bottom { background: #6366f1; color: white; border: none; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }  
+      
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #1f2937; background: #030712; color: white; box-sizing: border-box; }  
+    .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: var(--sky); color: #000; font-weight: 800; cursor: pointer; }  
+      
+    .auth-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #030712; padding: 5px; border-radius: 10px; }  
+    .auth-tab { flex: 1; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 13px; color: #64748b; text-align: center;}  
+    .auth-tab.active { background: var(--sky); color: #000; }  
+      
+    .btn-sm { padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; }  
+    .btn-login { background: var(--sky); color: #000; }  
+    .btn-logout { background: #ff4757; color: #fff; }  
+    .btn-deposit { background: #22c55e; color: #fff; }  
 
-        .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }
-        .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}
-        .history-item.done { border-left-color: var(--success); }
-        .h-name { font-weight: bold; font-size: 14px; display: block; color: #fff; }
-        .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }
-        .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }
-        
-        .top-deposit-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .rank { font-weight: 900; width: 30px; }
-        .amount { color: var(--success); font-weight: 700; }
+    .history-list { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 15px; }  
+    .history-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--sky); position: relative;}  
+    .history-item.done { border-left-color: var(--success); }  
+    .h-name { font-weight: bold; font-size: 14px; display: block; color: #fff; }  
+    .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }  
+    .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }  
+      
+    .top-deposit-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 10px; margin-bottom: 20px; }  
+    .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }  
+    .rank { font-weight: 900; width: 30px; }  
+    .amount { color: var(--success); font-weight: 700; }  
 
-        .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }
-        .comm-discord { background: #5865F2; } .comm-zalo { background: #0068ff; } .comm-messenger { background: #0084ff; }
-        .event-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
+    .community-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 30px; color: #334155; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }  
+    .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }  
+    .comm-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 700; color: white; transition: 0.3s; }  
+    .comm-discord { background: #5865F2; } .comm-zalo { background: #0068ff; } .comm-messenger { background: #0084ff; }  
+    .event-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }  
 
-        .referral-box { background: rgba(56, 189, 248, 0.05); border: 1px solid var(--sky); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
-        .ref-code-display { font-size: 24px; font-weight: 900; color: var(--gold); letter-spacing: 2px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px dashed var(--gold); cursor: pointer; }
-        .ref-stats { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 15px; }
-        .ref-stat-item b { display: block; color: var(--sky); font-size: 18px; }
-        .ref-stat-item span { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
-    </style>
-</head>
-<body>
+    .referral-box { background: rgba(56, 189, 248, 0.05); border: 1px solid var(--sky); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }  
+    .ref-code-display { font-size: 24px; font-weight: 900; color: var(--gold); letter-spacing: 2px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px dashed var(--gold); cursor: pointer; }  
+    .ref-stats { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 15px; }  
+    .ref-stat-item b { display: block; color: var(--sky); font-size: 18px; }  
+    .ref-stat-item span { font-size: 11px; color: #94a3b8; text-transform: uppercase; }  
+</style>
 
-<div id="bottomStatusBar" class="status-bar">
-    <div class="status-user"><i class="fas fa-user-circle"></i> <span id="status-email">...</span></div>
-    <div class="status-balance"><i class="fas fa-wallet"></i> <span id="status-money">0đ</span></div>
-    <button class="btn-history-bottom" onclick="window.openHistory()">ĐƠN HÀNG</button>
-</div>
+</head>  
+<body>  <div id="bottomStatusBar" class="status-bar">  
+    <div class="status-user"><i class="fas fa-user-circle"></i> <span id="status-email">...</span></div>  
+    <div class="status-balance"><i class="fas fa-wallet"></i> <span id="status-money">0đ</span></div>  
+    <button class="btn-history-bottom" onclick="window.openHistory()">ĐƠN HÀNG</button>  
+</div>  <div id="historyModal" class="modal"> <div class="modal-content" style="max-width: 450px;"> <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3> <div id="history-content" class="history-list"></div> <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button> </div> </div>  
+<div id="depositModal" class="modal"> <div class="modal-content" style="max-width: 420px;"> <div class="auth-tabs"> <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div> <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div> </div> <div id="dep-bank-area"> <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;"></div> <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p> <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button> </div> <div id="dep-card-area" style="display: none; text-align: left;"> <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select> <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">20.000đ</option><option value="500000">500.000đ</option></select> <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial"> <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button> </div> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p> </div> </div>  
+<div id="welcomeModal" class="modal" style="display: flex;"> <div class="modal-content" style="max-width: 420px;"> <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" style="width:100%; max-width:280px; border-radius:15px; margin-bottom:15px;"></div> <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2> <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3> <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div> <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div> <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div> <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button> </div> </div>  
 
-<div id="historyModal" class="modal"> <div class="modal-content" style="max-width: 450px;"> <h3 style="color: var(--sky); margin: 0;">LỊCH SỬ MUA HÀNG</h3> <div id="history-content" class="history-list"></div> <button class="btn-submit" style="background: #334155; color: white; margin-top: 15px;" onclick="window.closeModal('historyModal')">ĐÓNG</button> </div> </div>
-<div id="depositModal" class="modal"> <div class="modal-content" style="max-width: 420px;"> <div class="auth-tabs"> <div id="tab-dep-bank" class="auth-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG (VIETQR)</div> <div id="tab-dep-card" class="auth-tab" onclick="window.setDepMode('card')">THẺ CÀO (15%)</div> </div> <div id="dep-bank-area"> <div style="background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width: 100%;"></div> <p style="font-size: 13px;">Nội dung CK: <b id="depositMsg" style="color: var(--gold);">Đang tải...</b></p> <button class="btn-submit" style="background: #22c55e; color: white;" onclick="window.sendDepositWebhook()">XÁC NHẬN ĐÃ CHUYỂN TIỀN</button> </div> <div id="dep-card-area" style="display: none; text-align: left;"> <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select> <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">20.000đ</option><option value="500000">500.000đ</option></select> <input type="text" id="cardPin" placeholder="Mã nạp (PIN)"><input type="text" id="cardSeri" placeholder="Số Serial"> <button class="btn-submit" style="background: var(--sky); color: #000;" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button> </div> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('depositModal')">ĐÓNG</p> </div> </div>
-<div id="welcomeModal" class="modal" style="display: flex;"> <div class="modal-content" style="max-width: 420px;"> <div style="width: 100%; text-align: center;"><img src="https://i.imgur.com/8CLFc5h.jpeg" style="width:100%; max-width:280px; border-radius:15px; margin-bottom:15px;"></div> <h2 style="color: var(--gold); text-transform: uppercase; margin: 0; font-size: 20px;">Tưng Bừng Khai Trương</h2> <h3 style="color: #fff; margin-top: 5px;">DEXSTY SHOP ROBLOX</h3> <div class="event-item"><span style="color: var(--gold); font-weight: 900; min-width:60px;">TOP 1:</span> <span style="color: #fff;">1 cây Yoru (Dark Blade) ⚔️</span></div> <div class="event-item"><span style="color: #e5e7eb; font-weight: 900; min-width:60px;">TOP 2:</span> <span style="color: #fff;">X2 Beli (Money) 💰</span></div> <div class="event-item"><span style="color: #cd7f32; font-weight: 900; min-width:60px;">TOP 3:</span> <span style="color: #fff;">+1 slot chứa rương 📦</span></div> <button class="btn-submit" style="background: var(--gold); color: #000; margin-top: 20px;" onclick="window.closeModal('welcomeModal')">VÀO SHOP NGAY</button> </div> </div>
-
-<div id="robloxModal" class="modal"> 
-    <div class="modal-content payment-modal" style="max-width: 420px;"> 
-        <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3> 
-        <table class="order-table"> 
-            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr> 
-            <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr> 
-            <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr> 
-            <tr id="row-pass"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr> 
-            <tr id="row-2fa"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr> 
-            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr> 
-        </table> 
-        <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;"> 
-            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận thông tin chính xác. Sai không hoàn tiền.</span></label> 
-        </div> 
-        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button> 
-        <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p> 
-    </div> 
-</div>
-
-<div id="customAlert" class="modal"> <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div> </div>
-<div id="authModal" class="modal"> <div class="modal-content"> <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div> <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu..."> <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p> </div> </div>
-
-<nav class="navbar">
-    <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>
-    <div id="auth-ui" class="nav-right"></div>
-</nav>
-
-<div class="system-status-bar">
-    <div class="status-header">
-        <div class="status-dot" id="system-status-dot"></div>
-        <span id="system-status-text">Đang tải trạng thái...</span>
-    </div>
-    <div class="status-notice" id="system-status-notice">Vui lòng chờ trong giây lát...</div>
-</div>
-
-<div class="container">
-    <div class="section-title">🏆 Top Nạp Trong Tháng</div>
-    <div id="top-deposit-list" class="top-deposit-card"></div>
-    
-    <div class="section-title">💎 Nạp Robux Chính Hãng (120H)</div>
-    <div class="robux-container">
-        <div class="robux-input-group">
-            <div>
-                <label style="font-size: 12px; color: var(--sky);">Số Robux muốn nhận:</label>
-                <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">
-            </div>
-            <div>
-                <label style="font-size: 12px; color: var(--gold);">Số tiền cần trả (230đ/1rb):</label>
-                <input type="text" id="outputPrice" readonly style="background: rgba(255,255,255,0.05); color: var(--gold); font-weight: bold;">
-            </div>
-        </div>
-        <div class="calc-note">
-            🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>
-            ⚠️ <b>Lưu ý quan trọng:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực (Price of area)</b> và để công khai.
-        </div>
-        <button class="btn-buy" id="btn-buy-robux" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>
-    </div>
-
-    <div class="section-title">🔥 DANH MỤC DỊCH VỤ</div>
-    <div class="shop-tabs">
-        <div class="tab-btn active" onclick="window.switchTab('acc')"><i class="fas fa-user-check"></i> Acc Blox Fruit</div>
-        <div class="tab-btn" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>
-        <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>
-        <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Ác Quỷ</div>
-        <div class="tab-btn" onclick="window.switchTab('referral')" style="color: var(--gold);"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</div>
-    </div>
-
-    <div id="acc-grid" class="grid active"></div>
-    <div id="service-grid" class="grid"></div>
-    <div id="gp-grid" class="grid"></div>
-    <div id="fruit-grid" class="grid"></div>
-
-    <div id="referral-grid" class="grid">
-        <div style="grid-column: 1 / -1;">
-            <div class="referral-box">
-                <h3 style="margin-top: 0;">MÃ MỜI CỦA BẠN</h3>
-                <p style="font-size: 12px; color: #94a3b8;">Chia sẻ mã này cho bạn bè. Khi họ nạp tiền, bạn nhận ngay <b>2%</b> giá trị nạp vào số dư shop!</p>
-                <div id="myReferralCode" class="ref-code-display" onclick="window.copyRef()">ĐANG TẢI...</div>
-                <div class="ref-stats">
-                    <div class="ref-stat-item"><b id="refCount">0</b><span>Người đã mời</span></div>
-                    <div class="ref-stat-item"><b id="refBonus">0đ</b><span>Hoa hồng nhận được</span></div>
-                </div>
-            </div>
-
-            <div id="input-ref-area" class="referral-box" style="border-color: #94a3b8; background: none;">
-                <h3 style="margin-top: 0; font-size: 14px;">NHẬP MÃ NGƯỜI GIỚI THIỆU</h3>
-                <input type="text" id="inputReferral" placeholder="Nhập mã mời tại đây..." style="text-align: center; border-color: var(--sky);">
-                <button class="btn-submit" onclick="window.applyReferral()">XÁC NHẬN MÃ</button>
-            </div>
-            <div id="already-referred" class="referral-box" style="display: none; border-color: var(--success);">
-                <p style="margin: 0; color: var(--success); font-weight: bold;"><i class="fas fa-check-circle"></i> Bạn đã được giới thiệu!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="community-card" style="margin-top: 30px;">
-        <h3 style="color: #0f172a; margin-top: 0; font-weight: 800;">🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>
-        <div class="community-grid">
-            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Link Server Discord</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
-        </div>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);
-    
-    const DEPOSIT_WEBHOOK = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
-    const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
-
-    let isMaintenance = false;
-    let pendingItem = null; 
-    let currentBalance = 0;
-
-    function initSystemStatus() {
-        onValue(ref(rtdb, 'settings/shopStatus'), (snap) => {
-            const data = snap.val();
-            if(!data) return;
-            const status = data.status || "Online";
-            const notice = data.notice || "Chào mừng bạn đến với Dexsty Shop!";
-            document.getElementById('system-status-notice').innerText = notice;
-            const dot = document.getElementById('system-status-dot'), statusLabel = document.getElementById('system-status-text');
-            if(status === "Maintenance") { isMaintenance = true; statusLabel.innerText = "Hệ thống: BẢO TRÌ"; dot.style.background = '#ff4757'; } 
-            else if(status === "Slow") { isMaintenance = false; statusLabel.innerText = "Hệ thống: XỬ LÝ CHẬM"; dot.style.background = '#fbbf24'; } 
-            else { isMaintenance = false; statusLabel.innerText = "Hệ thống: ĐANG HOẠT ĐỘNG"; dot.style.background = '#22c55e'; }
-        });
-    }
-
-    window.switchTab = (type) => {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.grid').forEach(grid => grid.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        document.getElementById(type + '-grid').classList.add('active');
-    };
-
-    const RATE = 230; 
-    window.calcRobux = () => {
-        const rb = parseInt(document.getElementById('inputRobux').value) || 0;
-        const totalWithTax = Math.ceil(rb / 0.7);
-        document.getElementById('outputPrice').value = (rb * RATE).toLocaleString() + "đ";
-        document.getElementById('taxNote').innerText = totalWithTax.toLocaleString();
-    };
-
-    window.buyRobux = () => {
-        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
-        const rb = parseInt(document.getElementById('inputRobux').value) || 0;
-        if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");
-        window.buyItem(`Nạp ${rb} Robux`, rb * RATE, 'robux');
-    };
-
-    window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-    window.showAlert = (msg, isSuccess = false) => {
-        const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'), title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'), message = document.getElementById('alertMessage');
-        const color = isSuccess ? "#22c55e" : "#ff4757";
-        box.style.borderColor = color; title.style.color = color; title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";
-        icon.style.color = color; icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-        btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';
-    };
-
-    window.buyItem = async (n, p, type) => {
-        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
-        if(!auth.currentUser) return window.openAuthModal();
-        
-        pendingItem = { name: n, price: p, type: type };
-        const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));
-        currentBalance = snapshot.val()?.balance || 0;
-        
-        document.getElementById('orderItemName').innerText = n;
-        document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';
-        document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';
-        
-        document.getElementById('robloxUser').value = ""; 
-        document.getElementById('robloxPass').value = ""; 
-        document.getElementById('roblox2fa').value = ""; 
-        document.getElementById('checkCorrect').checked = false;
-        
-        // LOGIC HIỂN THỊ CÁC DÒNG NHẬP LIỆU
-        if(type === 'acc') {
-            document.getElementById('row-user').style.display = 'none'; 
-            document.getElementById('row-pass').style.display = 'none'; 
-            document.getElementById('row-2fa').style.display = 'none'; 
-        } else if(type === 'service' || type === 'robux') { 
-            document.getElementById('row-user').style.display = 'table-row'; 
-            document.getElementById('row-pass').style.display = 'table-row'; 
-            document.getElementById('row-2fa').style.display = 'table-row'; 
-        } else { // Gamepass & Fruit
-            document.getElementById('row-user').style.display = 'table-row'; 
-            document.getElementById('row-pass').style.display = 'none'; 
-            document.getElementById('row-2fa').style.display = 'none'; 
-        }
-        
-        document.getElementById('robloxModal').style.display = 'flex';
-    };
-
-    window.confirmPurchase = async () => {
-        const robloxName = document.getElementById('robloxUser').value.trim();
-        const robloxPass = document.getElementById('robloxPass').value.trim();
-        const roblox2fa = document.getElementById('roblox2fa').value.trim();
-        
-        if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");
-        if(pendingItem.type !== 'acc' && !robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
-        if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");
-
-        try {
-            await update(ref(rtdb, 'users/' + auth.currentUser.uid), { balance: currentBalance - pendingItem.price });
-            const orderId = Date.now();
-            const orderData = { 
-                uid: auth.currentUser.uid, 
-                email: auth.currentUser.email, 
-                robloxAccount: robloxName || "MUA ACC", 
-                item: pendingItem.name, 
-                price: pendingItem.price, 
-                status: "Chờ xử lý", 
-                timestamp: orderId 
-            };
+<div id="robloxModal" class="modal">   
+    <div class="modal-content payment-modal" style="max-width: 420px;">   
+        <h3 style="color: #0f172a; margin: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">THÔNG TIN ĐƠN HÀNG</h3>   
+        <table class="order-table">   
+            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color: #2563eb;">---</td></tr>   
             
-            // LƯU CẢ PASS VÀ 2FA VÀO DATABASE NẾU LÀ CÀY THUÊ/ROBUX
-            if(pendingItem.type === 'service' || pendingItem.type === 'robux') { 
-                orderData.robloxPass = robloxPass; 
-                orderData.roblox2fa = roblox2fa; 
+            <tr id="row-toc" style="display: none;">
+                <td class="label">Chọn Tộc V4:</td>
+                <td class="value">
+                    <select id="selectToc" class="pay-input" style="margin: 0; border: 1.5px solid #cbd5e1;">
+                        <option value="Quỷ">Quỷ (Ghoul)</option>
+                        <option value="Thiên thần">Thiên thần (Angel)</option>
+                        <option value="Thỏ">Thỏ (Mink)</option>
+                        <option value="Người">Người (Human)</option>
+                        <option value="Cyborg">Cyborg</option>
+                        <option value="Cá">Cá (Fishman)</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr><td class="label">Số dư hiện tại:</td><td class="value" id="userBalanceText" style="color: #ef4444;">0đ</td></tr>   
+            <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr>   
+            <tr id="row-pass"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr>   
+            <tr id="row-2fa"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr>   
+            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size: 16px;">0đ</td></tr>   
+        </table>   
+        <div style="text-align: left; margin: 15px 0; color: #64748b; font-size: 12px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0;">   
+            <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;"><input type="checkbox" id="checkCorrect" style="width: 16px; height: 16px; margin: 0;"> <span>Xác nhận thông tin chính xác. Sai không hoàn tiền.</span></label>   
+        </div>   
+        <button id="finalBuyBtn" class="btn-submit" style="background: #0f172a; color: white;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>   
+        <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; cursor: pointer; font-weight: bold;" onclick="window.closeModal('robloxModal')">QUAY LẠI</p>   
+    </div>   
+</div>  <div id="customAlert" class="modal"> <div class="modal-content" id="alertBox" style="max-width: 320px;"><div id="alertIcon" style="font-size: 40px; margin-bottom: 15px;"></div><h3 id="alertTitle"></h3><p id="alertMessage"></p><button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button></div> </div>  
+<div id="authModal" class="modal"> <div class="modal-content"> <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div> <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu..."> <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p> </div> </div>  <nav class="navbar">  
+    <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>  
+    <div id="auth-ui" class="nav-right"></div>  
+</nav>  <div class="system-status-bar">  
+    <div class="status-header">  
+        <div class="status-dot" id="system-status-dot"></div>  
+        <span id="system-status-text">Đang tải trạng thái...</span>  
+    </div>  
+    <div class="status-notice" id="system-status-notice">Vui lòng chờ trong giây lát...</div>  
+</div>  <div class="container">  
+    <div class="section-title">🏆 Top Nạp Trong Tháng</div>  
+    <div id="top-deposit-list" class="top-deposit-card"></div>  <div class="section-title">💎 Nạp Robux Chính Hãng (120H)</div>  
+<div class="robux-container">  
+    <div class="robux-input-group">  
+        <div>  
+            <label style="font-size: 12px; color: var(--sky);">Số Robux muốn nhận:</label>  
+            <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">  
+        </div>  
+        <div>  
+            <label style="font-size: 12px; color: var(--gold);">Số tiền cần trả (230đ/1rb):</label>  
+            <input type="text" id="outputPrice" readonly style="background: rgba(255,255,255,0.05); color: var(--gold); font-weight: bold;">  
+        </div>  
+    </div>  
+    <div class="calc-note">  
+        🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>  
+        ⚠️ <b>Lưu ý quan trọng:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực (Price of area)</b> và để công khai.  
+    </div>  
+    <button class="btn-buy" id="btn-buy-robux" style="height: 45px; font-size: 14px;" onclick="window.buyRobux()">MUA ROBUX NGAY</button>  
+</div>  
+
+<div class="section-title">🔥 DANH MỤC DỊCH VỤ</div>  
+<div class="shop-tabs">  
+    <div class="tab-btn active" onclick="window.switchTab('acc')"><i class="fas fa-user-check"></i> Acc Blox Fruit</div>  
+    <div class="tab-btn" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>  
+    <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>  
+    <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Ác Quỷ</div>  
+    <div class="tab-btn" onclick="window.switchTab('referral')" style="color: var(--gold);"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</div>  
+</div>  
+
+<div id="acc-grid" class="grid active"></div>  
+<div id="service-grid" class="grid"></div>  
+<div id="gp-grid" class="grid"></div>  
+<div id="fruit-grid" class="grid"></div>  
+
+<div id="referral-grid" class="grid">  
+    <div style="grid-column: 1 / -1;">  
+        <div class="referral-box">  
+            <h3 style="margin-top: 0;">MÃ MỜI CỦA BẠN</h3>  
+            <p style="font-size: 12px; color: #94a3b8;">Chia sẻ mã này cho bạn bè. Khi họ nạp tiền, bạn nhận ngay <b>2%</b> giá trị nạp vào số dư shop!</p>  
+            <div id="myReferralCode" class="ref-code-display" onclick="window.copyRef()">ĐANG TẢI...</div>  
+            <div class="ref-stats">  
+                <div class="ref-stat-item"><b id="refCount">0</b><span>Người đã mời</span></div>  
+                <div class="ref-stat-item"><b id="refBonus">0đ</b><span>Hoa hồng nhận được</span></div>  
+            </div>  
+        </div>  
+
+        <div id="input-ref-area" class="referral-box" style="border-color: #94a3b8; background: none;">  
+            <h3 style="margin-top: 0; font-size: 14px;">NHẬP MÃ NGƯỜI GIỚI THIỆU</h3>  
+            <input type="text" id="inputReferral" placeholder="Nhập mã mời tại đây..." style="text-align: center; border-color: var(--sky);">  
+            <button class="btn-submit" onclick="window.applyReferral()">XÁC NHẬN ĐÃ NHẬP</button>  
+        </div>  
+        <div id="already-referred" class="referral-box" style="display: none; border-color: var(--success);">  
+            <p style="margin: 0; color: var(--success); font-weight: bold;"><i class="fas fa-check-circle"></i> Bạn đã được giới thiệu!</p>  
+        </div>  
+    </div>  
+</div>  
+
+<div class="community-card" style="margin-top: 30px;">  
+    <h3 style="color: #0f172a; margin-top: 0; font-weight: 800;">🚀 THAM GIA CỘNG ĐỒNG DEXSTY</h3>  
+    <div class="community-grid">  
+        <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Link Server Discord</a>  
+        <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>  
+        <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>  
+    </div>  
+</div>
+
+</div>  <script type="module">  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";  
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";  
+    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";  
+  
+    const firebaseConfig = { apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls", authDomain: "dexsty-shop-f955d.firebaseapp.com", databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com", projectId: "dexsty-shop-f955d" };  
+    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const rtdb = getDatabase(app);  
+      
+    const DEPOSIT_WEBHOOK = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";  
+    const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";  
+  
+    let isMaintenance = false;  
+    let pendingItem = null;   
+    let currentBalance = 0;  
+  
+    function initSystemStatus() {  
+        onValue(ref(rtdb, 'settings/shopStatus'), (snap) => {  
+            const data = snap.val();  
+            if(!data) return;  
+            const status = data.status || "Online";  
+            const notice = data.notice || "Chào mừng bạn đến với Dexsty Shop!";  
+            document.getElementById('system-status-notice').innerText = notice;  
+            const dot = document.getElementById('system-status-dot'), statusLabel = document.getElementById('system-status-text');  
+            if(status === "Maintenance") { isMaintenance = true; statusLabel.innerText = "Hệ thống: BẢO TRÌ"; dot.style.background = '#ff4757'; }   
+            else if(status === "Slow") { isMaintenance = false; statusLabel.innerText = "Hệ thống: XỬ LÝ CHẬM"; dot.style.background = '#fbbf24'; }   
+            else { isMaintenance = false; statusLabel.innerText = "Hệ thống: ĐANG HOẠT ĐỘNG"; dot.style.background = '#22c55e'; }  
+        });  
+    }  
+  
+    window.switchTab = (type) => {  
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));  
+        document.querySelectorAll('.grid').forEach(grid => grid.classList.remove('active'));  
+        event.currentTarget.classList.add('active');  
+        document.getElementById(type + '-grid').classList.add('active');  
+    };  
+  
+    const RATE = 230;   
+    window.calcRobux = () => {  
+        const rb = parseInt(document.getElementById('inputRobux').value) || 0;  
+        const totalWithTax = Math.ceil(rb / 0.7);  
+        document.getElementById('outputPrice').value = (rb * RATE).toLocaleString() + "đ";  
+        document.getElementById('taxNote').innerText = totalWithTax.toLocaleString();  
+    };  
+  
+    window.buyRobux = () => {  
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");  
+        const rb = parseInt(document.getElementById('inputRobux').value) || 0;  
+        if(rb < 10) return showAlert("Tối thiểu mua 10 Robux!");  
+        window.buyItem(`Nạp ${rb} Robux`, rb * RATE, 'robux');  
+    };  
+  
+    window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';  
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';  
+    window.showAlert = (msg, isSuccess = false) => {  
+        const box = document.getElementById('alertBox'), icon = document.getElementById('alertIcon'), title = document.getElementById('alertTitle'), btn = document.getElementById('alertBtn'), message = document.getElementById('alertMessage');  
+        const color = isSuccess ? "#22c55e" : "#ff4757";  
+        box.style.borderColor = color; title.style.color = color; title.innerText = isSuccess ? "THÀNH CÔNG" : "THÔNG BÁO";  
+        icon.style.color = color; icon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';  
+        btn.style.background = color; message.innerText = msg; document.getElementById('customAlert').style.display = 'flex';  
+    };  
+  
+    window.buyItem = async (n, p, type) => {  
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");  
+        if(!auth.currentUser) return window.openAuthModal();  
+          
+        pendingItem = { name: n, price: p, type: type };  
+        const snapshot = await get(ref(rtdb, 'users/' + auth.currentUser.uid));  
+        currentBalance = snapshot.val()?.balance || 0;  
+          
+        document.getElementById('orderItemName').innerText = n;  
+        document.getElementById('userBalanceText').innerText = currentBalance.toLocaleString() + 'đ';  
+        document.getElementById('itemPriceText').innerText = p.toLocaleString() + 'đ';  
+          
+        document.getElementById('robloxUser').value = "";   
+        document.getElementById('robloxPass').value = "";   
+        document.getElementById('roblox2fa').value = "";   
+        document.getElementById('checkCorrect').checked = false;  
+          
+        // LOGIC HIỂN THỊ CÁC DÒNG NHẬP LIỆU  
+        if(type === 'acc') {  
+            document.getElementById('row-user').style.display = 'none';   
+            document.getElementById('row-pass').style.display = 'none';   
+            document.getElementById('row-2fa').style.display = 'none';   
+            document.getElementById('row-toc').style.display = 'none'; // Acc không cần chọn tộc
+        } else if(type === 'service' || type === 'robux') {   
+            document.getElementById('row-user').style.display = 'table-row';   
+            document.getElementById('row-pass').style.display = 'table-row';   
+            document.getElementById('row-2fa').style.display = 'table-row';   
+            
+            // NẾU LÀ CÀY TỘC V4 THÌ HIỆN DÒNG CHỌN TỘC
+            if(n.toLowerCase().includes("tộc v4")) {
+                document.getElementById('row-toc').style.display = 'table-row';
+            } else {
+                document.getElementById('row-toc').style.display = 'none';
             }
+        } else { // Gamepass & Fruit  
+            document.getElementById('row-user').style.display = 'table-row';   
+            document.getElementById('row-pass').style.display = 'none';   
+            document.getElementById('row-2fa').style.display = 'none';   
+            document.getElementById('row-toc').style.display = 'none';
+        }  
+          
+        document.getElementById('robloxModal').style.display = 'flex';  
+    };  
+  
+    window.confirmPurchase = async () => {  
+        const robloxName = document.getElementById('robloxUser').value.trim();  
+        const robloxPass = document.getElementById('robloxPass').value.trim();  
+        const roblox2fa = document.getElementById('roblox2fa').value.trim();  
+        const selectedToc = document.getElementById('selectToc').value;
+          
+        if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");  
+        if(pendingItem.type !== 'acc' && !robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");  
+        if(currentBalance < pendingItem.price) return showAlert("Số dư không đủ!");  
 
-            await set(ref(rtdb, 'orders/' + orderId), orderData);
-            
-            // GỬI WEBHOOK ĐẦY ĐỦ THÔNG TIN CHO ADMIN
-            await fetch(PURCHASE_WEBHOOK, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ 
-                    username: "Dexsty Shop - ĐƠN MỚI", 
-                    embeds: [{ 
-                        title: "🛒 CÓ ĐƠN HÀNG MỚI!", 
-                        color: 3447003, 
-                        fields: [
-                            { name: "👤 Khách", value: auth.currentUser.email, inline: true }, 
-                            { name: "📦 Sản phẩm", value: pendingItem.name, inline: true }, 
-                            { name: "💰 Giá", value: pendingItem.price.toLocaleString() + "đ", inline: true }, 
-                            { name: "🎮 Tài khoản", value: `\`${robloxName || "MUA ACC"}\``, inline: true },
-                            { name: "🔑 Mật khẩu", value: `\`${robloxPass || "N/A"}\``, inline: true },
-                            { name: "🛡️ Mã 2FA", value: `\`${roblox2fa || "N/A"}\``, inline: true }
-                        ], 
-                        timestamp: new Date().toISOString() 
-                    }] 
-                }) 
-            });
-
-            window.closeModal('robloxModal'); 
-            showAlert("Mua thành công!", true);
-        } catch (e) { 
-            showAlert(e.message); 
+        // Nếu là đơn Tộc V4 thì ghép tên tộc vào sản phẩm
+        let finalItemName = pendingItem.name;
+        if(pendingItem.name.toLowerCase().includes("tộc v4")) {
+            finalItemName += ` [Tộc: ${selectedToc}]`;
         }
-    };
 
-    /* --- GIỮ NGUYÊN TOÀN BỘ LOGIC AUTH/DEPOSIT/HISTORY --- */
-    window.copyRef = () => { const code = document.getElementById('myReferralCode').innerText; navigator.clipboard.writeText(code); showAlert("Đã sao chép mã mời!", true); };
-    window.applyReferral = async () => {
-        const code = document.getElementById('inputReferral').value.trim();
-        if(!code) return showAlert("Vui lòng nhập mã!");
-        if(code === auth.currentUser.uid.substring(0, 6)) return showAlert("Bạn không thể tự mời chính mình!");
-        const snap = await get(ref(rtdb, 'users'));
-        let referrerUid = null;
-        snap.forEach(child => { if(child.val().referralCode === code) referrerUid = child.key; });
-        if(!referrerUid) return showAlert("Mã mời không tồn tại!");
-        await update(ref(rtdb, 'users/' + auth.currentUser.uid), { referredBy: referrerUid });
-        showAlert("Áp dụng mã mời thành công!", true);
-    };
-
-    onAuthStateChanged(auth, async (u) => {
-        const ui = document.getElementById('auth-ui'), sb = document.getElementById('bottomStatusBar');
-        if(u) {
-            onValue(ref(rtdb, 'users/' + u.uid), (s) => {
-                const data = s.val() || {};
-                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;
-                sb.style.display = 'flex'; document.getElementById('status-email').innerText = u.email.split('@')[0]; document.getElementById('status-money').innerText = Number(data.balance || 0).toLocaleString() + 'đ';
-                document.getElementById('depositMsg').innerText = "NAP " + u.email;
-                if(!data.referralCode) {
-                    const myCode = u.uid.substring(0, 6).toUpperCase();
-                    update(ref(rtdb, 'users/' + u.uid), { referralCode: myCode });
-                    document.getElementById('myReferralCode').innerText = myCode;
-                } else { document.getElementById('myReferralCode').innerText = data.referralCode; }
-                document.getElementById('refBonus').innerText = (data.totalReferralBonus || 0).toLocaleString() + 'đ';
-                if(data.referredBy) { document.getElementById('input-ref-area').style.display = 'none'; document.getElementById('already-referred').style.display = 'block'; }
-            });
-            onValue(query(ref(rtdb, 'users'), orderByChild('referredBy'), equalTo(u.uid)), (snap) => {
-                document.getElementById('refCount').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
-            });
-        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }
-    });
-
-    window.sendDepositWebhook = async () => {
-        const u = auth.currentUser; if(!u) return;
-        try {
-            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - BANK", embeds: [{ title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + u.email, inline: true }], timestamp: new Date().toISOString() }] }) });
-            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
-        } catch (e) { showAlert(e.message); }
-    };
-
-    window.sendCardWebhook = async () => {
-        const t = document.getElementById('cardType').value, v = document.getElementById('cardValue').value, p = document.getElementById('cardPin').value.trim(), s = document.getElementById('cardSeri').value.trim(), u = auth.currentUser;
-        if(!t || !v || !p || !s) return showAlert("Vui lòng điền đủ thông tin!");
-        try {
-            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - THẺ CÀO", embeds: [{ title: "💳 THẺ CÀO MỚI!", color: 16711767, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "🆔 Loại", value: t, inline: true }, { name: "💰 Mệnh giá", value: Number(v).toLocaleString() + "đ", inline: true }, { name: "🔑 PIN", value: `\`${p}\`` }, { name: "🔢 Seri", value: `\`${s}\`` }], timestamp: new Date().toISOString() }] }) });
-            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
-        } catch (e) { showAlert(e.message); }
-    };
-
-    window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };
-    window.processAuth = async () => { const e = document.getElementById('email').value, p = document.getElementById('password').value; try { if(document.getElementById('auth-btn-text').innerText.includes('NHẬP')) await signInWithEmailAndPassword(auth, e, p); else { const r = await createUserWithEmailAndPassword(auth, e, p); await set(ref(rtdb, 'users/'+r.user.uid), {balance:0, totalDeposit:0, email:e, referralCode: r.user.uid.substring(0,6).toUpperCase(), totalReferralBonus: 0}); } window.closeModal('authModal'); } catch(err) { showAlert(err.message); } };
-    window.logout = () => signOut(auth).then(() => location.reload());
-    window.openDeposit = () => document.getElementById('depositModal').style.display = 'flex';
-    window.setDepMode = (m) => { document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; };
-    window.openHistory = () => { const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex'; onValue(query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid)), (snap) => { const data = snap.val(); if(!data) { content.innerHTML = 'Trống'; return; } content.innerHTML = Object.values(data).reverse().map(o => `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}"><span class="h-status">${o.status||'Chờ'}</span><span class="h-name">${o.item}</span><div class="h-info">🎮: ${o.robloxAccount} | 💰: ${o.price.toLocaleString()}đ</div></div>`).join(''); }); };
-
-    /* --- GIỮ NGUYÊN DANH SÁCH SẢN PHẨM --- */
-    const allItems = [
-        {n: "Acc TTT 100% Godhuman + Max Lv + 1 Tộc V4", p: 40000, t: "a", i: "https://i.imgur.com/9TNm9UO.jpeg", sold: 125, stock: 5},
-        {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100.000 Fragment", p: 85000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1M Beli", p: 2000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50M Beli", p: 90000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100M Beli", p: 170000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "10M Bounty/Honor", p: 70000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "30M Bounty/Honor", p: 150000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V1-V3", p: 8000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 (1 Bánh răng)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 Full Bánh răng", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Quỷ", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Cyborg", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Có đủ đai)", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Thiếu đai)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V1-V3", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V4 Full Bánh răng", p: 60000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Có mảnh gương)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Không mảnh gương)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Melee V2", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "God Human", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Sanguine Art", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Kiếm/Súng Rồng", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tam Kiếm", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mini Yoru", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lưỡi Hái", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tushita", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Yama", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Song Kiếm", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mỏ Neo", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Soul Guitar", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Đinh Ba Gai", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Koko", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Haki Legendary", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Tiki", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Hydra", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Nguyên Thạch Bóng Tối", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Cổng Rip_Indra", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 1 Giấy Mythical", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 20 Giấy Mythical", p: 500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 50 Giấy Mythical", p: 1000000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 100 Giấy Mythical", p: 1500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Fruit Thường", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},
-        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg"}, {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg"}, {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg"}, {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg"}, {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg"}, {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg"}, {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg"},
-        {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"}, {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"}, {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"}, {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"}, {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"}, {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"}, {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"}, {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"}, {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg"}, {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg"}, {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg"}, {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg"}, {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg"}, {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg"}, {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"}, {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg"}, {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg"}, {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg"}, {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg"}, {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg"}, {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg"}, {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg"}, {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg"}, {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg"}, {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg"}, {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg"}, {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg"}, {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg"}, {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg"}, {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg"}, {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg"}, {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg"}, {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg"}, {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg"}, {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg"}, {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg"}, {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg"}, {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg"}, {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg"}, {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg"}, {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg"}
-    ];
-
-    function render() {
-        initSystemStatus();
-        const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid'), ac = document.getElementById('acc-grid');
-        gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = ''; ac.innerHTML = '';
-        allItems.forEach(item => {
-            const card = document.createElement('div'); card.className = 'card';
-            
-            // FIX LỖI MẤT DỊCH VỤ: Gán đúng type dựa trên thuộc tính t
-            let displayType = '';
-            if(item.t === 'a') displayType = 'acc';
-            else if(item.t === 's') displayType = 'service';
-            else if(item.t === 'f') displayType = 'fruit';
-            else displayType = 'gp';
-
-            let statsHtml = '';
-            if(item.t === 'a') {
-                statsHtml = `<div class="card-stats">
-                                <span class="stat-sold">🔥 Đã bán: ${item.sold || 0}</span>
-                                <span class="stat-stock">📦 Còn lại: ${item.stock || 0}</span>
-                             </div>`;
-            }
-
-            card.innerHTML = `
-                <img src="${item.i}" loading="lazy">
-                <h3>${item.n}</h3>
-                ${statsHtml}
-                <div class="price">${item.p.toLocaleString()}đ</div>
-                <button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p}, '${displayType}')">MUA NGAY</button>
-            `;
-
-            if(item.t === 'f') fr.appendChild(card); 
-            else if(item.t === 's') sv.appendChild(card); 
-            else if(item.t === 'a') ac.appendChild(card);
-            else gp.appendChild(card);
-        });
-
-        onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {
-            const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;
-            const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);
-            list.innerHTML = sorted.map((u, i) => `<div class="top-row"><div><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`).join('');
-        });
-    }
-    render();
-</script>
-</body>
+        try {  
+            await update(ref(rtdb, 'users/' + auth.currentUser.uid), { balance: currentBalance - pendingItem.price });  
+            const orderId = Date.now();  
+            const orderData = {   
+                uid: auth.currentUser.uid,   
+                email: auth.currentUser.email,   
+                robloxAccount: robloxName || "MUA ACC",   
+                item: finalItemName,   
+                price: pendingItem.price,   
+                status: "Chờ xử lý",   
+                timestamp: orderId   
+            };  
+              
+            if(pendingItem.type === 'service' || pendingItem.type === 'robux') {   
+                orderData.robloxPass = robloxPass;   
+                orderData.roblox2fa = roblox2fa;   
+            }  
+  
+            await set(ref(rtdb, 'orders/' + orderId), orderData);  
+              
+            await fetch(PURCHASE_WEBHOOK, {   
+                method: 'POST',   
+                headers: { 'Content-Type': 'application/json' },   
+                body: JSON.stringify({   
+                    username: "Dexsty Shop - ĐƠN MỚI",   
+                    embeds: [{   
+                        title: "🛒 CÓ ĐƠN HÀNG MỚI!",   
+                        color: 3447003,   
+                        fields: [  
+                            { name: "👤 Khách", value: auth.currentUser.email, inline: true },   
+                            { name: "📦 Sản phẩm", value: finalItemName, inline: true },   
+                            { name: "💰 Giá", value: pendingItem.price.toLocaleString() + "đ", inline: true },   
+                            { name: "🎮 Tài khoản", value: `\`${robloxName || "MUA ACC"}\``, inline: true },  
+                            { name: "🔑 Mật khẩu", value: `\`${robloxPass || "N/A"}\``, inline: true },  
+                            { name: "🛡️ Mã 2FA", value: `\`${roblox2fa || "N/A"}\``, inline: true }  
+                        ],   
+                        timestamp: new Date().toISOString()   
+                    }]   
+                })   
+            });  
+  
+            window.closeModal('robloxModal');   
+            showAlert("Mua thành công!", true);  
+        } catch (e) {   
+            showAlert(e.message);   
+        }  
+    };  
+  
+    /* --- GIỮ NGUYÊN TOÀN BỘ LOGIC AUTH/DEPOSIT/HISTORY --- */  
+    window.copyRef = () => { const code = document.getElementById('myReferralCode').innerText; navigator.clipboard.writeText(code); showAlert("Đã sao chép mã mời!", true); };  
+    window.applyReferral = async () => {  
+        const code = document.getElementById('inputReferral').value.trim();  
+        if(!code) return showAlert("Vui lòng nhập mã!");  
+        if(code === auth.currentUser.uid.substring(0, 6)) return showAlert("Bạn không thể tự mời chính mình!");  
+        const snap = await get(ref(rtdb, 'users'));  
+        let referrerUid = null;  
+        snap.forEach(child => { if(child.val().referralCode === code) referrerUid = child.key; });  
+        if(!referrerUid) return showAlert("Mã mời không tồn tại!");  
+        await update(ref(rtdb, 'users/' + auth.currentUser.uid), { referredBy: referrerUid });  
+        showAlert("Áp dụng mã mời thành công!", true);  
+    };  
+  
+    onAuthStateChanged(auth, async (u) => {  
+        const ui = document.getElementById('auth-ui'), sb = document.getElementById('bottomStatusBar');  
+        if(u) {  
+            onValue(ref(rtdb, 'users/' + u.uid), (s) => {  
+                const data = s.val() || {};  
+                ui.innerHTML = `<button class="btn-sm btn-deposit" onclick="window.openDeposit()">Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()">Thoát</button>`;  
+                sb.style.display = 'flex'; document.getElementById('status-email').innerText = u.email.split('@')[0]; document.getElementById('status-money').innerText = Number(data.balance || 0).toLocaleString() + 'đ';  
+                document.getElementById('depositMsg').innerText = "NAP " + u.email;  
+                if(!data.referralCode) {  
+                    const myCode = u.uid.substring(0, 6).toUpperCase();  
+                    update(ref(rtdb, 'users/' + u.uid), { referralCode: myCode });  
+                    document.getElementById('myReferralCode').innerText = myCode;  
+                } else { document.getElementById('myReferralCode').innerText = data.referralCode; }  
+                document.getElementById('refBonus').innerText = (data.totalReferralBonus || 0).toLocaleString() + 'đ';  
+                if(data.referredBy) { document.getElementById('input-ref-area').style.display = 'none'; document.getElementById('already-referred').style.display = 'block'; }  
+            });  
+            onValue(query(ref(rtdb, 'users'), orderByChild('referredBy'), equalTo(u.uid)), (snap) => {  
+                document.getElementById('refCount').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;  
+            });  
+        } else { ui.innerHTML = `<button class="btn-sm btn-login" onclick="window.openAuthModal()">Đăng nhập / Đăng ký</button>`; sb.style.display = 'none'; }  
+    });  
+  
+    window.sendDepositWebhook = async () => {  
+        const u = auth.currentUser; if(!u) return;  
+        try {  
+            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - BANK", embeds: [{ title: "🏦 YÊU CẦU NẠP BANK!", color: 2278750, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "📝 Nội dung", value: "NAP " + u.email, inline: true }], timestamp: new Date().toISOString() }] }) });  
+            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);  
+        } catch (e) { showAlert(e.message); }  
+    };  
+  
+    window.sendCardWebhook = async () => {  
+        const t = document.getElementById('cardType').value, v = document.getElementById('cardValue').value, p = document.getElementById('cardPin').value.trim(), s = document.getElementById('cardSeri').value.trim(), u = auth.currentUser;  
+        if(!t || !v || !p || !s) return showAlert("Vui lòng điền đủ thông tin!");  
+        try {  
+            await fetch(DEPOSIT_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: "Dexsty Shop - THẺ CÀO", embeds: [{ title: "💳 THẺ CÀO MỚI!", color: 16711767, fields: [{ name: "👤 Khách", value: u.email, inline: true }, { name: "🆔 Loại", value: t, inline: true }, { name: "💰 Mệnh giá", value: Number(v).toLocaleString() + "đ", inline: true }, { name: "🔑 PIN", value: `\`${p}\`` }, { name: "🔢 Seri", value: `\`${s}\`` }], timestamp: new Date().toISOString() }] }) });  
+            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);  
+        } catch (e) { showAlert(e.message); }  
+    };  
+  
+    window.setAuthMode = (m) => { document.getElementById('tab-login').className = `auth-tab ${m==='login'?'active':''}`; document.getElementById('tab-register').className = `auth-tab ${m==='register'?'active':''}`; document.getElementById('auth-btn-text').innerText = m==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ'; };  
+    window.processAuth = async () => { const e = document.getElementById('email').value, p = document.getElementById('password').value; try { if(document.getElementById('auth-btn-text').innerText.includes('NHẬP')) await signInWithEmailAndPassword(auth, e, p); else { const r = await createUserWithEmailAndPassword(auth, e, p); await set(ref(rtdb, 'users/'+r.user.uid), {balance:0, totalDeposit:0, email:e, referralCode: r.user.uid.substring(0,6).toUpperCase(), totalReferralBonus: 0}); } window.closeModal('authModal'); } catch(err) { showAlert(err.message); } };  
+    window.logout = () => signOut(auth).then(() => location.reload());  
+    window.openDeposit = () => document.getElementById('depositModal').style.display = 'flex';  
+    window.setDepMode = (m) => { document.getElementById('tab-dep-bank').className = `auth-tab ${m==='bank'?'active':''}`; document.getElementById('tab-dep-card').className = `auth-tab ${m==='card'?'active':''}`; document.getElementById('dep-bank-area').style.display = m==='bank'?'block':'none'; document.getElementById('dep-card-area').style.display = m==='card'?'block':'none'; };  
+    window.openHistory = () => { const content = document.getElementById('history-content'); document.getElementById('historyModal').style.display = 'flex'; onValue(query(ref(rtdb, 'orders'), orderByChild('uid'), equalTo(auth.currentUser.uid)), (snap) => { const data = snap.val(); if(!data) { content.innerHTML = 'Trống'; return; } content.innerHTML = Object.values(data).reverse().map(o => `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}"><span class="h-status">${o.status||'Chờ'}</span><span class="h-name">${o.item}</span><div class="h-info">🎮: ${o.robloxAccount} | 💰: ${o.price.toLocaleString()}đ</div></div>`).join(''); }); };  
+  
+    /* --- DANH SÁCH SẢN PHẨM --- */  
+    const allItems = [  
+        {n: "Acc TTT 100% Godhuman + Max Lv + 1 Tộc V4", p: 40000, t: "a", i: "https://i.imgur.com/9TNm9UO.jpeg", sold: 125, stock: 5},  
+        {n: "Cày 700 Level", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1.000 Fragment", p: 1000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50.000 Fragment", p: 45000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100.000 Fragment", p: 85000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "1M Beli", p: 2000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "50M Beli", p: 90000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "100M Beli", p: 170000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "10M Bounty/Honor", p: 70000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "30M Bounty/Honor", p: 150000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V1-V3", p: 8000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 (1 Bánh răng)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Up Tộc V4 Full Bánh răng", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Quỷ", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lấy Tộc Cyborg", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Có đủ đai)", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco (Thiếu đai)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V1-V3", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Draco V4 Full Bánh răng", p: 60000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Có mảnh gương)", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Gạt cần (Không mảnh gương)", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Melee V2", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "God Human", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Sanguine Art", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Kiếm/Súng Rồng", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tam Kiếm", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mini Yoru", p: 25000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Lưỡi Hái", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Tushita", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Yama", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Song Kiếm", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Mỏ Neo", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Soul Guitar", p: 20000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Đinh Ba Gai", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Koko", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Haki Legendary", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Tiki", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Leviathan về Hydra", p: 40000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Nguyên Thạch Bóng Tối", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Cổng Rip_Indra", p: 15000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 1 Giấy Mythical", p: 30000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 20 Giấy Mythical", p: 500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 50 Giấy Mythical", p: 1000000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Chế 100 Giấy Mythical", p: 1500000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Fruit Thường", p: 5000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"}, {n: "Awaken Dough/Phoenix", p: 10000, t: "s", i: "https://i.imgur.com/8CLFc5h.jpeg"},  
+        {n: "Fruit Notifier", p: 370000, t: "gp", i: "https://i.imgur.com/3m5NHWK.jpeg"}, {n: "Dark Blade", p: 170000, t: "gp", i: "https://i.imgur.com/DbAN7S7.jpeg"}, {n: "x2 Money", p: 69000, t: "gp", i: "https://i.imgur.com/aJoy0Nw.jpeg"}, {n: "x2 Mastery", p: 69000, t: "gp", i: "https://i.imgur.com/6PXaYAF.jpeg"}, {n: "+1 Storage", p: 62000, t: "gp", i: "https://i.imgur.com/O9sbGMx.jpeg"}, {n: "Fast Boats", p: 55000, t: "gp", i: "https://i.imgur.com/FQkdkNT.jpeg"}, {n: "x2 Drop Chance", p: 55000, t: "gp", i: "https://i.imgur.com/3ifB2RS.jpeg"},  
+        {n: "Dragon", p: 700000, t: "f", i: "https://i.imgur.com/hd885Pk.jpeg"}, {n: "Kitsune", p: 574000, t: "f", i: "https://i.imgur.com/VT4sDLv.jpeg"}, {n: "Control", p: 574000, t: "f", i: "https://i.imgur.com/66dqB98.jpeg"}, {n: "Yeti", p: 425000, t: "f", i: "https://i.imgur.com/J1Ne7dv.jpeg"}, {n: "Tiger", p: 425000, t: "f", i: "https://i.imgur.com/0dXUzXD.jpeg"}, {n: "Spirit", p: 364000, t: "f", i: "https://i.imgur.com/l5aIdw9.jpeg"}, {n: "Gas", p: 357000, t: "f", i: "https://i.imgur.com/zy4ChAF.jpeg"}, {n: "Venom", p: 348000, t: "f", i: "https://i.imgur.com/QzP5E0E.jpeg"}, {n: "Shadow", p: 348000, t: "f", i: "https://i.imgur.com/LZAPvPb.jpeg"}, {n: "Dough", p: 341000, t: "f", i: "https://i.imgur.com/6rEQHI5.jpeg"}, {n: "Mammoth", p: 332000, t: "f", i: "https://i.imgur.com/Ez2xudQ.jpeg"}, {n: "T-Rex", p: 332000, t: "f", i: "https://i.imgur.com/oqFHqzo.jpeg"}, {n: "Gravity", p: 326000, t: "f", i: "https://i.imgur.com/LghKtc7.jpeg"}, {n: "Blizzard", p: 320000, t: "f", i: "https://i.imgur.com/SIeh0Te.jpeg"}, {n: "Pain", p: 314000, t: "f", i: "https://i.imgur.com/p3CqyEK.jpeg"}, {n: "Rumble", p: 307000, t: "f", i: "https://i.imgur.com/xpQUYLW.jpeg"}, {n: "Portal", p: 291000, t: "f", i: "https://i.imgur.com/Jftqt3B.jpeg"}, {n: "Phoenix", p: 291000, t: "f", i: "https://i.imgur.com/aUB6T44.jpeg"}, {n: "Sound", p: 278000, t: "f", i: "https://i.imgur.com/LKQol8k.jpeg"}, {n: "Spider", p: 264000, t: "f", i: "https://i.imgur.com/ID0a36h.jpeg"}, {n: "Creation", p: 252000, t: "f", i: "https://i.imgur.com/wXCWHcV.jpeg"}, {n: "Love", p: 244000, t: "f", i: "https://i.imgur.com/cd02nrF.jpeg"}, {n: "Buddha", p: 239000, t: "f", i: "https://i.imgur.com/y9oLYWT.jpeg"}, {n: "Quake", p: 220000, t: "f", i: "https://i.imgur.com/LDH6uqW.jpeg"}, {n: "Magma", p: 200000, t: "f", i: "https://i.imgur.com/rrpluXY.jpeg"}, {n: "Ghost", p: 178000, t: "f", i: "https://i.imgur.com/ksHabID.jpeg"}, {n: "Rubber", p: 168000, t: "f", i: "https://i.imgur.com/zQ4DhaA.jpeg"}, {n: "Light", p: 156000, t: "f", i: "https://i.imgur.com/AyWbzot.jpeg"}, {n: "Diamond", p: 142000, t: "f", i: "https://i.imgur.com/RNzFUoC.jpeg"}, {n: "Eagle", p: 137000, t: "f", i: "https://i.imgur.com/3ovBTVZ.jpeg"}, {n: "Dark", p: 134000, t: "f", i: "https://i.imgur.com/BKU2uIr.jpeg"}, {n: "Sand", p: 121000, t: "f", i: "https://i.imgur.com/nzbbUzn.jpeg"}, {n: "Ice", p: 108000, t: "f", i: "https://i.imgur.com/Stbmekr.jpeg"}, {n: "Flame", p: 76000, t: "f", i: "https://i.imgur.com/1Csccr6.jpeg"}, {n: "Spike", p: 52000, t: "f", i: "https://i.imgur.com/KjfNWXw.jpeg"}, {n: "Smoke", p: 35000, t: "f", i: "https://i.imgur.com/qaK73hH.jpeg"}, {n: "Bomb", p: 31000, t: "f", i: "https://i.imgur.com/ZHL18nV.jpeg"}, {n: "Spring", p: 26000, t: "f", i: "https://i.imgur.com/UeOKLpA.jpeg"}, {n: "Blade", p: 15000, t: "f", i: "https://i.imgur.com/Plprtph.jpeg"}, {n: "Spin", p: 12000, t: "f", i: "https://i.imgur.com/mRJbKHu.jpeg"}, {n: "Rocket", p: 8000, t: "f", i: "https://i.imgur.com/A6WvKsq.jpeg"}  
+    ];  
+  
+    function render() {  
+        initSystemStatus();  
+        const gp = document.getElementById('gp-grid'), fr = document.getElementById('fruit-grid'), sv = document.getElementById('service-grid'), ac = document.getElementById('acc-grid');  
+        gp.innerHTML = ''; fr.innerHTML = ''; sv.innerHTML = ''; ac.innerHTML = '';  
+        allItems.forEach(item => {  
+            const card = document.createElement('div'); card.className = 'card';  
+            let displayType = '';  
+            if(item.t === 'a') displayType = 'acc';  
+            else if(item.t === 's') displayType = 'service';  
+            else if(item.t === 'f') displayType = 'fruit';  
+            else displayType = 'gp';  
+  
+            let statsHtml = '';  
+            if(item.t === 'a') {  
+                statsHtml = `<div class="card-stats">  
+                                <span class="stat-sold">🔥 Đã bán: ${item.sold || 0}</span>  
+                                <span class="stat-stock">📦 Còn lại: ${item.stock || 0}</span>  
+                             </div>`;  
+            }  
+  
+            card.innerHTML = `  
+                <img src="${item.i}" loading="lazy">  
+                <h3>${item.n}</h3>  
+                ${statsHtml}  
+                <div class="price">${item.p.toLocaleString()}đ</div>  
+                <button class="btn-buy" onclick="window.buyItem('${item.n}', ${item.p}, '${displayType}')">MUA NGAY</button>  
+            `;  
+  
+            if(item.t === 'f') fr.appendChild(card);   
+            else if(item.t === 's') sv.appendChild(card);   
+            else if(item.t === 'a') ac.appendChild(card);  
+            else gp.appendChild(card);  
+        });  
+  
+        onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {  
+            const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;  
+            const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);  
+            list.innerHTML = sorted.map((u, i) => `<div class="top-row"><div><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</span><span class="user-name">${u.email.split('@')[0]}***</span></div><div class="amount">${u.totalDeposit.toLocaleString()}đ</div></div>`).join('');  
+        });  
+    }  
+    render();  
+</script>  </body>  
 </html>
