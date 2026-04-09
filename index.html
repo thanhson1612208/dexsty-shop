@@ -1,4 +1,5 @@
-<!DOCTYPE html>  <html lang="vi">  
+<!DOCTYPE html>  <html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">   
+
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
@@ -8,7 +9,71 @@
         /* --- HIỆU ỨNG SMOOTH & TRANSITION MỚI --- */
         html { scroll-behavior: smooth; }
         
-        * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; } /* Đã thêm box-sizing để tránh tràn khung */
+        * { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; } 
+
+        /* --- CSS SIDEBAR (MỚI THÊM) --- */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 3000;
+            top: 0;
+            left: 0;
+            background-color: #0f172a;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            border-right: 1px solid var(--sky);
+            backdrop-filter: blur(15px);
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #94a3b8;
+            display: block;
+            transition: 0.3s;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.05);
+        }
+
+        .sidebar a i { margin-right: 10px; color: var(--sky); width: 20px; }
+
+        .sidebar a:hover {
+            color: var(--sky);
+            background: rgba(56, 189, 248, 0.1);
+            padding-left: 35px;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            border: none;
+        }
+
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: transparent;
+            color: var(--sky);
+            padding: 10px;
+            border: none;
+        }
+
+        .overlay-sidebar {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2999;
+        }
 
         /* --- HIỆU ỨNG GLOW ANIMATION --- */
         @keyframes glowBox {
@@ -23,11 +88,11 @@
             100% { text-shadow: 0 0 5px rgba(56, 189, 248, 0.2); }
         }
 
-        /* --- HIỆU ỨNG KHUNG VIỀN AVATAR TOP NẠP (MỚI) --- */
+        /* --- HIỆU ỨNG KHUNG VIỀN AVATAR TOP NẠP --- */
         .avatar-frame {
             width: 35px;
             height: 35px;
-            min-width: 35px; /* Giữ kích thước cố định */
+            min-width: 35px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -40,26 +105,15 @@
 
         .avatar-frame i { font-size: 18px; color: #94a3b8; }
 
-        /* Top 1 Gold */
         .rank-1 .avatar-frame { 
             border-color: #fbbf24; 
             box-shadow: 0 0 15px #fbbf24; 
             animation: goldPulse 2s infinite;
         }
         .rank-1 .avatar-frame i { color: #fbbf24; }
-
-        /* Top 2 Silver */
-        .rank-2 .avatar-frame { 
-            border-color: #e2e8f0; 
-            box-shadow: 0 0 10px #e2e8f0; 
-        }
+        .rank-2 .avatar-frame { border-color: #e2e8f0; box-shadow: 0 0 10px #e2e8f0; }
         .rank-2 .avatar-frame i { color: #e2e8f0; }
-
-        /* Top 3 Bronze */
-        .rank-3 .avatar-frame { 
-            border-color: #cd7f32; 
-            box-shadow: 0 0 8px #cd7f32; 
-        }
+        .rank-3 .avatar-frame { border-color: #cd7f32; box-shadow: 0 0 8px #cd7f32; }
         .rank-3 .avatar-frame i { color: #cd7f32; }
 
         @keyframes goldPulse {
@@ -112,7 +166,6 @@
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; } }  
       
         .card { background: var(--card); border-radius: 18px; padding: 15px 10px; border: 1px solid rgba(56, 189, 248, 0.1); text-align: center; position: relative; overflow: hidden; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }  
-        .card:hover { transform: translateY(-8px); background: rgba(17, 24, 39, 0.9); }  
         .card img { width: 85px; height: 85px; object-fit: contain; margin: 0 auto 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }  
         .card:hover img { transform: scale(1.1) rotate(3deg); }  
         .card h3 { font-size: 13px; margin: 5px 0; color: #fff; font-weight: 700; }  
@@ -173,17 +226,8 @@
         .h-info { font-size: 12px; color: #94a3b8; margin: 4px 0; }  
         .h-status { font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 5px; background: rgba(56, 189, 248, 0.1); color: var(--sky); float: right; }  
       
-        /* SỬA LỖI TRÀN KHUNG BẢNG XẾP HẠNG TẠI ĐÂY */
         .top-deposit-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(56, 189, 248, 0.1); border-radius: 15px; padding: 5px; margin-bottom: 20px; overflow: hidden; }  
-        .top-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 10px 15px; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
-            width: 100%; 
-            overflow: hidden; 
-        }  
+        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100%; overflow: hidden; }  
         .top-row:last-child { border-bottom: none; }
         .rank { font-weight: 900; width: 30px; min-width: 30px; text-align: center; margin-right: 5px; }  
         .user-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; font-size: 14px; }
@@ -205,6 +249,17 @@
     </style>
 </head>  
 <body>  
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="window.closeNav()">&times;</a>
+        <a href="#" onclick="window.closeNav()"><i class="fas fa-home"></i> Trang Chủ</a>
+        <a href="javascript:void(0)" onclick="window.openDeposit(); window.closeNav();"><i class="fas fa-wallet"></i> Nạp Tiền</a>
+        <a href="javascript:void(0)" onclick="window.openHistory(); window.closeNav();"><i class="fas fa-history"></i> Lịch Sử Đơn</a>
+        <a href="https://discord.gg/m8KXj9X4VE" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+        <a href="https://zalo.me/g/itxrwd287" target="_blank"><i class="fas fa-users"></i> Nhóm Zalo</a>
+        <a href="javascript:void(0)" onclick="window.switchTab('referral'); window.closeNav();"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</a>
+    </div>
+    <div id="sidebarOverlay" class="overlay-sidebar" onclick="window.closeNav()"></div>
+
     <div id="bottomStatusBar" class="status-bar">  
         <div class="status-user"><i class="fas fa-user-circle"></i> <span id="status-email">...</span></div>  
         <div class="status-balance"><i class="fas fa-wallet"></i> <span id="status-money">0đ</span></div>  
@@ -254,7 +309,10 @@
     <div id="authModal" class="modal"> <div class="modal-content"> <div class="auth-tabs"><div id="tab-login" class="auth-tab active" onclick="window.setAuthMode('login')">ĐĂNG NHẬP</div><div id="tab-register" class="auth-tab" onclick="window.setAuthMode('register')">ĐĂNG KÝ</div></div> <input type="email" id="email" placeholder="Email..."><input type="password" id="password" placeholder="Mật khẩu..."> <button id="auth-btn-text" class="btn-submit" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button> <p style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;" onclick="window.closeModal('authModal')">ĐÓNG</p> </div> </div>  
 
     <nav class="navbar">  
-        <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>  
+        <div style="display: flex; align-items: center;">
+            <button class="openbtn" onclick="window.openNav()"><i class="fas fa-bars"></i></button>
+            <a href="#" class="logo-container"><img src="https://i.imgur.com/8CLFc5h.jpeg" class="logo-img"><span class="logo-text">DEXSTY SHOP</span></a>  
+        </div>
         <div id="auth-ui" class="nav-right"></div>  
     </nav>  
 
@@ -353,6 +411,16 @@
         const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";  
       
         let isMaintenance = false; let pendingItem = null; let currentBalance = 0;  
+
+        // JS SIDEBAR MỚI
+        window.openNav = () => {
+            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("sidebarOverlay").style.display = "block";
+        };
+        window.closeNav = () => {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("sidebarOverlay").style.display = "none";
+        };
       
         function initSystemStatus() {  
             onValue(ref(rtdb, 'settings/shopStatus'), (snap) => {  
@@ -369,9 +437,16 @@
         window.switchTab = (type) => {  
             const allGrids = ['acc', 'service', 'gp', 'fruit', 'referral', 'sailor-gp'];
             allGrids.forEach(g => { const el = document.getElementById(g + '-grid'); if(el) el.classList.remove('active'); });
-            event.currentTarget.parentElement.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            const target = document.getElementById(type + '-grid'); if(target) target.classList.add('active');  
+            
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(btn => btn.classList.remove('active'));
+            
+            const target = document.getElementById(type + '-grid'); if(target) target.classList.add('active');
+            
+            // Tìm nút tab tương ứng để active
+            tabs.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(`'${type}'`)) btn.classList.add('active');
+            });
         };  
       
         const RATE = 230;   
@@ -464,7 +539,6 @@
                 if(item.t === 'f' && fr) fr.appendChild(card); else if(item.t === 's' && sv) sv.appendChild(card); else if(item.t === 'a' && ac) ac.appendChild(card); else if(item.t === 'sgp' && sgp) sgp.appendChild(card); else if(gp) gp.appendChild(card);  
             });  
             
-            // --- CẬP NHẬT BẢNG XẾP HẠNG VỚI HIỆU ỨNG KHUNG AVATAR ---
             onValue(query(ref(rtdb, 'users'), orderByChild('totalDeposit'), limitToLast(5)), (snap) => {  
                 const list = document.getElementById('top-deposit-list'), data = snap.val(); if(!data) return;  
                 const sorted = Object.entries(data).map(([id, v]) => ({ id, ...v })).filter(u => u.totalDeposit > 0).sort((a, b) => b.totalDeposit - a.totalDeposit);  
@@ -488,3 +562,4 @@
     </script>  
 </body>  
 </html>
+ 
