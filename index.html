@@ -468,10 +468,69 @@
             <div id="tab-dep-bank" class="dep-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG</div>
             <div id="tab-dep-card" class="dep-tab" onclick="window.setDepMode('card')">THẺ CÀO</div>
         </div>
-        <div id="dep-bank-area">
-            <div style="background:#fff;padding:10px;border-radius:10px;margin-bottom:14px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width:100%;display:block;border-radius:6px;"></div>
-            <p style="font-size:13px;color:#94a3b8;margin:0 0 12px;">Nội dung CK: <b id="depositMsg" style="color:var(--gold);">Đang tải...</b><button class="copy-inline" onclick="window.copyDepNote()"><i class="fas fa-copy"></i> Sao chép</button></p>
-            <button class="btn-submit" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="window.sendDepositWebhook()"><i class="fas fa-check-circle"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+        <!-- Giao diện Nạp tiền chuyên nghiệp cho dexstyshop.shop -->
+<div id="recharge-section" style="max-width: 450px; margin: 20px auto; padding: 25px; border: 1px solid #e1e4e8; border-radius: 15px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center;">
+    <h2 style="color: #0056b3; margin-bottom: 20px;">Nạp Tiền Tự Động</h2>
+    
+    <div style="margin-bottom: 20px; text-align: left;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Số tiền muốn nạp (VNĐ):</label>
+        <input type="number" id="recharge-amount" placeholder="Ví dụ: 50000" style="width: 100%; padding: 12px; border: 2px solid #0056b3; border-radius: 8px; font-size: 16px; outline: none; box-sizing: border-box;">
+    </div>
+
+    <button onclick="generateRechargeQR()" style="width: 100%; background: linear-gradient(135deg, #0056b3, #007bff); color: white; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s transform;">
+        Tạo Mã QR Thanh Toán
+    </button>
+
+    <!-- Vùng hiển thị mã QR (Mặc định ẩn) -->
+    <div id="qr-display-area" style="display: none; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd;">
+        <p style="font-weight: bold; color: #d9534f; margin-bottom: 15px;">Vui lòng quét mã QR để thanh toán:</p>
+        
+        <!-- Ảnh QR động từ SePay -->
+        <img id="sepay-qr-img" src="" alt="Mã QR VietinBank" style="width: 280px; height: auto; border: 3px solid #0056b3; border-radius: 12px; padding: 8px; background: #fff;">
+        
+        <div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #0056b3;">
+            <p style="margin: 6px 0;">🏦 Ngân hàng: <strong>VietinBank</strong></p>
+            <p style="margin: 6px 0;">👤 Chủ TK: <strong>BUI THANH SON</strong></p>
+            <p style="margin: 6px 0;">💳 Số TK: <strong>103886880692</strong></p>
+            <p style="margin: 6px 0;">💰 Số tiền: <strong id="display-amount" style="color: #28a745;">0</strong>đ</p>
+            <p style="margin: 6px 0;">📝 Nội dung: <strong id="display-content" style="color: #0056b3;">NAPTIEN</strong></p>
+        </div>
+        
+        <p style="font-size: 13px; color: #777; margin-top: 15px; line-height: 1.4;">
+            <i>* Lưu ý: Hệ thống sẽ tự động cộng tiền sau 1-3 phút. Vui lòng không tắt trang này cho đến khi nhận được thông báo.</i>
+        </p>
+    </div>
+</div>
+
+<script>
+function generateRechargeQR() {
+    const amount = document.getElementById('recharge-amount').value;
+    if (!amount || amount < 1000) {
+        alert("Vui lòng nhập số tiền tối thiểu là 1.000đ");
+        return;
+    }
+
+    // Lấy tên tài khoản khách hàng (Giả định bạn lưu trong localStorage khi đăng nhập)
+    // Nếu bạn dùng biến khác, hãy thay đổi dòng này
+    const username = localStorage.getItem('username') || 'KHACH_AN_DANH';
+    
+    const mySTK = "103886880692";
+    const myBank = "VietinBank";
+    const content = `NAPTIEN ${username.toUpperCase()}`; // Nội dung: NAPTIEN TENTAIKHOAN
+
+    // Tạo URL mã QR động qua SePay
+    const qrUrl = `https://qr.sepay.vn/img?acc=${mySTK}&bank=${myBank}&amount=${amount}&des=${content}`;
+
+    // Hiển thị lên giao diện
+    document.getElementById('sepay-qr-img').src = qrUrl;
+    document.getElementById('display-amount').innerText = parseInt(amount).toLocaleString();
+    document.getElementById('display-content').innerText = content;
+    document.getElementById('qr-display-area').style.display = 'block';
+    
+    // Cuộn xuống vùng mã QR
+    document.getElementById('qr-display-area').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
         </div>
         <div id="dep-card-area" style="display:none;">
             <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
@@ -718,7 +777,7 @@
         <div class="community-grid">
             <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Server Discord</a>
             <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
-            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
+            <a href="https://m.me/j/AbbBMrJOf3FukuoO/?send_source=gc%3Acopy_invite_link_c" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
         </div>
     </div>
 
