@@ -994,27 +994,39 @@
         }
     };
 
-    window.checkPayment = async () => {
-        if(!auth.currentUser) return;
-        const btn = document.getElementById('btnConfirmBank');
-        const statusText = document.getElementById('paymentStatus');
-        const amount = parseInt(document.getElementById('depAmount').value) || 0;
-        const note = document.getElementById('depositMsg').innerText;
+        window.checkPayment = async () => {
+        if (!auth.currentUser) return;
+        const btn = document.getElementById(\'btnConfirmBank\');
+        const statusText = document.getElementById(\'paymentStatus\');
+        const amount = parseInt(document.getElementById(\'depAmount\').value) || 0;
+        let noteContent = document.getElementById(\'depositMsg\').innerText; // Lấy nội dung ghi chú từ người dùng (nếu có)
 
-        if(amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
+        if (amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
+
+        // Tạo nội dung chuyển khoản chuẩn: SEVQR Nap [tên tài khoản]
+        const customerAccountName = auth.currentUser.email.split(\'@\')[0]; // Lấy phần trước @ của email làm tên tài khoản
+        const note = `SEVQR Nap ${customerAccountName}`;
+        document.getElementById(\'depositMsg\').innerText = note; // Cập nhật hiển thị cho người dùng
 
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
-        statusText.style.display = 'block';
+        btn.innerHTML = \'<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...\';
+        statusText.style.display = \'block\';
         statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
 
         try {
-            const response = await fetch(`https://my.sepay.vn/api/transactions/list?account_number=${BANK_STK}&limit=10`, {
-                headers: { 'Authorization': `Bearer ${SEPAY_API_KEY}` }
+            // Gọi API trung gian trên Vercel
+            const response = await fetch(\'/api/sepay-proxy\', {
+                method: \'POST\',
+                headers: { \'Content-Type\': \'application/json\' },
+                body: JSON.stringify({ 
+                    amount: amount, 
+                    note: note // Gửi note đã có SEVQR
+                })
             });
-            const data = await response.json();
 
-            if(data.status === 200 && data.transactions) {
+            const data = await response.json(); // data ở đây chính là sepayData từ proxy
+
+            if(response.ok && data.status === 200 && data.transactions) {
                 const transaction = data.transactions.find(t => 
                     t.content.includes(note) && 
                     parseInt(t.amount) >= amount
@@ -1031,7 +1043,7 @@
                             timestamp: Date.now()
                         });
 
-                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                        const userRef = ref(rtdb, \'users/\' + auth.currentUser.uid);
                         const userSnap = await get(userRef);
                         const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
                         
@@ -1044,8 +1056,8 @@
                         });
 
                         await fetch(DEPOSIT_WEBHOOK, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            method: \'POST\',
+                            headers: { \'Content-Type\': \'application/json\' },
                             body: JSON.stringify({
                                 username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
                                 embeds: [{
@@ -1061,7 +1073,7 @@
                             })
                         });
 
-                        window.closeModal('depositModal');
+                        window.closeModal(\'depositModal\');
                         showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
                     } else {
                         statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
@@ -1070,11 +1082,13 @@
                     statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
                 }
             } else {
-                statusText.innerText = "Lỗi kết nối hệ thống SePay. Vui lòng thử lại sau.";
+                statusText.innerText = data.message || "Lỗi kết nối hệ thống SePay. Vui lòng thử lại sau.";
             }
         } catch (e) {
             console.error(e);
-            statusText.innerText = "Có lỗi xảy ra khi kiểm tra thanh toán.";
+            statusText.innerText = "Lỗi kết nối đến máy chủ. Vui lòng kiểm tra lại.";
+        }
+
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
