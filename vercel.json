@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/sepay-proxy",
-      "destination": "/api/sepay-proxy.js"
-    }
-  ]
-}
- 
