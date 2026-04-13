@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-   <html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
+  <html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -108,6 +108,1316 @@
         .sidebar a i { color: var(--primary); width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
         .sidebar a:hover { color: #fff; background: rgba(139,92,246,.08); border-left-color: var(--primary); padding-left: 28px; }
         .overlay-sidebar { display: none; position: fixed; inset: 0; z-index: 2999; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+
+        /* ── SYSTEM STATUS BAR ── */
+        .system-status-bar {
+            background: rgba(139,92,246,.06); border-bottom: 1px solid var(--border);
+            padding: 8px 5%; display: flex; align-items: center; justify-content: center;
+            flex-wrap: wrap; gap: 12px; text-align: center; font-size: 12px;
+        }
+        .status-header { display: flex; align-items: center; gap: 8px; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: .5px; flex-wrap: wrap; justify-content: center; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.5s infinite; }
+        .status-notice { font-size: 11px; color: var(--muted); font-style: italic; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+        .online-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; }
+        .online-dot-sm { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; flex-shrink: 0; }
+
+        /* ── BOTTOM STATUS BAR ── */
+        .status-bar {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            display: none; align-items: center; gap: 0;
+            background: rgba(13,17,23,.95); border: 1px solid var(--border); border-radius: 40px;
+            padding: 0; overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(139,92,246,.1);
+            backdrop-filter: blur(20px); animation: slideUp .5s ease; z-index: 999;
+        }
+        @keyframes slideUp { from{transform:translateX(-50%) translateY(80px)} to{transform:translateX(-50%) translateY(0)} }
+        .status-segment { padding: 10px 16px; display: flex; align-items: center; gap: 7px; }
+        .status-segment + .status-segment { border-left: 1px solid rgba(255,255,255,.06); }
+        .status-user { font-size: 12px; color: var(--muted); font-weight: 600; }
+        .status-balance { font-size: 14px; font-weight: 900; color: var(--gold); font-family: 'Rajdhani',sans-serif; }
+        .btn-history-bottom { margin: 6px 10px 6px 0; padding: 5px 14px; border-radius: 20px; background: var(--primary); color: #fff; border: none; font-size: 10px; font-weight: 800; cursor: pointer; letter-spacing: .5px; }
+
+        /* ── SCROLL TOP ── */
+        #scrollTopBtn {
+            position: fixed; bottom: 82px; right: 16px; z-index: 998;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--primary); border: none; color: #fff; font-size: 15px;
+            cursor: pointer; opacity: 0; transform: translateY(20px);
+            box-shadow: 0 4px 16px rgba(139,92,246,.5);
+            display: flex; align-items: center; justify-content: center;
+        }
+        #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
+        #scrollTopBtn:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(139,92,246,.7); }
+
+        /* ── TOAST ── */
+        #toast-container { position: fixed; top: 72px; right: 14px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast {
+            padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 700;
+            color: #fff; opacity: 0; transform: translateX(110px);
+            transition: all .35s cubic-bezier(.175,.885,.32,1.275);
+            max-width: 240px; backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,.4);
+            pointer-events: all; display: flex; align-items: center; gap: 8px; border-left: 3px solid;
+        }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.success { background: rgba(16,185,129,.15); border-color: var(--green); }
+        .toast.error   { background: rgba(239,68,68,.15);  border-color: var(--red); }
+        .toast.info    { background: rgba(139,92,246,.15); border-color: var(--primary); }
+        .toast.warning { background: rgba(245,158,11,.15); border-color: var(--gold); }
+
+        /* ── CONTAINER + SECTION TITLES ── */
+        .container { position: relative; z-index: 1; padding: 0 5%; max-width: 1200px; margin: auto; }
+        .section-title {
+            margin: 36px 0 16px; font-family: 'Rajdhani', sans-serif;
+            font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            color: #fff; display: flex; align-items: center; gap: 10px;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+        .section-title span { color: var(--primary); }
+
+        /* ── VIDEO ── */
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+            border-radius: 12px; margin: 16px 0; border: 1px solid var(--border);
+            box-shadow: 0 0 40px rgba(139,92,246,.15);
+        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* ── TOP DEPOSIT ── */
+        .top-deposit-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,.03); }
+        .top-row:last-child { border-bottom: none; }
+        .rank { font-weight: 900; width: 28px; min-width: 28px; text-align: center; font-size: 16px; }
+        .avatar-frame { width: 34px; height: 34px; min-width: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; background: rgba(139,92,246,.1); border: 2px solid rgba(139,92,246,.3); }
+        .avatar-frame i { font-size: 15px; color: var(--primary); }
+        .rank-1 .avatar-frame { border-color: var(--gold); background: rgba(245,158,11,.08); box-shadow: 0 0 15px rgba(245,158,11,.3); animation: goldPulse 2s infinite; }
+        .rank-1 .avatar-frame i { color: var(--gold); }
+        .rank-2 .avatar-frame { border-color: #e2e8f0; }
+        .rank-2 .avatar-frame i { color: #e2e8f0; }
+        .rank-3 .avatar-frame { border-color: #cd7f32; }
+        .rank-3 .avatar-frame i { color: #cd7f32; }
+        @keyframes goldPulse { 0%,100%{box-shadow:0 0 8px rgba(245,158,11,.3)} 50%{box-shadow:0 0 22px rgba(245,158,11,.7)} }
+        .user-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; font-size: 13px; font-weight: 600; }
+        .amount { color: var(--green); font-weight: 800; white-space: nowrap; margin-left: 10px; font-family: 'Rajdhani',sans-serif; font-size: 15px; }
+
+        /* ── ROBUX CALC ── */
+        .robux-container {
+            background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+            padding: 22px; margin-top: 16px; display: flex; flex-direction: column; gap: 14px;
+            position: relative; overflow: hidden;
+        }
+        .robux-container::before { content: ''; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,.15), transparent 70%); pointer-events: none; }
+        .robux-input-group { display: flex; flex-wrap: wrap; gap: 14px; }
+        .robux-input-group > div { flex: 1; min-width: 140px; }
+        .robux-input-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); display: block; margin-bottom: 6px; }
+        .calc-note { background: rgba(139,92,246,.05); border: 1px dashed rgba(139,92,246,.3); padding: 12px; border-radius: 10px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+        .calc-note b { color: var(--pink); }
+        .robux-usd { font-size: 11px; color: var(--muted); margin-top: 3px; font-style: italic; }
+
+        /* ── SHOP TABS ── */
+        .shop-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 20px; scrollbar-width: none; }
+        .shop-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 0 0 auto; padding: 9px 20px; border-radius: 8px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); color: var(--muted); font-weight: 700; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; font-family: 'Inter', sans-serif; }
+        .tab-btn:hover { border-color: var(--primary); color: #c4b5fd; }
+        .tab-btn.active { background: linear-gradient(135deg, var(--primary2), var(--primary)); border-color: var(--primary); color: #fff; box-shadow: 0 4px 20px rgba(139,92,246,.4); }
+
+        /* ── SEARCH BAR ── */
+        .search-wrapper {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,.04); border: 1px solid rgba(139,92,246,.2);
+            border-radius: 10px; padding: 0 14px; margin-bottom: 16px;
+        }
+        .search-wrapper:focus-within { border-color: var(--primary); background: rgba(139,92,246,.06); box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+        .search-wrapper i { color: var(--muted); font-size: 13px; flex-shrink: 0; }
+        .search-input { flex: 1; background: none; border: none; outline: none; color: #fff; font-size: 13px; padding: 11px 0; margin: 0; font-family: 'Inter',sans-serif; }
+        .search-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 0; line-height: 1; width: auto; margin: 0; }
+        .search-clear:hover { color: #fff; }
+
+        /* ── FRUIT FILTER + SORT ── */
+        #fruit-controls { margin-bottom: 14px; }
+        .filter-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+        .fp { padding: 5px 13px; border-radius: 20px; font-size: 11px; font-weight: 800; cursor: pointer; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
+        .fp:hover { transform: scale(1.04); }
+        .fp.active { box-shadow: 0 0 8px currentColor; }
+        .fp-all.active    { color: #fff; border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.08); }
+        .fp-myth.active   { color: #ff4757; border-color: #ff4757; background: rgba(255,71,87,.1); }
+        .fp-legend.active { color: var(--gold); border-color: var(--gold); background: rgba(245,158,11,.1); }
+        .fp-rare.active   { color: var(--primary); border-color: var(--primary); background: rgba(139,92,246,.1); }
+        .fp-uncomm.active { color: var(--green); border-color: var(--green); background: rgba(16,185,129,.1); }
+        .fp-common.active { color: var(--muted); border-color: var(--muted); background: rgba(100,116,139,.08); }
+        .sort-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .sort-btn { padding: 5px 12px; border-radius: 7px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,.07); background: transparent; color: var(--muted); font-family: 'Inter',sans-serif; }
+        .sort-btn.active { background: rgba(139,92,246,.1); border-color: var(--primary); color: var(--primary); }
+
+        /* ── GRIDS + CARDS ── */
+        .grid { display: none; opacity: 0; transform: translateY(8px); grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .grid.active { display: grid; opacity: 1; transform: translateY(0); }
+        @media (min-width: 480px)  { .grid { grid-template-columns: repeat(2,1fr); gap: 14px; } }
+        @media (min-width: 700px)  { .grid { grid-template-columns: repeat(3,1fr); gap: 16px; } }
+        @media (min-width: 1000px) { .grid { grid-template-columns: repeat(4,1fr); gap: 18px; } }
+
+        .card {
+            background: var(--card); border: 1px solid rgba(255,255,255,.05);
+            border-radius: 14px; padding: 16px 12px 14px;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; overflow: hidden; backdrop-filter: blur(10px);
+        }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent); opacity: 0; transition: opacity .3s; }
+        .card:hover { border-color: rgba(139,92,246,.4); transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,.4), 0 0 0 1px rgba(139,92,246,.15); }
+        .card:hover::before { opacity: 1; }
+        .card:hover img { transform: scale(1.08) translateY(-2px); filter: drop-shadow(0 6px 16px rgba(139,92,246,.4)); }
+        .card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.4)); transition: transform .3s, filter .3s; }
+        .card h3 { font-size: 12px; line-height: 1.4; margin: 0 0 8px; color: #e2e8f0; font-weight: 600; text-align: center; width: 100%; }
+        .card-stats { display: flex; justify-content: space-between; font-size: 10px; width: 100%; margin-bottom: 8px; padding: 0 2px; }
+        .stat-sold { color: var(--muted); }
+        .stat-stock { color: var(--green); font-weight: 700; }
+        .price { font-family: 'Rajdhani',sans-serif; font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 10px; width: 100%; text-align: center; background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.15); padding: 5px 8px; border-radius: 8px; letter-spacing: .5px; }
+        .btn-buy { width: 100%; padding: 9px; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--primary), var(--primary2)); color: #fff; font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: .8px; font-family: 'Inter',sans-serif; }
+        .btn-buy:hover { box-shadow: 0 4px 20px rgba(139,92,246,.5); filter: brightness(1.1); }
+        .btn-buy:active { transform: scale(.96); }
+        .btn-buy:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+
+        /* RARITY BADGE */
+        .rarity-badge { font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; margin-bottom: 5px; display: inline-block; letter-spacing: .3px; }
+        .rb-myth   { background: rgba(255,71,87,.15);  color: #ff4757; }
+        .rb-legend { background: rgba(245,158,11,.15); color: var(--gold); }
+        .rb-rare   { background: rgba(139,92,246,.15); color: var(--primary); }
+        .rb-uncomm { background: rgba(16,185,129,.15); color: var(--green); }
+        .rb-common { background: rgba(100,116,139,.12);color: var(--muted); }
+
+        /* WISHLIST HEART */
+        .wl-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.08); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: 11px; padding: 0; z-index: 2; }
+        .wl-btn:hover, .wl-btn.active { color: #ff4757; border-color: #ff4757; background: rgba(255,71,87,.1); box-shadow: 0 0 8px rgba(255,71,87,.3); }
+
+        /* NO RESULTS */
+        .no-results { grid-column: 1/-1; text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
+        .no-results i { font-size: 28px; display: block; margin-bottom: 10px; color: #1e293b; }
+
+        /* ── TOOLS SECTION ── */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px; }
+        @media(max-width:600px){ .tools-grid { grid-template-columns: 1fr; } }
+        .tool-card { background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 18px; }
+        .tool-card h4 { color: var(--primary); margin: 0 0 12px; font-size: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: .8px; }
+        .tool-result { margin-top: 10px; padding: 10px 12px; background: rgba(139,92,246,.05); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; color: #94a3b8; display: none; line-height: 1.6; }
+        .tool-result.show { display: block; }
+
+        /* ── COPY INLINE BTN ── */
+        .copy-inline { background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.3); color: var(--primary); border-radius: 5px; padding: 2px 9px; font-size: 11px; font-weight: 700; cursor: pointer; margin-left: 6px; }
+        .copy-inline:hover { background: rgba(139,92,246,.2); }
+
+        /* ── INPUTS + BUTTONS (global) ── */
+        input, select { width: 100%; padding: 11px 14px; margin: 7px 0; border-radius: 8px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; background: rgba(139,92,246,.05); box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+        select option { background: #1e293b; }
+        .btn-submit { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--primary2)); color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; letter-spacing: .5px; }
+        .btn-submit:hover { filter: brightness(1.1); box-shadow: 0 4px 20px rgba(139,92,246,.4); }
+        .btn-sm { padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; border: none; letter-spacing: .3px; }
+        .btn-login { background: linear-gradient(135deg,var(--primary),var(--primary2)); color: #fff; box-shadow: 0 2px 12px rgba(139,92,246,.3); }
+        .btn-logout { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+        .btn-logout:hover { background: var(--red); color: #fff; }
+        .btn-deposit { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+        .btn-deposit:hover { background: var(--green); color: #fff; }
+
+        /* ── MODALS ── */
+        .modal { display: none; position: fixed; z-index: 2000; inset: 0; background: rgba(0,0,0,.8); backdrop-filter: blur(12px); align-items: center; justify-content: center; animation: fadeIn .25s ease; }
+        @keyframes fadeIn { from{opacity:0}to{opacity:1} }
+        .modal-content { background: #0d1117; padding: 28px; border-radius: 16px; width: 92%; max-width: 400px; border: 1px solid var(--border); transform: scale(.92); animation: modalIn .3s forwards cubic-bezier(.175,.885,.32,1.275); position: relative; overflow: hidden; }
+        .modal-content::before { content:''; position:absolute; top:-60px; right:-60px; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle,rgba(139,92,246,.12),transparent 70%); pointer-events:none; }
+        @keyframes modalIn { to{transform:scale(1)} }
+        .modal-title { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin:0 0 20px; }
+        .payment-modal { background: #f8fafc !important; color: #1e293b !important; border: none !important; }
+        .payment-modal::before { display:none; }
+        .order-table { width:100%; border-collapse:collapse; margin-top:14px; background:#fff; border-radius:10px; overflow:hidden; color:#334155; font-size:13px; }
+        .order-table td { padding:11px 12px; border:1px solid #e2e8f0; }
+        .order-table .label { font-weight:600; background:#f8fafc; width:42%; }
+        .order-table .value { font-weight:800; text-align:right; }
+        .pay-input { width:100%; padding:9px 10px; border:1.5px solid #cbd5e1; border-radius:6px; margin-top:5px; box-sizing:border-box; outline:none; background:#fff !important; color:#000 !important; font-size:13px; }
+        .pay-input:focus { border-color:#8b5cf6; }
+        .history-list { max-height:320px; overflow-y:auto; text-align:left; margin-top:14px; }
+        .history-item { background:rgba(139,92,246,.05); border-radius:10px; padding:12px 14px; margin-bottom:10px; border-left:3px solid var(--primary); }
+        .history-item.done { border-left-color:var(--green); }
+        .h-name { font-weight:700; font-size:13px; display:block; color:#fff; margin-bottom:4px; }
+        .h-info { font-size:11px; color:var(--muted); }
+        .h-status { font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:rgba(139,92,246,.15); color:#c4b5fd; float:right; letter-spacing:.3px; text-transform:uppercase; }
+        .dep-tabs { display:flex; gap:6px; margin-bottom:20px; background:rgba(255,255,255,.03); padding:5px; border-radius:10px; border:1px solid var(--border); }
+        .dep-tab { flex:1; padding:9px; text-align:center; border-radius:7px; cursor:pointer; font-weight:700; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+        .dep-tab.active { background:var(--primary); color:#fff; }
+        #alertBox { text-align:center; }
+        #alertIcon { font-size:42px; margin-bottom:14px; }
+        #alertTitle { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; margin:0 0 8px; }
+        #alertMessage { font-size:14px; color:var(--muted); margin:0 0 16px; line-height:1.5; }
+
+        /* ── AUTH MODAL ── */
+        #authModal { background: rgba(6,9,15,.97); }
+        #authModal .modal-content { background:transparent; border:none; padding:0; width:100%; height:100%; max-width:none; display:flex; justify-content:center; align-items:center; box-shadow:none; transform:none; animation:none; }
+        #authModal .modal-content::before { display:none; }
+        .animated-auth-container { position:relative; width:256px; height:256px; display:flex; justify-content:center; align-items:center; }
+        @media(max-width:450px){ .animated-auth-container { transform:scale(.85); } }
+        .animated-auth-container span { position:absolute; left:0; width:32px; height:6px; background:#1e1b4b; border-radius:8px; transform-origin:128px; transform:scale(2.2) rotate(calc(var(--i)*(360deg/50))); animation:animateBlink 3s linear infinite; animation-delay:calc(var(--i)*(3s/50)); }
+        @keyframes animateBlink { 0%{background:var(--primary);box-shadow:0 0 10px var(--primary),0 0 20px var(--primary);}25%{background:#1e1b4b;box-shadow:none;} }
+        .auth-login-box { position:absolute; width:90vw; max-width:380px; z-index:10; background:rgba(13,17,23,.7); padding:28px 24px; border-radius:20px; backdrop-filter:blur(10px); border:1px solid var(--border); text-align:center; }
+        .auth-login-box h2 { font-family:'Rajdhani',sans-serif; font-size:1.8em; color:var(--primary); margin-bottom:22px; text-transform:uppercase; letter-spacing:3px; }
+        .auth-input-box { position:relative; margin:22px 0; }
+        .auth-input-box input { width:100%; height:50px; background:rgba(255,255,255,.04); border:1.5px solid rgba(139,92,246,.25); outline:none; border-radius:40px; font-size:.95em; color:#fff; padding:0 20px; margin:0; }
+        .auth-input-box input:focus, .auth-input-box input:valid { border-color:var(--primary); background:rgba(139,92,246,.06); }
+        .auth-input-box label { position:absolute; top:50%; left:20px; transform:translateY(-50%); font-size:.95em; color:#64748b; pointer-events:none; transition:.4s ease; }
+        .auth-input-box input:focus~label, .auth-input-box input:valid~label { top:0; font-size:.75em; background:#0d1117; padding:0 8px; color:var(--primary); }
+        .auth-btn-main { width:100%; height:46px; border-radius:40px; background:linear-gradient(135deg,var(--primary),var(--primary2)); border:none; cursor:pointer; font-size:.95em; color:#fff; font-weight:700; letter-spacing:.5px; margin-top:8px; }
+        .auth-btn-main:hover { box-shadow:0 0 20px rgba(139,92,246,.5); filter:brightness(1.1); }
+        .auth-switch-link { margin-top:18px; font-size:.88em; }
+        .auth-switch-link span { color:#64748b; position:static; transform:none; background:none; animation:none; width:auto; height:auto; }
+        .auth-switch-link a { color:var(--primary); font-weight:700; cursor:pointer; text-decoration:none; }
+        .auth-close-btn { position:absolute; top:-38px; right:8px; color:#64748b; font-size:22px; cursor:pointer; }
+        .auth-close-btn:hover { color:#fff; }
+        .auth-logo { width:80px; height:80px; object-fit:contain; margin:0 auto 8px; display:block; filter:drop-shadow(0 0 14px rgba(139,92,246,.7)); }
+
+        /* ── REFERRAL ── */
+        .referral-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:center; margin-bottom:18px; }
+        .referral-box h3 { margin-top:0; font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+        .ref-code-display { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; color:var(--gold); letter-spacing:4px; background:rgba(245,158,11,.06); padding:12px; border-radius:10px; margin:12px 0; border:1px dashed rgba(245,158,11,.3); cursor:pointer; }
+        .ref-code-display:hover { background:rgba(245,158,11,.1); box-shadow:0 0 20px rgba(245,158,11,.2); }
+        .ref-stats { display:flex; justify-content:space-around; margin-top:16px; border-top:1px solid var(--border); padding-top:16px; }
+        .ref-stat-item b { display:block; color:var(--primary); font-size:20px; font-family:'Rajdhani',sans-serif; font-weight:700; }
+        .ref-stat-item span { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+
+        /* ── COMMUNITY ── */
+        .community-card { background: linear-gradient(135deg, var(--card) 0%, rgba(139,92,246,.08) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 30px; text-align: center; }
+        .community-card h3 { margin-top:0; font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:1px; }
+        .community-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:16px; }
+        .comm-link { display:flex; align-items:center; justify-content:center; gap:9px; padding:12px; border-radius:10px; text-decoration:none; font-weight:700; font-size:13px; color:#fff; border:1px solid transparent; }
+        .comm-link:hover { transform:translateY(-2px); filter:brightness(1.15); box-shadow:0 8px 24px rgba(0,0,0,.3); }
+        .comm-discord { background:rgba(88,101,242,.2); border-color:rgba(88,101,242,.4); }
+        .comm-discord:hover { background:#5865F2; }
+        .comm-zalo { background:rgba(0,104,255,.2); border-color:rgba(0,104,255,.4); }
+        .comm-zalo:hover { background:#0068ff; }
+        .comm-messenger { background:rgba(0,132,255,.2); border-color:rgba(0,132,255,.4); }
+        .comm-messenger:hover { background:#0084ff; }
+
+        /* ── HERO ── */
+        .hero-banner { margin: 20px 0; padding: 28px 24px; background: linear-gradient(135deg, rgba(109,40,217,.25) 0%, rgba(236,72,153,.12) 100%); border: 1px solid rgba(139,92,246,.25); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative; overflow: hidden; }
+        .hero-banner::before { content:''; position:absolute; top:-30px; right:-30px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(236,72,153,.2),transparent 70%); pointer-events:none; }
+        .hero-text h1 { margin:0 0 6px; font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:1px; }
+        .hero-text p { margin:0; font-size:13px; color:#94a3b8; }
+        .hero-badges { display:flex; flex-wrap:wrap; gap:7px; }
+        .hero-badge { padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+        .hb-secure { background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.3); color:#6ee7b7; }
+        .hb-fast   { background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); color:#fde68a; }
+        .hb-cheap  { background:rgba(139,92,246,.12); border:1px solid rgba(139,92,246,.3); color:#c4b5fd; }
+        @media(max-width:520px){ .hero-banner { flex-direction:column; align-items:flex-start; } }
+
+        /* ── WISHLIST EMPTY ── */
+        .wl-empty { grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--muted); }
+        .wl-empty i { font-size:40px; display:block; margin-bottom:10px; color:#1e293b; }
+
+        /* MISC */
+        .event-item { display:flex; align-items:center; margin-bottom:8px; font-size:14px; }
+        #customAlert.modal { display:none; }
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background:rgba(255,255,255,.03); }
+        ::-webkit-scrollbar-thumb { background:rgba(139,92,246,.3); border-radius:10px; }
+        ::-webkit-scrollbar-thumb:hover { background:var(--primary); }
+    </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+<!-- SCROLL TOP -->
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+
+<!-- SIDEBAR -->
+<div id="mySidebar" class="sidebar">
+    <div class="sidebar-header">
+        <span class="sidebar-title">✦ DEXSTY SHOP</span>
+        <button class="closebtn" onclick="window.closeNav()"><i class="fas fa-times"></i></button>
+    </div>
+    <nav>
+        <a href="#" onclick="window.closeNav()"><i class="fas fa-home"></i> Trang Chủ</a>
+        <a href="javascript:void(0)" onclick="window.openDeposit(); window.closeNav();"><i class="fas fa-wallet"></i> Nạp Tiền</a>
+        <a href="javascript:void(0)" onclick="window.openHistory(); window.closeNav();"><i class="fas fa-history"></i> Lịch Sử Đơn</a>
+        <a href="javascript:void(0)" onclick="window.switchTab('wishlist'); window.closeNav();"><i class="fas fa-heart" style="color:#ff4757;"></i> Yêu Thích</a>
+        <a href="https://discord.gg/m8KXj9X4VE" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+        <a href="https://zalo.me/g/itxrwd287" target="_blank"><i class="fas fa-users"></i> Nhóm Zalo</a>
+        <a href="javascript:void(0)" onclick="window.switchTab('referral'); window.closeNav();"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</a>
+    </nav>
+</div>
+<div id="sidebarOverlay" class="overlay-sidebar" onclick="window.closeNav()"></div>
+
+<!-- BOTTOM STATUS -->
+<div id="bottomStatusBar" class="status-bar">
+    <div class="status-segment status-user"><i class="fas fa-user" style="color:var(--primary);font-size:11px;"></i> <span id="status-email">...</span></div>
+    <div class="status-segment status-balance"><i class="fas fa-coins" style="color:var(--gold);font-size:11px;"></i> <span id="status-money">0đ</span></div>
+    <button class="btn-history-bottom" onclick="window.openHistory()">ĐƠN HÀNG</button>
+</div>
+
+<!-- HISTORY MODAL -->
+<div id="historyModal" class="modal">
+    <div class="modal-content" style="max-width:460px;">
+        <div class="modal-title">Lịch Sử Mua Hàng</div>
+        <div id="history-content" class="history-list"></div>
+        <button class="btn-submit" style="background:rgba(255,255,255,.05);color:#94a3b8;margin-top:14px;" onclick="window.closeModal('historyModal')">ĐÓNG</button>
+    </div>
+</div>
+
+<!-- DEPOSIT MODAL -->
+<div id="depositModal" class="modal">
+    <div class="modal-content" style="max-width:430px;">
+        <div class="modal-title">Nạp Tiền</div>
+        <div class="dep-tabs">
+            <div id="tab-dep-bank" class="dep-tab active" onclick="window.setDepMode('bank')">NGÂN HÀNG</div>
+            <div id="tab-dep-card" class="dep-tab" onclick="window.setDepMode('card')">THẺ CÀO</div>
+        </div>
+        <div id="dep-bank-area">
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Nhập số tiền cần nạp</label>
+                <input type="number" id="depAmount" placeholder="Ví dụ: 50000" oninput="window.updateQR()" style="margin-top: 5px;">
+            </div>
+            <div id="qr-container" style="background:#fff;padding:15px;border-radius:12px;margin-bottom:14px; text-align: center; display: none;">
+                <img id="sepayQR" src="" style="width:100%; max-width: 250px; display:inline-block; border-radius:6px;">
+                <div style="margin-top: 10px; color: #0f172a; font-size: 13px; font-weight: 600;">Quét mã để thanh toán tự động</div>
+            </div>
+            <div style="background: rgba(139,92,246,.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                <p style="font-size:13px; color:#94a3b8; margin:0 0 8px;">STK: <b style="color:#fff;">103886880692</b></p>
+                <p style="font-size:13px; color:#94a3b8; margin:0 0 8px;">Chủ TK: <b style="color:#fff;">BUI THANH SON</b></p>
+                <p style="font-size:13px; color:#94a3b8; margin:0;">Nội dung: <b id="depositMsg" style="color:var(--gold);">Đang tải...</b><button class="copy-inline" onclick="window.copyDepNote()"><i class="fas fa-copy"></i></button></p>
+            </div>
+            <button id="btnConfirmBank" class="btn-submit" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="window.checkPayment()"><i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+            <p id="paymentStatus" style="text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; display: none;"></p>
+        </div>
+        <div id="dep-card-area" style="display:none;">
+            <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
+            <select id="cardValue"><option value="">-- Chọn mệnh giá --</option><option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option></select>
+            <input type="text" id="cardPin" placeholder="Mã nạp (PIN)">
+            <input type="text" id="cardSeri" placeholder="Số Serial">
+            <button class="btn-submit" onclick="window.sendCardWebhook()">GỬI THẺ DUYỆT</button>
+        </div>
+        <p style="color:#475569;font-size:11px;margin-top:16px;cursor:pointer;text-align:center;" onclick="window.closeModal('depositModal')">ĐÓNG</p>
+    </div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div id="welcomeModal" class="modal" style="display:flex;">
+    <div class="modal-content" style="max-width:420px;text-align:center;">
+        <img src="https://i.imgur.com/tzbYzqq.png" style="width:100%;border-radius:12px;margin-bottom:16px;display:block;">
+        <button class="btn-submit" style="background:linear-gradient(135deg,var(--gold),#d97706);color:#000;font-size:15px;" onclick="window.closeModal('welcomeModal')">✦ VÀO SHOP NGAY ✦</button>
+    </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <div class="animated-auth-container">
+            <div class="auth-login-box">
+                <i class="fas fa-times auth-close-btn" onclick="window.closeModal('authModal')"></i>
+                <img src="https://i.imgur.com/LE8umJt.png" class="auth-logo" alt="Logo">
+                <h2 id="auth-title">LOGIN</h2>
+                <div class="auth-input-box"><input type="email" id="email" required><label>Email</label></div>
+                <div class="auth-input-box"><input type="password" id="password" required><label>Password</label></div>
+                <button class="auth-btn-main" id="auth-btn-text" onclick="window.processAuth()">XÁC NHẬN ĐĂNG NHẬP</button>
+                <div class="auth-switch-link">
+                    <span id="auth-switch-text">Chưa có tài khoản?</span>
+                    <a id="auth-switch-btn" onclick="window.toggleAuthMode()">Đăng ký ngay</a>
+                </div>
+            </div>
+            <script>for(let i=0;i<50;i++)document.write(`<span style="--i:${i};"></span>`);</script>
+        </div>
+    </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div id="robloxModal" class="modal">
+    <div class="modal-content payment-modal" style="max-width:430px;">
+        <h3 style="color:#0f172a;margin:0 0 4px;font-weight:800;font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:.5px;">THÔNG TIN ĐƠN HÀNG</h3>
+        <div style="height:2px;background:linear-gradient(90deg,#8b5cf6,#ec4899);border-radius:2px;margin-bottom:0;"></div>
+        <table class="order-table">
+            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color:#7c3aed;">---</td></tr>
+            <tr id="row-toc" style="display:none;"><td class="label">Chọn Tộc V4:</td><td class="value"><select id="selectToc" class="pay-input" style="margin:0;"><option value="Quỷ">Quỷ (Ghoul)</option><option value="Thiên thần">Thiên thần (Angel)</option><option value="Thỏ">Thỏ (Mink)</option><option value="Người">Người (Human)</option><option value="Cyborg">Cyborg</option><option value="Cá">Cá (Fishman)</option></select></td></tr>
+            <tr><td class="label">Số dư:</td><td class="value" id="userBalanceText" style="color:#ef4444;">0đ</td></tr>
+            <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr>
+            <tr id="row-pass"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr>
+            <tr id="row-2fa"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr>
+            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size:17px;color:#7c3aed;">0đ</td></tr>
+        </table>
+        <div style="margin:14px 0;background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:#64748b;">
+                <input type="checkbox" id="checkCorrect" style="width:15px;height:15px;margin:1px 0 0;background:#fff;border:1px solid #cbd5e1;">
+                <span>Xác nhận thông tin chính xác. Sai không hoàn tiền.</span>
+            </label>
+        </div>
+        <button id="finalBuyBtn" class="btn-submit" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);font-size:14px;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>
+        <p style="color:#94a3b8;font-size:11px;margin-top:14px;cursor:pointer;font-weight:700;text-align:center;" onclick="window.closeModal('robloxModal')">← QUAY LẠI</p>
+    </div>
+</div>
+
+<!-- ALERT MODAL -->
+<div id="customAlert" class="modal">
+    <div class="modal-content" id="alertBox" style="max-width:320px;">
+        <div id="alertIcon"></div>
+        <h3 id="alertTitle"></h3>
+        <p id="alertMessage"></p>
+        <button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <button class="openbtn" onclick="window.openNav()"><i class="fas fa-bars"></i></button>
+        <a href="#" class="logo-container">
+            <img src="https://i.imgur.com/LE8umJt.png" class="logo-img" alt="logo">
+            <span class="logo-text">DEXSTY SHOP</span>
+        </a>
+    </div>
+    <div id="auth-ui" class="nav-right"></div>
+</nav>
+
+<!-- SYSTEM STATUS -->
+<div class="system-status-bar">
+    <div class="status-header">
+        <div class="status-dot" id="system-status-dot"></div>
+        <span id="system-status-text">Đang tải trạng thái...</span>
+        <span style="color:rgba(139,92,246,.3);">|</span>
+        <span class="online-pill"><span class="online-dot-sm"></span><span id="online-count">...</span> đang xem</span>
+    </div>
+    <div class="status-notice" id="system-status-notice">Vui lòng chờ trong giây lát...</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    <!-- HERO -->
+    <div class="hero-banner">
+        <div class="hero-text">
+            <h1>✦ Chào Mừng Đến Dexsty Shop</h1>
+            <p>Dịch vụ Roblox & Blox Fruits uy tín — giao dịch nhanh chóng, hỗ trợ 24/7</p>
+        </div>
+        <div class="hero-badges">
+            <span class="hero-badge hb-secure"><i class="fas fa-shield-alt"></i> Uy Tín</span>
+            <span class="hero-badge hb-fast"><i class="fas fa-bolt"></i> Nhanh</span>
+            <span class="hero-badge hb-cheap"><i class="fas fa-tag"></i> Giá Rẻ</span>
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="section-title"><span>📺</span> Hướng Dẫn &amp; Giới Thiệu</div>
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_fH0ZeXFFSw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+
+    <!-- TOP DEPOSIT -->
+    <div class="section-title"><span>🏆</span> Top Nạp Trong Tháng</div>
+    <div id="top-deposit-list" class="top-deposit-card"></div>
+
+    <!-- ROBUX CALC -->
+    <div class="section-title"><span>💎</span> Nạp Robux Chính Hãng (120H)</div>
+    <div class="robux-container">
+        <div class="robux-input-group">
+            <div>
+                <label>Số Robux muốn nhận</label>
+                <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">
+            </div>
+            <div>
+                <label style="color:var(--gold);">Số tiền cần trả (230đ / 1 Robux)</label>
+                <input type="text" id="outputPrice" readonly style="color:var(--gold);font-weight:800;font-family:'Rajdhani',sans-serif;font-size:18px;">
+                <div class="robux-usd" id="robux-usd"></div>
+            </div>
+        </div>
+        <div class="calc-note">
+            🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>
+            ⚠️ <b>Lưu ý:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực</b> và để công khai.
+        </div>
+        <button class="btn-buy" id="btn-buy-robux" style="height:46px;font-size:14px;border-radius:10px;" onclick="window.buyRobux()">
+            <i class="fas fa-shopping-cart"></i> MUA ROBUX NGAY
+        </button>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="section-title"><span>🛠️</span> Công Cụ Tiện Ích</div>
+    <div class="tools-grid">
+        <div class="tool-card">
+            <h4><i class="fas fa-user-search"></i> Tra Cứu Profile Roblox</h4>
+            <input type="text" id="lookupUser" placeholder="Nhập username Roblox..." style="margin:0;">
+            <button class="btn-submit" style="padding:9px;font-size:12px;" onclick="window.lookupRoblox()"><i class="fas fa-search"></i> TÌM KIẾM</button>
+            <div id="lookup-result" class="tool-result"></div>
+        </div>
+        <div class="tool-card">
+            <h4><i class="fas fa-apple-alt"></i> Tra Giá Trái Cây Nhanh</h4>
+            <input type="text" id="fruitQuery" placeholder="Tên trái (vd: Dragon, Buddha)..." style="margin:0;" oninput="window.lookupFruit()">
+            <div id="fruit-lookup-result" class="tool-result"></div>
+        </div>
+    </div>
+
+    <!-- BLOX FRUITS -->
+    <div class="section-title"><span>🔥</span> Blox Fruits</div>
+
+    <!-- SEARCH -->
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchBar" class="search-input" placeholder="Tìm kiếm sản phẩm..." oninput="window.filterProducts()">
+        <button class="search-clear" onclick="document.getElementById('searchBar').value='';window.filterProducts()">×</button>
+    </div>
+
+    <!-- SHOP TABS -->
+    <div class="shop-tabs">
+        <div class="tab-btn active" onclick="window.switchTab('acc')"><i class="fas fa-user-check"></i> Acc Blox Fruit</div>
+        <div class="tab-btn" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>
+        <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>
+        <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Vĩnh Viễn</div>
+        <div class="tab-btn" onclick="window.switchTab('wishlist')" style="color:#ff4757;"><i class="fas fa-heart"></i> Yêu Thích</div>
+        <div class="tab-btn" onclick="window.switchTab('referral')" style="color:var(--gold);"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</div>
+    </div>
+
+    <!-- FRUIT FILTER/SORT (visible only when fruit tab active) -->
+    <div id="fruit-controls" style="display:none;">
+        <div class="filter-pills">
+            <span class="fp fp-all active" onclick="window.setFruitFilter('all')">🍀 Tất cả</span>
+            <span class="fp fp-myth"  onclick="window.setFruitFilter('myth')">🌟 Mythical (300k+)</span>
+            <span class="fp fp-legend" onclick="window.setFruitFilter('legend')">💫 Legendary (150k+)</span>
+            <span class="fp fp-rare"  onclick="window.setFruitFilter('rare')">✨ Rare (50k+)</span>
+            <span class="fp fp-uncomm" onclick="window.setFruitFilter('uncomm')">🔮 Uncommon (20k+)</span>
+            <span class="fp fp-common" onclick="window.setFruitFilter('common')">⚡ Common</span>
+        </div>
+        <div class="sort-row">
+            <button class="sort-btn active" id="sb-default" onclick="window.setFruitSort('default')">📋 Mặc định</button>
+            <button class="sort-btn" id="sb-high"    onclick="window.setFruitSort('high')">💰 Giá cao → thấp</button>
+            <button class="sort-btn" id="sb-low"     onclick="window.setFruitSort('low')">💰 Giá thấp → cao</button>
+            <button class="sort-btn" id="sb-alpha"   onclick="window.setFruitSort('alpha')">🔤 A → Z</button>
+        </div>
+    </div>
+
+    <!-- GRIDS -->
+    <div id="acc-grid"     class="grid active"></div>
+    <div id="service-grid" class="grid"></div>
+    <div id="gp-grid"      class="grid"></div>
+    <div id="fruit-grid"   class="grid"></div>
+    <div id="wishlist-grid" class="grid"></div>
+
+    <!-- SAILOR PIECES -->
+    <div class="section-title"><span>⚓</span> Sailor Pieces</div>
+    <div class="shop-tabs">
+        <div class="tab-btn active" onclick="window.switchTab('sailor-gp')"><i class="fas fa-id-card"></i> Game Pass</div>
+    </div>
+    <div id="sailor-gp-grid" class="grid active"></div>
+
+    <!-- REFERRAL -->
+    <div id="referral-grid" class="grid">
+        <div style="grid-column:1/-1;">
+            <div class="referral-box">
+                <h3 style="color:var(--primary);">MÃ MỜI CỦA BẠN</h3>
+                <p style="font-size:12px;color:var(--muted);">Chia sẻ mã này cho bạn bè. Khi họ nạp tiền, bạn nhận ngay <b style="color:var(--gold);">2%</b> giá trị nạp vào số dư shop!</p>
+                <div id="myReferralCode" class="ref-code-display" onclick="window.copyRef()">ĐANG TẢI...</div>
+                <div class="ref-stats">
+                    <div class="ref-stat-item"><b id="refCount">0</b><span>Người đã mời</span></div>
+                    <div class="ref-stat-item"><b id="refBonus">0đ</b><span>Hoa hồng nhận được</span></div>
+                </div>
+            </div>
+            <div id="input-ref-area" class="referral-box" style="border-color:rgba(255,255,255,.08);">
+                <h3 style="font-size:14px;color:#fff;">NHẬP MÃ NGƯỜI GIỚI THIỆU</h3>
+                <input type="text" id="inputReferral" placeholder="Nhập mã mời tại đây..." style="text-align:center;">
+                <button class="btn-submit" onclick="window.applyReferral()">XÁC NHẬN ĐẠN NHẬP</button>
+            </div>
+            <div id="already-referred" class="referral-box" style="display:none;border-color:var(--green);">
+                <p style="margin:0;color:var(--green);font-weight:bold;"><i class="fas fa-check-circle"></i> Bạn đã được giới thiệu!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div class="community-card" style="margin-top:30px;">
+        <h3>🚀 Tham Gia Cộng Đồng Dexsty</h3>
+        <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">Kết nối cùng hàng nghìn game thủ Blox Fruits</p>
+        <div class="community-grid">
+            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Server Discord</a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
+
+    const DEPOSIT_WEBHOOK  = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+    const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
+
+    let isMaintenance = false, pendingItem = null, currentBalance = 0, authMode = 'login';
+    let fruitFilter = 'all', fruitSort = 'default';
+    let wishlist = JSON.parse(localStorage.getItem('dexsty_wl') || '[]');
+
+    // ═══════ TOAST ═══════
+    window.toast = (msg, type = 'info', ms = 2800) => {
+        const icons = {success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+        document.getElementById('toast-container').appendChild(el);
+        requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, ms);
+    };
+
+    // ═══════ SCROLL TOP ═══════
+    window.addEventListener('scroll', () => {
+        document.getElementById('scrollTopBtn').classList.toggle('visible', window.scrollY > 300);
+    });
+
+    // ═══════ ONLINE COUNTER ═══════
+    function initOnline() {
+        const el = document.getElementById('online-count');
+        let n = Math.floor(Math.random()*18)+22;
+        el.innerText = n;
+        setInterval(() => { n += Math.floor(Math.random()*5)-2; n=Math.max(15,Math.min(80,n)); el.innerText=n; }, 4500);
+    }
+
+    // ═══════ SIDEBAR ═══════
+    window.openNav = () => { document.getElementById("mySidebar").style.width="260px"; document.getElementById("sidebarOverlay").style.display="block"; };
+    window.closeNav = () => { document.getElementById("mySidebar").style.width="0"; document.getElementById("sidebarOverlay").style.display="none"; };
+
+    // ═══════ AUTH TOGGLE ═══════
+    window.toggleAuthMode = () => {
+        authMode = authMode==='login'?'register':'login';
+        document.getElementById('auth-title').innerText      = authMode==='login'?'LOGIN':'REGISTER';
+        document.getElementById('auth-btn-text').innerText   = authMode==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ';
+        document.getElementById('auth-switch-text').innerText= authMode==='login'?'Chưa có tài khoản?':'Đã có tài khoản?';
+        document.getElementById('auth-switch-btn').innerText = authMode==='login'?'Đăng ký ngay':'Đăng nhập ngay';
+    };
+
+    // ═══════ SYSTEM STATUS ═══════
+    function initSystemStatus() {
+        onValue(ref(rtdb,'settings/shopStatus'), (snap) => {
+            const data=snap.val(); if(!data) return;
+            const status=data.status||"Online", notice=data.notice||"Chào mừng bạn đến với Dexsty Shop!";
+            document.getElementById('system-status-notice').innerText=notice;
+            const dot=document.getElementById('system-status-dot'), lbl=document.getElementById('system-status-text');
+            if(status==="Maintenance"){isMaintenance=true;lbl.innerText="Hệ thống: BẢO TRÌ";dot.style.background='#ef4444';}
+            else if(status==="Slow"){isMaintenance=false;lbl.innerText="Hệ thống: XỬ LÝ CHẬM";dot.style.background='#f59e0b';}
+            else{isMaintenance=false;lbl.innerText="Hệ thống: ĐANG HOẠT ĐỘNG";dot.style.background='#10b981';}
+        });
+    }
+
+    // ═══════ SWITCH TAB ═══════
+    window.switchTab = (type) => {
+        const allGrids=['acc','service','gp','fruit','referral','sailor-gp','wishlist'];
+        allGrids.forEach(g=>{ const el=document.getElementById(g+'-grid'); if(el) el.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        const target=document.getElementById(type+'-grid');
+        if(target) target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(`'${type}'`)) b.classList.add('active'); });
+        document.getElementById('fruit-controls').style.display = type==='fruit'?'block':'none';
+        if(type==='wishlist') window.renderWishlist();
+        const sb=document.getElementById('searchBar'); if(sb&&sb.value){sb.value='';window.filterProducts();}
+    };
+
+    // ═══════ ROBUX CALC ═══════
+    const RATE=230, USD=25000;
+    window.calcRobux = () => {
+        const rb=parseInt(document.getElementById('inputRobux').value)||0;
+        const vnd=rb*RATE;
+        document.getElementById('outputPrice').value = vnd.toLocaleString()+"đ";
+        document.getElementById('taxNote').innerText  = Math.ceil(rb/0.7).toLocaleString();
+        const hint=document.getElementById('robux-usd');
+        if(hint) hint.innerText = rb>0?`≈ $${(vnd/USD).toFixed(2)} USD`:'';
+    };
+    window.buyRobux = () => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
+        const rb=parseInt(document.getElementById('inputRobux').value)||0;
+        if(rb<10) return showAlert("Tối thiểu mua 10 Robux!");
+        window.buyItem(`Nạp ${rb} Robux`,rb*RATE,'robux');
+    };
+
+    // ═══════ COPY DEPOSIT NOTE ═══════
+    window.copyDepNote = () => {
+        const note=document.getElementById('depositMsg').innerText;
+        if(!note||note==='Đang tải...') return window.toast("Vui lòng đăng nhập trước!","warning");
+        navigator.clipboard.writeText(note);
+        window.toast("Đã sao chép nội dung chuyển khoản!","success");
+    };
+
+    window.openAuthModal = () => document.getElementById('authModal').style.display='flex';
+    window.closeModal = (id) => document.getElementById(id).style.display='none';
+
+    window.showAlert = (msg, isSuccess=false) => {
+        const box=document.getElementById('alertBox'),icon=document.getElementById('alertIcon'),
+              title=document.getElementById('alertTitle'),btn=document.getElementById('alertBtn'),
+              message=document.getElementById('alertMessage');
+        const color=isSuccess?"#10b981":"#ef4444";
+        box.style.borderColor=color; title.style.color=color;
+        title.innerText=isSuccess?"THÀNH CÔNG":"THÔNG BÁO";
+        icon.style.color=color; icon.style.fontSize="42px"; icon.style.marginBottom="14px";
+        icon.innerHTML=isSuccess?'<i class="fas fa-check-circle"></i>':'<i class="fas fa-exclamation-circle"></i>';
+        btn.style.background=color; message.innerText=msg;
+        document.getElementById('customAlert').style.display='flex';
+    };
+
+    window.buyItem = async (n,p,type) => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
+        if(!auth.currentUser) return window.openAuthModal();
+        pendingItem={name:n,price:p,type:type};
+        const snapshot=await get(ref(rtdb,'users/'+auth.currentUser.uid));
+        currentBalance=snapshot.val()?.balance||0;
+        document.getElementById('orderItemName').innerText=n;
+        document.getElementById('userBalanceText').innerText=currentBalance.toLocaleString()+'đ';
+        document.getElementById('itemPriceText').innerText=p.toLocaleString()+'đ';
+        document.getElementById('robloxUser').value="";
+        document.getElementById('robloxPass').value="";
+        document.getElementById('roblox2fa').value="";
+        document.getElementById('checkCorrect').checked=false;
+        if(type==='acc'){
+            document.getElementById('row-user').style.display='none';
+            document.getElementById('row-pass').style.display='none';
+            document.getElementById('row-2fa').style.display='none';
+            document.getElementById('row-toc').style.display='none';
+        } else if(type==='service'||type==='robux'){
+            document.getElementById('row-user').style.display='table-row';
+            document.getElementById('row-pass').style.display='table-row';
+            document.getElementById('row-2fa').style.display='table-row';
+            document.getElementById('row-toc').style.display=n.toLowerCase().includes("tộc v4")?'table-row':'none';
+        } else {
+            document.getElementById('row-user').style.display='table-row';
+            document.getElementById('row-pass').style.display='none';
+            document.getElementById('row-2fa').style.display='none';
+            document.getElementById('row-toc').style.display='none';
+        }
+        document.getElementById('robloxModal').style.display='flex';
+    };
+
+    window.confirmPurchase = async () => {
+        const robloxName=document.getElementById('robloxUser').value.trim(),
+              robloxPass=document.getElementById('robloxPass').value.trim(),
+              roblox2fa=document.getElementById('roblox2fa').value.trim(),
+              selectedToc=document.getElementById('selectToc').value;
+        if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");
+        if(pendingItem.type!=='acc'&&!robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
+        if(currentBalance<pendingItem.price) return showAlert("Số dư không đủ!");
+        let finalItemName=pendingItem.name;
+        if(pendingItem.name.toLowerCase().includes("tộc v4")) finalItemName+=` [Tộc: ${selectedToc}]`;
+        try {
+            await update(ref(rtdb,'users/'+auth.currentUser.uid),{balance:currentBalance-pendingItem.price});
+            const orderId=Date.now(), orderData={
+                uid:auth.currentUser.uid,email:auth.currentUser.email,
+                robloxAccount:robloxName||"MUA ACC",item:finalItemName,
+                price:pendingItem.price,status:"Chờ xử lý",timestamp:orderId
+            };
+            if(pendingItem.type==='service'||pendingItem.type==='robux'){
+                orderData.robloxPass=robloxPass; orderData.roblox2fa=roblox2fa;
+            }
+            await set(ref(rtdb,'orders/'+orderId),orderData);
+            await fetch(PURCHASE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - ĐƠN MỚI",embeds:[{title:"🛒 CÓ ĐƠN HÀNG MỚI!",color:3447003,fields:[
+                    {name:"👤 Khách",value:auth.currentUser.email,inline:true},
+                    {name:"📦 Sản phẩm",value:finalItemName,inline:true},
+                    {name:"💰 Giá",value:pendingItem.price.toLocaleString()+"đ",inline:true},
+                    {name:"🎮 Tài khoản",value:`\`${robloxName||"MUA ACC"}\``,inline:true},
+                    {name:"🔑 Mật khẩu",value:`\`${robloxPass||"N/A"}\``,inline:true},
+                    {name:"🛡️ Mã 2FA",value:`\`${roblox2fa||"N/A"}\``,inline:true}
+                ],timestamp:new Date().toISOString()}]})});
+            window.closeModal('robloxModal');
+            showAlert("Mua thành công!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.copyRef = () => {
+        navigator.clipboard.writeText(document.getElementById('myReferralCode').innerText);
+        window.toast("Đã sao chép mã mời!","success");
+    };
+
+    window.applyReferral = async () => {
+        const code=document.getElementById('inputReferral').value.trim();
+        if(!code) return showAlert("Vui lòng nhập mã!");
+        if(code===auth.currentUser.uid.substring(0,6)) return showAlert("Bạn không thể tự mời chính mình!");
+        const snap=await get(ref(rtdb,'users'));
+        let referrerUid=null;
+        snap.forEach(child=>{ if(child.val().referralCode===code) referrerUid=child.key; });
+        if(!referrerUid) return showAlert("Mã mời không tồn tại!");
+        await update(ref(rtdb,'users/'+auth.currentUser.uid),{referredBy:referrerUid});
+        showAlert("Áp dụng mã mời thành công!", true);
+    };
+
+    onAuthStateChanged(auth, async (u) => {
+        const ui=document.getElementById('auth-ui'), sb=document.getElementById('bottomStatusBar');
+        if(u){
+            onValue(ref(rtdb,'users/'+u.uid),(s)=>{
+                const data=s.val()||{};
+                ui.innerHTML=`<button class="btn-sm btn-deposit" onclick="window.openDeposit()"><i class="fas fa-plus"></i> Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()"><i class="fas fa-sign-out-alt"></i></button>`;
+                sb.style.display='flex';
+                document.getElementById('status-email').innerText=u.email.split('@')[0];
+                document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
+                document.getElementById('depositMsg').innerText="SEVQR NAP "+u.email.split('@')[0];
+                const myCode=data.referralCode||u.uid.substring(0,6).toUpperCase();
+                if(!data.referralCode) update(ref(rtdb,'users/'+u.uid),{referralCode:myCode});
+                document.getElementById('myReferralCode').innerText=myCode;
+                document.getElementById('refBonus').innerText=(data.totalReferralBonus||0).toLocaleString()+'đ';
+                if(data.referredBy){
+                    document.getElementById('input-ref-area').style.display='none';
+                    document.getElementById('already-referred').style.display='block';
+                }
+            });
+            onValue(query(ref(rtdb,'users'),orderByChild('referredBy'),equalTo(u.uid)),(snap)=>{
+                document.getElementById('refCount').innerText=snap.exists()?Object.keys(snap.val()).length:0;
+            });
+        } else {
+            ui.innerHTML=`<button class="btn-sm btn-login" onclick="window.openAuthModal()"><i class="fas fa-user"></i> Đăng nhập / Đăng ký</button>`;
+            sb.style.display='none';
+        }
+    });
+
+    // ═══════ SEPAY QR INTEGRATION ═══════
+    const SEPAY_API_KEY = "SEPAY_API_KEY"; // Thay bằng API Key SePay của bạn
+    const BANK_STK = "103886880692";
+    const ACCOUNT_NAME = "BUI THANH SON";
+
+    window.updateQR = () => {
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+        const qrContainer = document.getElementById('qr-container');
+        const qrImg = document.getElementById('sepayQR');
+        
+        if(amount >= 1000 && note !== "Đang tải...") {
+            const qrUrl = `https://img.vietqr.io/image/vietinbank-${BANK_STK}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(note)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+            qrImg.src = qrUrl;
+            qrContainer.style.display = 'block';
+        } else {
+            qrContainer.style.display = 'none';
+        }
+    };
+
+    window.checkPayment = async () => {
+        if (!auth.currentUser) return;
+        const btn = document.getElementById('btnConfirmBank');
+        const statusText = document.getElementById('paymentStatus');
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+
+        if (amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+        statusText.style.display = 'block';
+        statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
+
+        try {
+            const response = await fetch('/api/sepay-proxy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, note })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 200 && data.transactions) {
+                const transaction = data.transactions.find(t => 
+                    t.content.toLowerCase().includes(note.toLowerCase()) && 
+                    parseInt(t.amount) >= amount
+                );
+
+                if (transaction) {
+                    const transRef = ref(rtdb, `transactions/${transaction.id}`);
+                    const transSnap = await get(transRef);
+                    
+                    if (!transSnap.exists()) {
+                        await set(transRef, {
+                            uid: auth.currentUser.uid,
+                            amount: parseInt(transaction.amount),
+                            timestamp: Date.now(),
+                            content: transaction.content
+                        });
+
+                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                        const userSnap = await get(userRef);
+                        const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
+                        
+                        const newBalance = (userData.balance || 0) + parseInt(transaction.amount);
+                        const newTotalDep = (userData.totalDeposit || 0) + parseInt(transaction.amount);
+                        
+                        await update(userRef, { 
+                            balance: newBalance,
+                            totalDeposit: newTotalDep
+                        });
+
+                        await fetch(DEPOSIT_WEBHOOK, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
+                                embeds: [{
+                                    title: "✅ NẠP TIỀN TỰ ĐỘNG THÀNH CÔNG!",
+                                    color: 65280,
+                                    fields: [
+                                        { name: "👤 Khách", value: auth.currentUser.email, inline: true },
+                                        { name: "💰 Số tiền", value: parseInt(transaction.amount).toLocaleString() + "đ", inline: true },
+                                        { name: "📝 Nội dung", value: transaction.content, inline: false }
+                                    ],
+                                    timestamp: new Date().toISOString()
+                                }]
+                            })
+                        });
+
+                        window.closeModal('depositModal');
+                        showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
+                    } else {
+                        statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                    }
+                } else {
+                    statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
+                }
+            } else {
+                // Hiển thị lỗi chi tiết từ Proxy (nếu có)
+                statusText.innerText = data.error || data.message || "Lỗi kết nối hệ thống SePay. Vui lòng thử lại sau.";
+            }
+        } catch (e) {
+            console.error(e);
+            statusText.innerText = "Lỗi kết nối đến máy chủ: " + e.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
+        }
+    };
+
+    window.sendDepositWebhook = async () => {
+        const u=auth.currentUser; if(!u) return;
+        try {
+            await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - BANK",embeds:[{title:"🏦 YÊU CẦU NẠP BANK!",color:2278750,
+                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"📝 Nội dung",value:"SEVQR NAP "+u.email.split('@')[0],inline:true}],
+                    timestamp:new Date().toISOString()}]})});
+            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.sendCardWebhook = async () => {
+        const t=document.getElementById('cardType').value, v=document.getElementById('cardValue').value,
+              p=document.getElementById('cardPin').value.trim(), s=document.getElementById('cardSeri').value.trim(),
+              u=auth.currentUser;
+        if(!t||!v||!p||!s) return showAlert("Vui lòng điền đủ thông tin!");
+        try {
+            await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO",embeds:[{title:"💳 THẺ CÀO MỚI!",color:16711767,
+                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"🆔 Loại",value:t,inline:true},
+                             {name:"💰 Mệnh giá",value:Number(v).toLocaleString()+"đ",inline:true},
+                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``}],
+                    timestamp:new Date().toISOString()}]})});
+            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.processAuth = async () => {
+        const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim();
+        if(!e||!p) return showAlert("Vui lòng nhập đầy đủ thông tin!");
+        try {
+            if(authMode==='login'){ await signInWithEmailAndPassword(auth,e,p); }
+            else {
+                const r=await createUserWithEmailAndPassword(auth,e,p);
+                await set(ref(rtdb,'users/'+r.user.uid),{balance:0,totalDeposit:0,email:e,referralCode:r.user.uid.substring(0,6).toUpperCase(),totalReferralBonus:0});
+            }
+            window.closeModal('authModal');
+        } catch(err){ showAlert(err.message); }
+    };
+
+    window.logout = () => signOut(auth).then(()=>location.reload());
+    window.openDeposit = () => {
+        document.getElementById('depositModal').style.display='flex';
+        window.updateQR();
+    };
+    window.setDepMode = (m) => {
+        document.getElementById('tab-dep-bank').className=`dep-tab ${m==='bank'?'active':''}`;
+        document.getElementById('tab-dep-card').className=`dep-tab ${m==='card'?'active':''}`;
+        document.getElementById('dep-bank-area').style.display=m==='bank'?'block':'none';
+        document.getElementById('dep-card-area').style.display=m==='card'?'block':'none';
+        if(m==='bank') window.updateQR();
+    };
+    window.openHistory = () => {
+        const content=document.getElementById('history-content');
+        document.getElementById('historyModal').style.display='flex';
+        onValue(query(ref(rtdb,'orders'),orderByChild('uid'),equalTo(auth.currentUser.uid)),(snap)=>{
+            const data=snap.val();
+            if(!data){content.innerHTML='<p style="color:#64748b;text-align:center;padding:20px;">Chưa có đơn hàng nào.</p>';return;}
+            content.innerHTML=Object.values(data).reverse().map(o=>
+                `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}">
+                    <span class="h-status">${o.status||'Chờ'}</span>
+                    <span class="h-name">${o.item}</span>
+                    <div class="h-info">🎮 ${o.robloxAccount} &nbsp;|&nbsp; 💰 ${o.price.toLocaleString()}đ</div>
+                </div>`
+            ).join('');
+        });
+    };
+
+    // ═══════ SEARCH / FILTER ═══════
+    window.filterProducts = () => {
+        const q=(document.getElementById('searchBar').value||'').toLowerCase().trim();
+        const activeGrid=document.querySelector('.grid.active');
+        if(!activeGrid||['referral-grid','wishlist-grid'].includes(activeGrid.id)) return;
+        let any=false;
+        activeGrid.querySelectorAll('.card[data-name]').forEach(c=>{
+            const match=!q||(c.getAttribute('data-name')||'').toLowerCase().includes(q);
+            c.style.display=match?'':'none';
+            if(match) any=true;
+        });
+        let nm=activeGrid.querySelector('.no-results');
+        if(!any&&q){
+            if(!nm){nm=document.createElement('div');nm.className='no-results';nm.innerHTML='<i class="fas fa-search"></i>Không tìm thấy sản phẩm phù hợp';activeGrid.appendChild(nm);}
+        } else { if(nm) nm.remove(); }
+    };
+
+    // ═══════ FRUIT RARITY ═══════
+    function rarity(p){ if(p>=300000) return 'myth'; if(p>=150000) return 'legend'; if(p>=50000) return 'rare'; if(p>=20000) return 'uncomm'; return 'common'; }
+    const RARITY_META = { myth:{label:'🌟 Mythical',cls:'rb-myth'}, legend:{label:'💫 Legendary',cls:'rb-legend'}, rare:{label:'✨ Rare',cls:'rb-rare'}, uncomm:{label:'🔮 Uncommon',cls:'rb-uncomm'}, common:{label:'⚡ Common',cls:'rb-common'} };
+
+    window.setFruitFilter = (r) => {
+        fruitFilter=r;
+        document.querySelectorAll('.fp').forEach(p=>p.classList.remove('active'));
+        const pill=document.querySelector(`.fp-${r}`); if(pill) pill.classList.add('active');
+        applyFruitControls();
+    };
+    window.setFruitSort = (s) => {
+        fruitSort=s;
+        document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+        const btn=document.getElementById('sb-'+s); if(btn) btn.classList.add('active');
+        applyFruitControls();
+    };
+    function applyFruitControls(){
+        const grid=document.getElementById('fruit-grid'); if(!grid) return;
+        const cards=Array.from(grid.querySelectorAll('.card[data-name]'));
+        cards.forEach(c=>{ const r=c.getAttribute('data-rarity')||'common'; c.style.display=(fruitFilter==='all'||r===fruitFilter)?'':'none'; });
+        if(fruitSort!=='default'){
+            const vis=cards.filter(c=>c.style.display!=='none');
+            vis.sort((a,b)=>{
+                if(fruitSort==='high')  return parseInt(b.dataset.price||0)-parseInt(a.dataset.price||0);
+                if(fruitSort==='low')   return parseInt(a.dataset.price||0)-parseInt(b.dataset.price||0);
+                if(fruitSort==='alpha') return (a.dataset.name||'').localeCompare(b.dataset.name||'');
+                return 0;
+            });
+            vis.forEach(c=>grid.appendChild(c));
+        }
+    }
+
+    // ═══════ WISHLIST ═══════
+    window.toggleWL = (name,price,img,type) => {
+        const idx=wishlist.findIndex(w=>w.name===name);
+        if(idx>=0){ wishlist.splice(idx,1); window.toast(`Đã xoá khỏi yêu thích`,'info'); }
+        else { wishlist.push({name,price,img,type}); window.toast(`Đã thêm vào yêu thích ❤️`,'success'); }
+        localStorage.setItem('dexsty_wl',JSON.stringify(wishlist));
+        document.querySelectorAll(`.wl-btn[data-n="${CSS.escape(name)}"]`).forEach(b=>{
+            b.classList.toggle('active',wishlist.some(w=>w.name===name));
+        });
+    };
+    window.renderWishlist = () => {
+        const grid=document.getElementById('wishlist-grid'); if(!grid) return;
+        if(!wishlist.length){ grid.innerHTML='<div class="wl-empty"><i class="fas fa-heart-broken"></i>Chưa có sản phẩm yêu thích.<br><small>Nhấn ❤️ trên sản phẩm để thêm.</small></div>'; return; }
+        grid.innerHTML='';
+        wishlist.forEach(item=>{
+            const card=document.createElement('div');
+            card.className='card'; card.setAttribute('data-name',item.name);
+            card.innerHTML=`
+                <button class="wl-btn active" data-n="${item.name.replace(/"/g,'&quot;')}" onclick="window.toggleWL('${item.name.replace(/'/g,"\\'")}',${item.price},'${item.img}','${item.type}');window.renderWishlist();" title="Bỏ yêu thích"><i class="fas fa-heart"></i></button>
+                <img src="${item.img}" loading="lazy">
+                <h3>${item.name}</h3>
+                <div class="price">${item.price.toLocaleString()}đ</div>
+                <button class="btn-buy" onclick="window.buyItem('${item.name.replace(/'/g,"\\'")}',${item.price},'${item.type}')">MUA NGAY</button>`;
+            grid.appendChild(card);
+        });
+    };
+
+    // ═══════ TOOLS ═══════
+    window.lookupRoblox = () => {
+        const u=(document.getElementById('lookupUser').value||'').trim();
+        const res=document.getElementById('lookup-result');
+        if(!u){res.className='tool-result';return;}
+        res.className='tool-result show';
+        res.innerHTML=`
+            <div style="color:var(--primary);font-weight:700;margin-bottom:8px;"><i class="fas fa-user"></i> ${u}</div>
+            <a href="https://www.roblox.com/users/profile?username=${encodeURIComponent(u)}" target="_blank" style="color:#c4b5fd;font-size:12px;display:block;margin-bottom:4px;text-decoration:none;"><i class="fas fa-external-link-alt"></i> Mở trang Profile Roblox</a>
+            <a href="https://www.roblox.com/search/users?keyword=${encodeURIComponent(u)}" target="_blank" style="color:var(--muted);font-size:12px;text-decoration:none;"><i class="fas fa-search"></i> Tìm kiếm trên Roblox</a>`;
+    };
+
+    window.lookupFruit = () => {
+        const q=(document.getElementById('fruitQuery').value||'').trim().toLowerCase();
+        const res=document.getElementById('fruit-lookup-result');
+        if(!q){res.className='tool-result';return;}
+        const matches=allItems.filter(it=>it.t==='f'&&it.n.toLowerCase().includes(q));
+        if(!matches.length){res.className='tool-result show';res.innerHTML='<span style="color:var(--muted);">Không tìm thấy trái phù hợp.</span>';return;}
+        const {cls,label}=RARITY_META;
+        res.className='tool-result show';
+        res.innerHTML=matches.slice(0,5).map(it=>{
+            const rm=RARITY_META[rarity(it.p)];
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+                <span><span class="rarity-badge ${rm.cls}" style="margin-right:5px;">${rm.label}</span>${it.n}</span>
+                <b style="color:var(--gold);white-space:nowrap;margin-left:8px;font-family:'Rajdhani',sans-serif;font-size:15px;">${it.p.toLocaleString()}đ</b>
+            </div>`;
+        }).join('');
+    };
+
+    // ═══════ ALL ITEMS (preserved 100%) ═══════
+    const allItems = [
+        {n:"Acc TTT 100% Godhuman + Max Lv + 1 Tộc V4",p:40000,t:"a",i:"https://i.imgur.com/9TNm9UO.jpeg",sold:125,stock:5},
+        {n:"Cày 700 Level",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"1.000 Fragment",p:1000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"50.000 Fragment",p:45000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"100.000 Fragment",p:85000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"1M Beli",p:2000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"50M Beli",p:90000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"100M Beli",p:170000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"10M Bounty/Honor",p:70000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"30M Bounty/Honor",p:150000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V1-V3",p:8000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V4 (1 Bánh răng)",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V4 Full Bánh răng",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lấy Tộc Quỷ",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lấy Tộc Cyborg",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco (Có đủ đai)",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco (Thiếu đai)",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco V1-V3",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco V4 Full Bánh răng",p:60000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Gạt cần (Có mảnh gương)",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Gạt cần (Không mảnh gương)",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Melee V2",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"God Human",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Sanguine Art",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Kiếm/Súng Rồng",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Tam Kiếm",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Mini Yoru",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lưỡi Hái",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Tushita",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Yama",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Song Kiếm",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Mỏ Neo",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Soul Guitar",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Đinh Ba Gai",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Koko",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Haki Legendary",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Leviathan về Tiki",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Leviathan về Hydra",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Nguyên Thạch Bóng Tối",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Cổng Rip_Indra",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 1 Giấy Mythical",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 20 Giấy Mythical",p:500000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 50 Giấy Mythical",p:1000000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 100 Giấy Mythical",p:1500000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Awaken Fruit Thường",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Awaken Dough/Phoenix",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Fruit Notifier",p:378000,t:"gp",i:"https://i.imgur.com/3m5NHWK.jpeg"},
+        {n:"Dark Blade",p:168000,t:"gp",i:"https://i.imgur.com/DbAN7S7.jpeg"},
+        {n:"x2 Money",p:63000,t:"gp",i:"https://i.imgur.com/aJoy0Nw.jpeg"},
+        {n:"x2 Mastery",p:63000,t:"gp",i:"https://i.imgur.com/6PXaYAF.jpeg"},
+        {n:"+1 Storage",p:56000,t:"gp",i:"https://i.imgur.com/O9sbGMx.jpeg"},
+        {n:"Fast Boats",p:49000,t:"gp",i:"https://i.imgur.com/FQkdkNT.jpeg"},
+        {n:"x2 Drop Chance",p:49000,t:"gp",i:"https://i.imgur.com/3ifB2RS.jpeg"},
+        {n:"Dragon",p:650000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
+        {n:"Kitsune",p:520000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
+        {n:"Control",p:520000,t:"f",i:"https://i.imgur.com/66dqB98.jpeg"},
+        {n:"Yeti",p:390000,t:"f",i:"https://i.imgur.com/J1Ne7dv.jpeg"},
+        {n:"Tiger",p:390000,t:"f",i:"https://i.imgur.com/0dXUzXD.jpeg"},
+        {n:"Spirit",p:325000,t:"f",i:"https://i.imgur.com/l5aIdw9.jpeg"},
+        {n:"Gas",p:325000,t:"f",i:"https://i.imgur.com/zy4ChAF.jpeg"},
+        {n:"Venom",p:318500,t:"f",i:"https://i.imgur.com/QzP5E0E.jpeg"},
+        {n:"Shadow",p:315250,t:"f",i:"https://i.imgur.com/LZAPvPb.jpeg"},
+        {n:"Dough",p:312000,t:"f",i:"https://i.imgur.com/6rEQHI5.jpeg"},
+        {n:"Mammoth",p:305500,t:"f",i:"https://i.imgur.com/Ez2xudQ.jpeg"},
+        {n:"T-Rex",p:305500,t:"f",i:"https://i.imgur.com/oqFHqzo.jpeg"},
+        {n:"Gravity",p:299000,t:"f",i:"https://i.imgur.com/LghKtc7.jpeg"},
+        {n:"Blizzard",p:292500,t:"f",i:"https://i.imgur.com/SIeh0Te.jpeg"},
+        {n:"Pain",p:286000,t:"f",i:"https://i.imgur.com/p3CqyEK.jpeg"},
+        {n:"Rumble",p:273000,t:"f",i:"https://i.imgur.com/xpQUYLW.jpeg"},
+        {n:"Portal",p:260000,t:"f",i:"https://i.imgur.com/Jftqt3B.jpeg"},
+        {n:"Phoenix",p:260000,t:"f",i:"https://i.imgur.com/aUB6T44.jpeg"},
+        {n:"Sound",p:247000,t:"f",i:"https://i.imgur.com/LKQol8k.jpeg"},
+        {n:"Spider",p:234000,t:"f",i:"https://i.imgur.com/ID0a36h.jpeg"},
+        {n:"Creation",p:227500,t:"f",i:"https://i.imgur.com/wXCWHcV.jpeg"},
+        {n:"Love",p:221000,t:"f",i:"https://i.imgur.com/cd02nrF.jpeg"},
+        {n:"Buddha",p:214500,t:"f",i:"https://i.imgur.com/y9oLYWT.jpeg"},
+        {n:"Quake",p:195000,t:"f",i:"https://i.imgur.com/LDH6uqW.jpeg"},
+        {n:"Magma",p:169000,t:"f",i:"https://i.imgur.com/rrpluXY.jpeg"},
+        {n:"Ghost",p:165750,t:"f",i:"https://i.imgur.com/ksHabID.jpeg"},
+        {n:"Rubber",p:156000,t:"f",i:"https://i.imgur.com/zQ4DhaA.jpeg"},
+        {n:"Light",p:143000,t:"f",i:"https://i.imgur.com/AyWbzot.jpeg"},
+        {n:"Diamond",p:130000,t:"f",i:"https://i.imgur.com/RNzFUoC.jpeg"},
+        {n:"Eagle",p:126750,t:"f",i:"https://i.imgur.com/3ovBTVZ.jpeg"},
+        {n:"Dark",p:123500,t:"f",i:"https://i.imgur.com/BKU2uIr.jpeg"},
+        {n:"Sand",p:110500,t:"f",i:"https://i.imgur.com/nzbbUzn.jpeg"},
+        {n:"Ice",p:97500,t:"f",i:"https://i.imgur.com/Stbmekr.jpeg"},
+        {n:"Flame",p:71500,t:"f",i:"https://i.imgur.com/1Csccr6.jpeg"},
+        {n:"Spike",p:49450,t:"f",i:"https://i.imgur.com/KjfNWXw.jpeg"},
+        {n:"Smoke",p:32500,t:"f",i:"https://i.imgur.com/02Sb01z.jpeg"},
+        {n:"Bomb",p:28600,t:"f",i:"https://i.imgur.com/ZHL18nV.jpeg"},
+        {n:"Spring",p:23400,t:"f",i:"https://i.imgur.com/UeOKLpA.jpeg"},
+        {n:"Blade",p:13000,t:"f",i:"https://i.imgur.com/Plprtph.jpeg"},
+        {n:"Spin",p:9750,t:"f",i:"https://i.imgur.com/mRJbKHu.jpeg"},
+        {n:"Rocket",p:6500,t:"f",i:"https://i.imgur.com/A6WvKsq.jpeg"},
+        {n:"[Sailor] x2 Drops",p:118000,t:"sgp",i:"https://i.imgur.com/ewQ78br.png"},
+        {n:"[Sailor] x2 Luck Drop",p:90860,t:"sgp",i:"https://i.imgur.com/JmdsaPp.png"},
+        {n:"[Sailor] x2 Exp",p:41860,t:"sgp",i:"https://i.imgur.com/qKA2epn.png"},
+        {n:"[Sailor] x2 Gems",p:55860,t:"sgp",i:"https://i.imgur.com/F9wzE3B.png"},
+        {n:"[Sailor] x2 Money",p:34860,t:"sgp",i:"https://i.imgur.com/K0nFOjc.png"}
+    ];
+
+    // ═══════ RENDER ═══════
+    function render() {
+        initSystemStatus();
+        initOnline();
+        const gp=document.getElementById('gp-grid'), fr=document.getElementById('fruit-grid'),
+              sv=document.getElementById('service-grid'), ac=document.getElementById('acc-grid'),
+              sgp=document.getElementById('sailor-gp-grid');
+        [gp,fr,sv,ac,sgp].forEach(g=>{ if(g) g.innerHTML=''; });
+
+        allItems.forEach(item => {
+            const card=document.createElement('div');
+            card.className='card';
+            let dt=item.t==='a'?'acc':item.t==='s'?'service':item.t==='f'?'fruit':item.t==='sgp'?'sailor-gp':'gp';
+            card.setAttribute('data-name',item.n);
+            card.setAttribute('data-price',item.p);
+            if(item.t==='f') card.setAttribute('data-rarity',rarity(item.p));
+
+            const inWL=wishlist.some(w=>w.name===item.n);
+            const wlHtml=`<button class="wl-btn${inWL?' active':''}" data-n="${item.n.replace(/"/g,'&quot;')}" title="${inWL?'Bỏ yêu thích':'Yêu thích'}" onclick="window.toggleWL('${item.n.replace(/'/g,"\\'")}',${item.p},'${item.i}','${dt}')"><i class="fas fa-heart"></i></button>`;
+
+            const rarBadge=item.t==='f'?(()=>{ const rm=RARITY_META[rarity(item.p)]; return `<div class="rarity-badge ${rm.cls}">${rm.label}</div>`; })():'';
+
+            let statsHtml='';
+            if(item.t==='a') statsHtml=`<div class="card-stats"><span class="stat-sold">🔥 Đã bán: ${item.sold||0}</span><span class="stat-stock">📦 Còn: ${item.stock||0}</span></div>`;
+
+            card.innerHTML=`${wlHtml}<img src="${item.i}" loading="lazy">${rarBadge}<h3>${item.n}</h3>${statsHtml}<div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n.replace(/'/g,"\\'")}',${item.p},'${dt}')">MUA NGAY</button>`;
+
+            if(item.t==='f'&&fr) fr.appendChild(card);
+            else if(item.t==='s'&&sv) sv.appendChild(card);
+            else if(item.t==='a'&&ac) ac.appendChild(card);
+            else if(item.t==='sgp'&&sgp) sgp.appendChild(card);
+            else if(gp) gp.appendChild(card);
+        });
+
+        onValue(query(ref(rtdb,'users'),orderByChild('totalDeposit'),limitToLast(5)),(snap)=>{
+            const list=document.getElementById('top-deposit-list'), data=snap.val();
+            if(!data) return;
+            const sorted=Object.entries(data).map(([id,v])=>({id,...v})).filter(u=>u.totalDeposit>0).sort((a,b)=>b.totalDeposit-a.totalDeposit);
+            list.innerHTML=sorted.map((u,i)=>{
+                const rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+                return `<div class="top-row ${rc}">
+                    <div style="display:flex;align-items:center;overflow:hidden;flex:1;">
+                        <span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</span>
+                        <div class="avatar-frame"><i class="fas fa-user-shield"></i></div>
+                        <span class="user-name">${u.email.split('@')[0]}***</span>
+                    </div>
+                    <div class="amount">${u.totalDeposit.toLocaleString()}đ</div>
+                </div>`;
+            }).join('');
+        });
+    }
+    render();
+</script>
+</body>
+</html>
+
 
         /* ── SYSTEM STATUS BAR ── */
         .system-status-bar {
