@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
+   <html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -469,9 +469,21 @@
             <div id="tab-dep-card" class="dep-tab" onclick="window.setDepMode('card')">THẺ CÀO</div>
         </div>
         <div id="dep-bank-area">
-            <div style="background:#fff;padding:10px;border-radius:10px;margin-bottom:14px;"><img src="https://img.vietqr.io/image/vietcombank-1044627277-compact.jpg?accountName=DEXSTY%20SHOP" style="width:100%;display:block;border-radius:6px;"></div>
-            <p style="font-size:13px;color:#94a3b8;margin:0 0 12px;">Nội dung CK: <b id="depositMsg" style="color:var(--gold);">Đang tải...</b><button class="copy-inline" onclick="window.copyDepNote()"><i class="fas fa-copy"></i> Sao chép</button></p>
-            <button class="btn-submit" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="window.sendDepositWebhook()"><i class="fas fa-check-circle"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Nhập số tiền cần nạp</label>
+                <input type="number" id="depAmount" placeholder="Ví dụ: 50000" oninput="window.updateQR()" style="margin-top: 5px;">
+            </div>
+            <div id="qr-container" style="background:#fff;padding:15px;border-radius:12px;margin-bottom:14px; text-align: center; display: none;">
+                <img id="sepayQR" src="" style="width:100%; max-width: 250px; display:inline-block; border-radius:6px;">
+                <div style="margin-top: 10px; color: #0f172a; font-size: 13px; font-weight: 600;">Quét mã để thanh toán tự động</div>
+            </div>
+            <div style="background: rgba(139,92,246,.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                <p style="font-size:13px; color:#94a3b8; margin:0 0 8px;">STK: <b style="color:#fff;">103886880692</b></p>
+                <p style="font-size:13px; color:#94a3b8; margin:0 0 8px;">Chủ TK: <b style="color:#fff;">BUI THANH SON</b></p>
+                <p style="font-size:13px; color:#94a3b8; margin:0;">Nội dung: <b id="depositMsg" style="color:var(--gold);">Đang tải...</b><button class="copy-inline" onclick="window.copyDepNote()"><i class="fas fa-copy"></i></button></p>
+            </div>
+            <button id="btnConfirmBank" class="btn-submit" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="window.checkPayment()"><i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN</button>
+            <p id="paymentStatus" style="text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; display: none;"></p>
         </div>
         <div id="dep-card-area" style="display:none;">
             <select id="cardType"><option value="">-- Chọn loại thẻ --</option><option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option><option value="Mobifone">Mobifone</option><option value="Garena">Garena</option><option value="Zing">Zing</option></select>
@@ -943,7 +955,7 @@
                 sb.style.display='flex';
                 document.getElementById('status-email').innerText=u.email.split('@')[0];
                 document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
-                document.getElementById('depositMsg').innerText="NAP "+u.email;
+                document.getElementById('depositMsg').innerText="SEVQR NAP "+u.email.split('@')[0];
                 const myCode=data.referralCode||u.uid.substring(0,6).toUpperCase();
                 if(!data.referralCode) update(ref(rtdb,'users/'+u.uid),{referralCode:myCode});
                 document.getElementById('myReferralCode').innerText=myCode;
@@ -962,12 +974,119 @@
         }
     });
 
+    // ═══════ SEPAY QR INTEGRATION ═══════
+    const SEPAY_API_KEY = "SEPAY_API_KEY"; // Thay bằng API Key SePay của bạn
+    const BANK_STK = "103886880692";
+    const ACCOUNT_NAME = "BUI THANH SON";
+
+    window.updateQR = () => {
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+        const qrContainer = document.getElementById('qr-container');
+        const qrImg = document.getElementById('sepayQR');
+        
+        if(amount >= 1000 && note !== "Đang tải...") {
+            const qrUrl = `https://img.vietqr.io/image/vietinbank-${BANK_STK}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(note)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+            qrImg.src = qrUrl;
+            qrContainer.style.display = 'block';
+        } else {
+            qrContainer.style.display = 'none';
+        }
+    };
+
+    window.checkPayment = async () => {
+        if(!auth.currentUser) return;
+        const btn = document.getElementById('btnConfirmBank');
+        const statusText = document.getElementById('paymentStatus');
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+
+        if(amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+        statusText.style.display = 'block';
+        statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
+
+        try {
+            const response = await fetch(`https://my.sepay.vn/api/transactions/list?account_number=${BANK_STK}&limit=10`, {
+                headers: { 'Authorization': `Bearer ${SEPAY_API_KEY}` }
+            });
+            const data = await response.json();
+
+            if(data.status === 200 && data.transactions) {
+                const transaction = data.transactions.find(t => 
+                    t.content.includes(note) && 
+                    parseInt(t.amount) >= amount
+                );
+
+                if(transaction) {
+                    const transRef = ref(rtdb, `transactions/${transaction.id}`);
+                    const transSnap = await get(transRef);
+                    
+                    if(!transSnap.exists()) {
+                        await set(transRef, {
+                            uid: auth.currentUser.uid,
+                            amount: parseInt(transaction.amount),
+                            timestamp: Date.now()
+                        });
+
+                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                        const userSnap = await get(userRef);
+                        const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
+                        
+                        const newBalance = (userData.balance || 0) + parseInt(transaction.amount);
+                        const newTotalDep = (userData.totalDeposit || 0) + parseInt(transaction.amount);
+                        
+                        await update(userRef, { 
+                            balance: newBalance,
+                            totalDeposit: newTotalDep
+                        });
+
+                        await fetch(DEPOSIT_WEBHOOK, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
+                                embeds: [{
+                                    title: "✅ NẠP TIỀN TỰ ĐỘNG THÀNH CÔNG!",
+                                    color: 65280,
+                                    fields: [
+                                        { name: "👤 Khách", value: auth.currentUser.email, inline: true },
+                                        { name: "💰 Số tiền", value: parseInt(transaction.amount).toLocaleString() + "đ", inline: true },
+                                        { name: "📝 Nội dung", value: transaction.content, inline: false }
+                                    ],
+                                    timestamp: new Date().toISOString()
+                                }]
+                            })
+                        });
+
+                        window.closeModal('depositModal');
+                        showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
+                    } else {
+                        statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                    }
+                } else {
+                    statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
+                }
+            } else {
+                statusText.innerText = "Lỗi kết nối hệ thống SePay. Vui lòng thử lại sau.";
+            }
+        } catch (e) {
+            console.error(e);
+            statusText.innerText = "Có lỗi xảy ra khi kiểm tra thanh toán.";
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
+        }
+    };
+
     window.sendDepositWebhook = async () => {
         const u=auth.currentUser; if(!u) return;
         try {
             await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({username:"Dexsty Shop - BANK",embeds:[{title:"🏦 YÊU CẦU NẠP BANK!",color:2278750,
-                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"📝 Nội dung",value:"NAP "+u.email,inline:true}],
+                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"📝 Nội dung",value:"SEVQR NAP "+u.email.split('@')[0],inline:true}],
                     timestamp:new Date().toISOString()}]})});
             window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
         } catch(e){ showAlert(e.message); }
@@ -1003,12 +1122,16 @@
     };
 
     window.logout = () => signOut(auth).then(()=>location.reload());
-    window.openDeposit = () => document.getElementById('depositModal').style.display='flex';
+    window.openDeposit = () => {
+        document.getElementById('depositModal').style.display='flex';
+        window.updateQR();
+    };
     window.setDepMode = (m) => {
         document.getElementById('tab-dep-bank').className=`dep-tab ${m==='bank'?'active':''}`;
         document.getElementById('tab-dep-card').className=`dep-tab ${m==='card'?'active':''}`;
         document.getElementById('dep-bank-area').style.display=m==='bank'?'block':'none';
         document.getElementById('dep-card-area').style.display=m==='card'?'block':'none';
+        if(m==='bank') window.updateQR();
     };
     window.openHistory = () => {
         const content=document.getElementById('history-content');
