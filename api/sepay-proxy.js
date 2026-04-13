@@ -1,7 +1,3 @@
-
-import fetch from 'node-fetch';
-
-
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -23,38 +19,46 @@ export default async function handler(req, res) {
 
   const { amount, note } = req.body;
 
-  if (!amount || !note) {
-    return res.status(400).json({ error: 'Missing required fields: amount, note' });
-  }
+  // Log để debug trên Vercel Dashboard (không lộ key)
+  console.log('Request received:', { amount, note });
 
   const SEPAY_API_KEY = process.env.SEPAY_API_KEY;
   const BANK_STK = process.env.BANK_STK;
 
   if (!SEPAY_API_KEY || !BANK_STK) {
-    console.error('Missing environment variables for SePay');
-    return res.status(500).json({ error: 'Server configuration error: SePay API Key or Bank STK not set.' });
+    console.error('Missing environment variables: SEPAY_API_KEY or BANK_STK');
+    return res.status(500).json({ 
+        error: 'Chưa cấu hình biến môi trường SEPAY_API_KEY hoặc BANK_STK trên Vercel.' 
+    });
   }
 
   try {
-    // Gọi API SePay để lấy danh sách giao dịch gần đây
-    const sepayResponse = await fetch(`https://my.sepay.vn/api/transactions/list?account_number=${BANK_STK}&limit=20`, {
+    // Gọi API SePay
+    const response = await fetch(`https://my.sepay.vn/api/transactions/list?account_number=${BANK_STK}&limit=20`, {
+      method: 'GET',
       headers: { 
         'Authorization': `Bearer ${SEPAY_API_KEY}`,
         'Content-Type': 'application/json'
       }
     });
     
-    if (!sepayResponse.ok) {
-      const errorText = await sepayResponse.text();
-      console.error('SePay API Error:', errorText);
-      return res.status(sepayResponse.status).json({ error: 'Lỗi từ SePay API' });
+    const sepayData = await response.json();
+
+    if (!response.ok) {
+      console.error('SePay API Error:', sepayData);
+      return res.status(response.status).json({ 
+          error: 'Lỗi từ hệ thống SePay', 
+          details: sepayData 
+      });
     }
 
-    const sepayData = await sepayResponse.json();
     return res.status(200).json(sepayData);
 
   } catch (e) {
-    console.error('Error in sepay-proxy API:', e);
-    return res.status(500).json({ success: false, message: 'Có lỗi xảy ra khi kết nối đến SePay.' });
+    console.error('Proxy Error:', e.message);
+    return res.status(500).json({ 
+        error: 'Lỗi kết nối Serverless Function', 
+        message: e.message 
+    });
   }
 }
