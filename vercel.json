@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=0"
+          "value": "max-age=31600000"
         }
       ]
     }
