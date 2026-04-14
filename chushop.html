@@ -15,7 +15,7 @@
         * { box-sizing: border-box; transition: 0.3s; }
         body { 
             background: var(--bg); color: #f3f4f6; 
-            font-family: 'Inter', sans-serif; margin: 0; padding: 20px; 
+            font-family: \'Inter\', sans-serif; margin: 0; padding: 20px; 
         }
         .admin-container { max-width: 1200px; margin: auto; }
         
@@ -162,15 +162,15 @@
     <div id="tab-orders" class="section-card">
         <h3 style="margin-top:0"><i class="fas fa-box"></i> Quản lý Đơn hàng</h3>
         <div class="filter-bar">
-            <button class="filter-btn active" onclick="filterOrders('all')">Tất cả</button>
-            <button class="filter-btn" onclick="filterOrders('pending')">Chờ xử lý</button>
-            <button class="filter-btn" onclick="filterOrders('processing')">Đang thực hiện</button>
-            <button class="filter-btn" onclick="filterOrders('completed')">Đã hoàn thành</button>
-            <button class="filter-btn" onclick="filterOrders('cancelled')">Đã hủy</button>
+            <button class="filter-btn active" onclick="filterOrders(\'all\')">Tất cả</button>
+            <button class="filter-btn" onclick="filterOrders(\'pending\')">Chờ xử lý</button>
+            <button class="filter-btn" onclick="filterOrders(\'processing\')">Đang thực hiện</button>
+            <button class="filter-btn" onclick="filterOrders(\'completed\')">Đã hoàn thành</button>
+            <button class="filter-btn" onclick="filterOrders(\'cancelled\')">Đã hủy</button>
         </div>
         <div class="filter-bar" id="product-type-filter-bar">
             <!-- Product type filters will be loaded here dynamically -->
-            <button class="filter-btn active" onclick="filterOrdersByProductType('all')">Tất cả loại</button>
+            <button class="filter-btn active" onclick="filterOrdersByProductType(\'all\')">Tất cả loại</button>
         </div>
         <div id="order-list-container">
             <p style="text-align: center; color: gray;">Đang đồng bộ dữ liệu...</p>
@@ -204,15 +204,14 @@
         <div id="user-result-area" class="hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border);">
             <div class="user-item" style="background: #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <div class="user-info">
-                    <p>📧 Email: <b id="res-email" style="color:var(--sky)"></b></p>
-                    <p>💰 Số dư: <b id="res-balance" style="color:var(--gold)"></b></p>
-                    <p>📈 Tổng nạp: <b id="res-total" style="color:var(--success)"></b></p>
+                    <p>📧 Email: <b style="color:var(--sky)"></b></p>
+                    <p>💰 Số dư: <b style="color:var(--gold)"></b></p>
+                    <p>📈 Tổng nạp: <b style="color:var(--success)"></b></p>
                 </div>
                 <div class="user-actions">
-                    <label style="font-size: 0.8rem; color: #94a3b8;">SỐ TIỀN MUỐN CỘNG:</label>
-                    <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
-                    <button class="btn btn-success" id="btn-confirm-money">CỘNG TIỀN</button>
-                    <button class="btn btn-danger" id="btn-deduct-money">TRỪ TIỀN</button>
+                    <input type="number" class="amount-input" placeholder="Số tiền" data-uid="">
+                    <button class="btn btn-success btn-sm" onclick="addBalance(\'\')"><i class="fas fa-plus"></i> Cộng</button>
+                    <button class="btn btn-danger btn-sm" onclick="deductBalance(\'\')"><i class="fas fa-minus"></i> Trừ</button>
                 </div>
             </div>
         </div>
@@ -273,73 +272,73 @@
     const auth = getAuth(app);
 
     // --- UTILS ---
-    const showToast = (msg, type = 'success') => {
-        const t = document.getElementById('toast');
+    const showToast = (msg, type = \'success\') => {
+        const t = document.getElementById(\'toast\');
         t.innerText = msg;
-        t.style.background = type === 'success' ? '#22c55e' : '#ef4444';
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
+        t.style.background = type === \'success\' ? \'#22c55e\' : \'#ef4444\';
+        t.style.display = \'block\';
+        setTimeout(() => t.style.display = \'none\', 3000);
     }
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        return new Intl.NumberFormat(\'vi-VN\', { style: \'currency\', currency: \'VND\' }).format(amount);
     };
 
     // --- AUTHENTICATION ---
     onAuthStateChanged(auth, (user) => {
         if (!user) {
             // Redirect to login page or show login form
-            // For simplicity, we'll just alert and prevent access
-            alert('Bạn cần đăng nhập để truy cập trang Admin.');
-            // Example: window.location.href = '/login.html';
+            // For simplicity, we\'ll just alert and prevent access
+            alert(\'Bạn cần đăng nhập để truy cập trang Admin.\');
+            // Example: window.location.href = \'/login.html\';
             // Or show a login modal/form
             // For now, just a basic login prompt
-            const email = prompt('Nhập email admin:');
-            const password = prompt('Nhập mật khẩu admin:');
+            const email = prompt(\'Nhập email admin:\');
+            const password = prompt(\'Nhập mật khẩu admin:\');
             if (email && password) {
                 signInWithEmailAndPassword(auth, email, password)
-                    .then(() => showToast('Đăng nhập thành công!', 'success'))
+                    .then(() => showToast(\'Đăng nhập thành công!\', \'success\'))
                     .catch(error => {
-                        console.error('Login failed:', error);
-                        showToast('Đăng nhập thất bại: ' + error.message, 'danger');
+                        console.error(\'Login failed:\', error);
+                        showToast(\'Đăng nhập thất bại: \' + error.message, \'danger\');
                     });
             } else {
-                showToast('Bạn phải đăng nhập để tiếp tục.', 'danger');
+                showToast(\'Bạn phải đăng nhập để tiếp tục.\', \'danger\');
             }
         }
     });
 
     // --- TAB SWITCHING ---
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    document.querySelectorAll(\'.tab-btn\').forEach(btn => {
         btn.onclick = () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const target = btn.getAttribute('data-tab');
-            document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
-            document.getElementById('tab-products').classList.toggle('hidden', target !== 'products');
-            document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
-            document.getElementById('tab-stats').classList.toggle('hidden', target !== 'stats');
-            document.getElementById('tab-settings').classList.toggle('hidden', target !== 'settings');
+            document.querySelectorAll(\'.tab-btn\').forEach(b => b.classList.remove(\'active\'));
+            btn.classList.add(\'active\');
+            const target = btn.getAttribute(\'data-tab\');
+            document.getElementById(\'tab-orders\').classList.toggle(\'hidden\', target !== \'orders\');
+            document.getElementById(\'tab-products\').classList.toggle(\'hidden\', target !== \'products\');
+            document.getElementById(\'tab-users\').classList.toggle(\'hidden\', target !== \'users\');
+            document.getElementById(\'tab-stats\').classList.toggle(\'hidden\', target !== \'stats\');
+            document.getElementById(\'tab-settings\').classList.toggle(\'hidden\', target !== \'settings\');
 
             // Load data for the active tab
-            if (target === 'orders') { loadOrders(); }
-            else if (target === 'products') { loadProducts(); }
-            else if (target === 'users') { loadUsers(); }
-            else if (target === 'stats') { loadStats(); }
-            else if (target === 'settings') { loadSettings(); }
+            if (target === \'orders\') { loadOrders(); }
+            else if (target === \'products\') { loadProducts(); }
+            else if (target === \'users\') { loadUsers(); }
+            else if (target === \'stats\') { loadStats(); }
+            else if (target === \'settings\') { loadSettings(); }
         }
     });
 
     // --- ORDER MANAGEMENT ---
     let allOrders = [];
-    let currentOrderFilterStatus = 'all';
-    let currentOrderFilterProductType = 'all';
+    let currentOrderFilterStatus = \'all\';
+    let currentOrderFilterProductType = \'all\';
 
     const loadOrders = () => {
-        onValue(ref(rtdb, 'orders'), (snapshot) => {
+        onValue(ref(rtdb, \'orders\'), (snapshot) => {
             const data = snapshot.val();
             if(!data) {
-                document.getElementById('order-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có đơn hàng nào.</p>";
+                document.getElementById(\'order-list-container\').innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Chưa có đơn hàng nào.</p>";
                 allOrders = [];
                 renderOrders();
                 updateStats(allOrders);
@@ -354,41 +353,41 @@
     const renderOrders = () => {
         let filteredOrders = allOrders;
 
-        if (currentOrderFilterStatus !== 'all') {
+        if (currentOrderFilterStatus !== \'all\') {
             filteredOrders = filteredOrders.filter(order => {
                 const statusMap = {
-                    'pending': 'Chờ xử lý',
-                    'processing': 'Đang thực hiện',
-                    'completed': 'Đã hoàn thành',
-                    'cancelled': 'Đã hủy'
+                    \'pending\': \'Chờ xử lý\',
+                    \'processing\': \'Đang thực hiện\',
+                    \'completed\': \'Đã hoàn thành\',
+                    \'cancelled\': \'Đã hủy\'
                 };
                 return order.status === statusMap[currentOrderFilterStatus];
             });
         }
 
-        if (currentOrderFilterProductType !== 'all') {
+        if (currentOrderFilterProductType !== \'all\') {
             filteredOrders = filteredOrders.filter(order => order.productType === currentOrderFilterProductType);
         }
 
-        const container = document.getElementById('order-list-container');
-        container.innerHTML = '';
+        const container = document.getElementById(\'order-list-container\');
+        container.innerHTML = \'\';
 
         if (filteredOrders.length === 0) {
-            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không tìm thấy đơn hàng nào.</p>";
+            container.innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Không tìm thấy đơn hàng nào.</p>";
             return;
         }
 
         filteredOrders.forEach(order => {
-            const orderItem = document.createElement('div');
-            orderItem.className = 'order-item';
-            let statusClass = '';
-            let statusText = '';
+            const orderItem = document.createElement(\'div\');
+            orderItem.className = \'order-item\';
+            let statusClass = \'\';
+            let statusText = \'\';
             switch (order.status) {
-                case 'Chờ xử lý': statusClass = 'pending'; statusText = 'Chờ xử lý'; break;
-                case 'Đang thực hiện': statusClass = 'processing'; statusText = 'Đang thực hiện'; break;
-                case 'Đã hoàn thành': statusClass = 'completed'; statusText = 'Đã hoàn thành'; break;
-                case 'Đã hủy': statusClass = 'cancelled'; statusText = 'Đã hủy'; break;
-                default: statusClass = 'pending'; statusText = 'Không rõ';
+                case \'Chờ xử lý\': statusClass = \'pending\'; statusText = \'Chờ xử lý\'; break;
+                case \'Đang thực hiện\': statusClass = \'processing\'; statusText = \'Đang thực hiện\'; break;
+                case \'Đã hoàn thành\': statusClass = \'completed\'; statusText = \'Đã hoàn thành\'; break;
+                case \'Đã hủy\': statusClass = \'cancelled\'; statusText = \'Đã hủy\'; break;
+                default: statusClass = \'pending\'; statusText = \'Không rõ\';
             }
 
             orderItem.innerHTML = `
@@ -396,43 +395,43 @@
                     <p><b>Mã Đơn:</b> ${order.id}</p>
                     <p><b>Khách hàng:</b> ${order.userEmail}</p>
                     <p><b>Sản phẩm:</b> ${order.productName} (${formatCurrency(order.price)})</p>
-                    <p><b>Loại sản phẩm:</b> ${order.productType || 'N/A'}</p>
+                    <p><b>Loại sản phẩm:</b> ${order.productType || \'N/A\'}</p>
                     <p><b>Thời gian:</b> ${new Date(order.timestamp).toLocaleString()}</p>
                 </div>
                 <div>
                     <span class="status-pill ${statusClass}">${statusText}</span>
                     <select class="status-selector" data-order-id="${order.id}">
-                        <option value="Chờ xử lý" ${order.status === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
-                        <option value="Đang thực hiện" ${order.status === 'Đang thực hiện' ? 'selected' : ''}>Đang thực hiện</option>
-                        <option value="Đã hoàn thành" ${order.status === 'Đã hoàn thành' ? 'selected' : ''}>Đã hoàn thành</option>
-                        <option value="Đã hủy" ${order.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+                        <option value="Chờ xử lý" ${order.status === \'Chờ xử lý\' ? \'selected\' : \'\''}>Chờ xử lý</option>
+                        <option value="Đang thực hiện" ${order.status === \'Đang thực hiện\' ? \'selected\' : \'\''}>Đang thực hiện</option>
+                        <option value="Đã hoàn thành" ${order.status === \'Đã hoàn thành\' ? \'selected\' : \'\''}>Đã hoàn thành</option>
+                        <option value="Đã hủy" ${order.status === \'Đã hủy\' ? \'selected\' : \'\''}>Đã hủy</option>
                     </select>
                 </div>
             `;
             container.appendChild(orderItem);
         });
 
-        document.querySelectorAll('.status-selector').forEach(selector => {
+        document.querySelectorAll(\'.status-selector\').forEach(selector => {
             selector.onchange = async (e) => {
-                const orderId = e.target.getAttribute('data-order-id');
+                const orderId = e.target.getAttribute(\'data-order-id\');
                 const newStatus = e.target.value;
                 await update(ref(rtdb, `orders/${orderId}`), { status: newStatus });
-                showToast(`Cập nhật trạng thái đơn hàng ${orderId} thành ${newStatus}`, 'success');
+                showToast(`Cập nhật trạng thái đơn hàng ${orderId} thành ${newStatus}`, \'success\');
             };
         });
     };
 
     const filterOrders = (status) => {
         currentOrderFilterStatus = status;
-        document.querySelectorAll('.filter-bar:first-child .filter-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.filter-bar:first-child .filter-btn[onclick="filterOrders('${status}')"]`).classList.add('active');
+        document.querySelectorAll(\'.filter-bar:first-child .filter-btn\').forEach(btn => btn.classList.remove(\'active\'));
+        document.querySelector(`.filter-bar:first-child .filter-btn[onclick="filterOrders(\'${status}\')"]`).classList.add(\'active\');
         renderOrders();
     };
 
     const filterOrdersByProductType = (type) => {
         currentOrderFilterProductType = type;
-        document.querySelectorAll('#product-type-filter-bar .filter-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`#product-type-filter-bar .filter-btn[onclick="filterOrdersByProductType('${type}')"]`).classList.add('active');
+        document.querySelectorAll(\'#product-type-filter-bar .filter-btn\').forEach(btn => btn.classList.remove(\'active\'));
+        document.querySelector(`#product-type-filter-bar .filter-btn[onclick="filterOrdersByProductType(\'${type}\')"]`).classList.add(\'active\');
         renderOrders();
     };
 
@@ -440,10 +439,10 @@
     let allProducts = [];
 
     const loadProducts = () => {
-        onValue(ref(rtdb, 'products'), (snapshot) => {
+        onValue(ref(rtdb, \'products\'), (snapshot) => {
             const data = snapshot.val();
             if(!data) {
-                document.getElementById('product-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có sản phẩm nào.</p>";
+                document.getElementById(\'product-list-container\').innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Chưa có sản phẩm nào.</p>";
                 allProducts = [];
                 updateTotalProducts(0);
                 return;
@@ -456,27 +455,27 @@
     };
 
     const renderProducts = () => {
-        const container = document.getElementById('product-list-container');
-        container.innerHTML = '';
+        const container = document.getElementById(\'product-list-container\');
+        container.innerHTML = \'\';
 
         if (allProducts.length === 0) {
-            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có sản phẩm nào.</p>";
+            container.innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Chưa có sản phẩm nào.</p>";
             return;
         }
 
         allProducts.forEach(product => {
-            const productItem = document.createElement('div');
-            productItem.className = 'product-item';
+            const productItem = document.createElement(\'div\');
+            productItem.className = \'product-item\';
             productItem.innerHTML = `
                 <div class="product-info">
                     <p><b>Tên:</b> ${product.name}</p>
                     <p><b>Giá:</b> ${formatCurrency(product.price)}</p>
                     <p><b>Kho:</b> ${product.stock}</p>
-                    <p><b>Mô tả:</b> ${product.description || 'Không có'}</p>
+                    <p><b>Mô tả:</b> ${product.description || \'Không có\'}</p>
                 </div>
                 <div class="product-actions">
-                    <button class="btn btn-primary btn-sm" onclick="editProduct('${product.id}')"><i class="fas fa-edit"></i> Sửa</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.id}')"><i class="fas fa-trash"></i> Xóa</button>
+                    <button class="btn btn-primary btn-sm" onclick="editProduct(\'${product.id}\')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct(\'${product.id}\')"><i class="fas fa-trash"></i> Xóa</button>
                 </div>
             `;
             container.appendChild(productItem);
@@ -484,27 +483,27 @@
     };
 
     const renderProductTypeFilters = () => {
-        const filterBar = document.getElementById('product-type-filter-bar');
-        filterBar.innerHTML = '<button class="filter-btn active" onclick="filterOrdersByProductType(\'all\')">Tất cả loại</button>';
+        const filterBar = document.getElementById(\'product-type-filter-bar\');
+        filterBar.innerHTML = \'<button class="filter-btn active" onclick="filterOrdersByProductType(\'all\')">Tất cả loại</button>\';
         const productTypes = [...new Set(allProducts.map(p => p.name))]; // Get unique product names as types
         productTypes.forEach(type => {
-            const btn = document.createElement('button');
-            btn.className = 'filter-btn';
+            const btn = document.createElement(\'button\');
+            btn.className = \'filter-btn\';
             btn.innerText = type;
-            btn.setAttribute('onclick', `filterOrdersByProductType('${type}')`);
+            btn.setAttribute(\'onclick\', `filterOrdersByProductType(\'${type}\')`);
             filterBar.appendChild(btn);
         });
     };
 
     const saveProduct = async () => {
-        const productId = document.getElementById('productId').value;
-        const productName = document.getElementById('productName').value;
-        const productPrice = parseInt(document.getElementById('productPrice').value);
-        const productStock = parseInt(document.getElementById('productStock').value);
-        const productDescription = document.getElementById('productDescription').value;
+        const productId = document.getElementById(\'productId\').value;
+        const productName = document.getElementById(\'productName\').value;
+        const productPrice = parseInt(document.getElementById(\'productPrice\').value);
+        const productStock = parseInt(document.getElementById(\'productStock\').value);
+        const productDescription = document.getElementById(\'productDescription\').value;
 
         if (!productName || !productPrice || !productStock) {
-            showToast('Vui lòng điền đầy đủ thông tin sản phẩm.', 'danger');
+            showToast(\'Vui lòng điền đầy đủ thông tin sản phẩm.\', \'danger\');
             return;
         }
 
@@ -519,12 +518,12 @@
         if (productId) {
             // Update existing product
             await update(ref(rtdb, `products/${productId}`), productData);
-            showToast('Cập nhật sản phẩm thành công!', 'success');
+            showToast(\'Cập nhật sản phẩm thành công!\', \'success\');
         } else {
             // Add new product
-            const newProductRef = ref(rtdb, 'products/' + Date.now()); // Simple ID generation
+            const newProductRef = ref(rtdb, \'products/\' + Date.now()); // Simple ID generation
             await set(newProductRef, productData);
-            showToast('Thêm sản phẩm thành công!', 'success');
+            showToast(\'Thêm sản phẩm thành công!\', \'success\');
         }
         clearProductForm();
     };
@@ -532,45 +531,45 @@
     const editProduct = (productId) => {
         const product = allProducts.find(p => p.id === productId);
         if (product) {
-            document.getElementById('productId').value = product.id;
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productPrice').value = product.price;
-            document.getElementById('productStock').value = product.stock;
-            document.getElementById('productDescription').value = product.description;
-            document.getElementById('btn-cancel-edit-product').classList.remove('hidden');
-            document.getElementById('btn-save-product').innerText = 'CẬP NHẬT SẢN PHẨM';
+            document.getElementById(\'productId\').value = product.id;
+            document.getElementById(\'productName\').value = product.name;
+            document.getElementById(\'productPrice\').value = product.price;
+            document.getElementById(\'productStock\').value = product.stock;
+            document.getElementById(\'productDescription\').value = product.description;
+            document.getElementById(\'btn-cancel-edit-product\').classList.remove(\'hidden\');
+            document.getElementById(\'btn-save-product\').innerText = \'CẬP NHẬT SẢN PHẨM\';
         }
     };
 
     const deleteProduct = async (productId) => {
-        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+        if (confirm(\'Bạn có chắc chắn muốn xóa sản phẩm này?\')) {
             await remove(ref(rtdb, `products/${productId}`));
-            showToast('Xóa sản phẩm thành công!', 'success');
+            showToast(\'Xóa sản phẩm thành công!\', \'success\');
             clearProductForm();
         }
     };
 
     const clearProductForm = () => {
-        document.getElementById('productId').value = '';
-        document.getElementById('productName').value = '';
-        document.getElementById('productPrice').value = '';
-        document.getElementById('productStock').value = '';
-        document.getElementById('productDescription').value = '';
-        document.getElementById('btn-cancel-edit-product').classList.add('hidden');
-        document.getElementById('btn-save-product').innerText = 'LƯU SẢN PHẨM';
+        document.getElementById(\'productId\').value = \'\';
+        document.getElementById(\'productName\').value = \'\';
+        document.getElementById(\'productPrice\').value = \'\';
+        document.getElementById(\'productStock\').value = \'\';
+        document.getElementById(\'productDescription\').value = \'\';
+        document.getElementById(\'btn-cancel-edit-product\').classList.add(\'hidden\');
+        document.getElementById(\'btn-save-product\').innerText = \'LƯU SẢN PHẨM\';
     };
 
-    document.getElementById('btn-save-product').onclick = saveProduct;
-    document.getElementById('btn-cancel-edit-product').onclick = clearProductForm;
+    document.getElementById(\'btn-save-product\').onclick = saveProduct;
+    document.getElementById(\'btn-cancel-edit-product\').onclick = clearProductForm;
 
     // --- USER MANAGEMENT ---
     let allUsers = [];
 
     const loadUsers = () => {
-        onValue(ref(rtdb, 'users'), (snapshot) => {
+        onValue(ref(rtdb, \'users\'), (snapshot) => {
             const data = snapshot.val();
             if(!data) {
-                document.getElementById('user-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có người dùng nào.</p>";
+                document.getElementById(\'user-list-container\').innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Chưa có người dùng nào.</p>";
                 allUsers = [];
                 return;
             }
@@ -580,17 +579,17 @@
     };
 
     const renderUsers = (usersToRender = allUsers) => {
-        const container = document.getElementById('user-list-container');
-        container.innerHTML = '';
+        const container = document.getElementById(\'user-list-container\');
+        container.innerHTML = \'\';
 
         if (usersToRender.length === 0) {
-            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không tìm thấy người dùng nào.</p>";
+            container.innerHTML = "<p style=\'text-align:center; padding:20px; color:gray;\'>Không tìm thấy người dùng nào.</p>";
             return;
         }
 
         usersToRender.forEach(user => {
-            const userItem = document.createElement('div');
-            userItem.className = 'user-item';
+            const userItem = document.createElement(\'div\');
+            userItem.className = \'user-item\';
             userItem.innerHTML = `
                 <div class="user-info">
                     <p>📧 Email: <b style="color:var(--sky)">${user.email}</b></p>
@@ -599,8 +598,8 @@
                 </div>
                 <div class="user-actions">
                     <input type="number" class="amount-input" placeholder="Số tiền" data-uid="${user.uid}">
-                    <button class="btn btn-success btn-sm" onclick="addBalance('${user.uid}')"><i class="fas fa-plus"></i> Cộng</button>
-                    <button class="btn btn-danger btn-sm" onclick="deductBalance('${user.uid}')"><i class="fas fa-minus"></i> Trừ</button>
+                    <button class="btn btn-success btn-sm" onclick="addBalance(\'${user.uid}\')"><i class="fas fa-plus"></i> Cộng</button>
+                    <button class="btn btn-danger btn-sm" onclick="deductBalance(\'${user.uid}\')"><i class="fas fa-minus"></i> Trừ</button>
                 </div>
             `;
             container.appendChild(userItem);
@@ -608,16 +607,16 @@
     };
 
     const findUser = async () => {
-        const email = document.getElementById('userEmailSearch').value;
+        const email = document.getElementById(\'userEmailSearch\').value;
         if (!email) {
-            showToast('Vui lòng nhập email khách hàng để tìm kiếm.', 'danger');
+            showToast(\'Vui lòng nhập email khách hàng để tìm kiếm.\', \'danger\');
             return;
         }
 
-        const userResultArea = document.getElementById('user-result-area');
-        userResultArea.classList.add('hidden');
+        const userResultArea = document.getElementById(\'user-result-area\');
+        userResultArea.classList.add(\'hidden\');
 
-        const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
+        const userQuery = query(ref(rtdb, \'users\'), orderByChild(\'email\'), equalTo(email));
         const snapshot = await get(userQuery);
 
         if (snapshot.exists()) {
@@ -625,25 +624,25 @@
             const uid = Object.keys(userData)[0];
             const user = userData[uid];
             
-            document.getElementById('res-email').innerText = user.email;
-            document.getElementById('res-balance').innerText = formatCurrency(user.balance || 0);
-            document.getElementById('res-total').innerText = formatCurrency(user.totalDeposit || 0);
-            userResultArea.classList.remove('hidden');
+            document.getElementById(\'res-email\').innerText = user.email;
+            document.getElementById(\'res-balance\').innerText = formatCurrency(user.balance || 0);
+            document.getElementById(\'res-total\').innerText = formatCurrency(user.totalDeposit || 0);
+            userResultArea.classList.remove(\'hidden\');
 
-            document.getElementById('btn-confirm-money').onclick = () => addBalance(uid, true);
-            document.getElementById('btn-deduct-money').onclick = () => deductBalance(uid, true);
+            document.getElementById(\'btn-confirm-money\').onclick = () => addBalance(uid, true);
+            document.getElementById(\'btn-deduct-money\').onclick = () => deductBalance(uid, true);
 
         } else {
-            showToast('Không tìm thấy khách hàng với email này.', 'danger');
+            showToast(\'Không tìm thấy khách hàng với email này.\', \'danger\');
         }
     };
 
     const addBalance = async (uid, fromSearch = false) => {
-        const amountInput = fromSearch ? document.getElementById('amountToAdd') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
+        const amountInput = fromSearch ? document.getElementById(\'amountToAdd\') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
         const amount = parseInt(amountInput.value);
 
         if (isNaN(amount) || amount <= 0) {
-            showToast('Vui lòng nhập số tiền hợp lệ để cộng.', 'danger');
+            showToast(\'Vui lòng nhập số tiền hợp lệ để cộng.\', \'danger\');
             return;
         }
 
@@ -654,18 +653,18 @@
             const newBalance = (userData.balance || 0) + amount;
             const newTotalDeposit = (userData.totalDeposit || 0) + amount; // Assuming manual add is also a deposit
             await update(userRef, { balance: newBalance, totalDeposit: newTotalDeposit });
-            showToast(`Đã cộng ${formatCurrency(amount)} vào tài khoản ${userData.email}`, 'success');
-            amountInput.value = ''; // Clear input
+            showToast(`Đã cộng ${formatCurrency(amount)} vào tài khoản ${userData.email}`, \'success\');
+            amountInput.value = \'\'; // Clear input
             if (fromSearch) findUser(); // Refresh search result
         }
     };
 
     const deductBalance = async (uid, fromSearch = false) => {
-        const amountInput = fromSearch ? document.getElementById('amountToAdd') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
+        const amountInput = fromSearch ? document.getElementById(\'amountToAdd\') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
         const amount = parseInt(amountInput.value);
 
         if (isNaN(amount) || amount <= 0) {
-            showToast('Vui lòng nhập số tiền hợp lệ để trừ.', 'danger');
+            showToast(\'Vui lòng nhập số tiền hợp lệ để trừ.\', \'danger\');
             return;
         }
 
@@ -675,23 +674,23 @@
             const userData = userSnap.val();
             const newBalance = (userData.balance || 0) - amount;
             if (newBalance < 0) {
-                showToast('Số dư không đủ để trừ số tiền này.', 'danger');
+                showToast(\'Số dư không đủ để trừ số tiền này.\', \'danger\');
                 return;
             }
             await update(userRef, { balance: newBalance });
-            showToast(`Đã trừ ${formatCurrency(amount)} từ tài khoản ${userData.email}`, 'success');
-            amountInput.value = ''; // Clear input
+            showToast(`Đã trừ ${formatCurrency(amount)} từ tài khoản ${userData.email}`, \'success\');
+            amountInput.value = \'\'; // Clear input
             if (fromSearch) findUser(); // Refresh search result
         }
     };
 
-    document.getElementById('btn-find-user').onclick = findUser;
+    document.getElementById(\'btn-find-user\').onclick = findUser;
 
     // --- STATISTICS ---
     let dailyRevenueChart, orderStatusChart;
 
     const loadStats = () => {
-        onValue(ref(rtdb, 'orders'), (snapshot) => {
+        onValue(ref(rtdb, \'orders\'), (snapshot) => {
             const data = snapshot.val();
             if(!data) {
                 renderDailyRevenueChart([]);
@@ -707,8 +706,8 @@
     const renderDailyRevenueChart = (orders) => {
         const dailyRevenue = {};
         orders.forEach(order => {
-            if (order.status === 'Đã hoàn thành') {
-                const date = new Date(order.timestamp).toLocaleDateString('en-CA'); // YYYY-MM-DD
+            if (order.status === \'Đã hoàn thành\') {
+                const date = new Date(order.timestamp).toLocaleDateString(\'en-CA\'); // YYYY-MM-DD
                 dailyRevenue[date] = (dailyRevenue[date] || 0) + (order.price || 0);
             }
         });
@@ -716,17 +715,17 @@
         const labels = Object.keys(dailyRevenue).sort();
         const data = labels.map(date => dailyRevenue[date]);
 
-        const ctx = document.getElementById('dailyRevenueChart').getContext('2d');
+        const ctx = document.getElementById(\'dailyRevenueChart\').getContext(\'2d\');
         if (dailyRevenueChart) dailyRevenueChart.destroy();
         dailyRevenueChart = new Chart(ctx, {
-            type: 'line',
+            type: \'line\',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Doanh thu (VND)',
+                    label: \'Doanh thu (VND)\',
                     data: data,
-                    borderColor: var(--sky),
-                    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                    borderColor: \'var(--sky)\',
+                    backgroundColor: \'rgba(56, 189, 248, 0.2)\',
                     fill: true,
                     tension: 0.1
                 }]
@@ -736,16 +735,16 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { color: '#f3f4f6' },
-                        grid: { color: '#1f2937' }
+                        ticks: { color: \'#f3f4f6\' },
+                        grid: { color: \'#1f2937\' }
                     },
                     x: {
-                        ticks: { color: '#f3f4f6' },
-                        grid: { color: '#1f2937' }
+                        ticks: { color: \'#f3f4f6\' },
+                        grid: { color: \'#1f2937\' }
                     }
                 },
                 plugins: {
-                    legend: { labels: { color: '#f3f4f6' } }
+                    legend: { labels: { color: \'#f3f4f6\' } }
                 }
             }
         });
@@ -753,10 +752,10 @@
 
     const renderOrderStatusChart = (orders) => {
         const statusCounts = {
-            'Chờ xử lý': 0,
-            'Đang thực hiện': 0,
-            'Đã hoàn thành': 0,
-            'Đã hủy': 0
+            \'Chờ xử lý\': 0,
+            \'Đang thực hiện\': 0,
+            \'Đã hoàn thành\': 0,
+            \'Đã hủy\': 0
         };
         orders.forEach(order => {
             if (statusCounts.hasOwnProperty(order.status)) {
@@ -767,16 +766,16 @@
         const labels = Object.keys(statusCounts);
         const data = Object.values(statusCounts);
         const backgroundColors = [
-            '#fbbf24', // pending (gold)
-            '#38bdf8', // processing (sky)
-            '#22c55e', // completed (success)
-            '#ef4444'  // cancelled (danger)
+            \'#fbbf24\', // pending (gold)
+            \'#38bdf8\', // processing (sky)
+            \'#22c55e\', // completed (success)
+            \'#ef4444\'  // cancelled (danger)
         ];
 
-        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+        const ctx = document.getElementById(\'orderStatusChart\').getContext(\'2d\');
         if (orderStatusChart) orderStatusChart.destroy();
         orderStatusChart = new Chart(ctx, {
-            type: 'pie',
+            type: \'pie\',
             data: {
                 labels: labels,
                 datasets: [{
@@ -788,7 +787,7 @@
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { labels: { color: '#f3f4f6' } }
+                    legend: { labels: { color: \'#f3f4f6\' } }
                 }
             }
         });
@@ -796,46 +795,45 @@
 
     // --- SETTINGS MANAGEMENT ---
     const loadSettings = () => {
-        onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
+        onValue(ref(rtdb, \'settings/shopStatus\'), (snapshot) => {
             const status = snapshot.val();
             if (status) {
-                document.getElementById('shop-status-select').value = status.status;
-                document.getElementById('shop-announcement').value = status.announcement;
+                document.getElementById(\'shop-status-select\').value = status.status;
+                document.getElementById(\'shop-announcement\').value = status.announcement;
             }
         });
     };
 
     const saveSettings = async () => {
-        const status = document.getElementById('shop-status-select').value;
-        const announcement = document.getElementById('shop-announcement').value;
-        await update(ref(rtdb, 'settings/shopStatus'), { status, announcement });
-        showToast('Cập nhật trạng thái website thành công!', 'success');
+        const status = document.getElementById(\'shop-status-select\').value;
+        const announcement = document.getElementById(\'shop-announcement\').value;
+        await update(ref(rtdb, \'settings/shopStatus\'), { status, announcement });
+        showToast(\'Cập nhật trạng thái website thành công!\', \'success\');
     };
 
-    document.getElementById('btn-save-status').onclick = saveSettings;
+    document.getElementById(\'btn-save-status\').onclick = saveSettings;
 
     // Initial load for the default tab (Orders)
     loadOrders();
 
     // Initial stats update (for header stats)
-    onValue(ref(rtdb, 'users'), (snapshot) => {
+    onValue(ref(rtdb, \'users\'), (snapshot) => {
         const users = snapshot.val();
-        if(users) document.getElementById('stat-users').innerText = Object.keys(users).length;
+        if(users) document.getElementById(\'stat-users\').innerText = Object.keys(users).length;
     });
 
     const updateTotalProducts = (count) => {
-        document.getElementById('stat-total-products').innerText = count;
+        document.getElementById(\'stat-total-products\').innerText = count;
     };
 
     // Function to reset top deposit (from original code)
     window.resetTopDeposit = async () => {
-        if (confirm('Bạn có chắc chắn muốn reset Top Nạp? Hành động này không thể hoàn tác.')) {
-            await remove(ref(rtdb, 'topDeposits'));
-            showToast('Đã reset Top Nạp thành công!', 'success');
+        if (confirm(\'Bạn có chắc chắn muốn reset Top Nạp? Hành động này không thể hoàn tác.\')) {
+            await remove(ref(rtdb, \'topDeposits\'));
+            showToast(\'Đã reset Top Nạp thành công!\', \'success\');
         }
     };
 
 </script>
 </body>
 </html>
-
