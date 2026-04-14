@@ -17,7 +17,7 @@
             background: var(--bg); color: #f3f4f6; 
             font-family: 'Inter', sans-serif; margin: 0; padding: 20px; 
         }
-        .admin-container { max-width: 1100px; margin: auto; }
+        .admin-container { max-width: 1200px; margin: auto; }
         
         /* HEADER & STATS */
         header { text-align: center; margin-bottom: 30px; }
@@ -64,17 +64,19 @@
         }
         .filter-btn.active { border-color: var(--sky); color: var(--sky); }
 
-        .order-item { 
+        .order-item, .product-item, .user-item { 
             background: #0f172a; border: 1px solid var(--border); border-radius: 12px; 
             padding: 15px; margin-bottom: 12px; display: flex; flex-wrap: wrap;
             justify-content: space-between; align-items: center; gap: 15px;
         }
-        .order-info b { color: var(--sky); }
-        .order-info p { margin: 3px 0; font-size: 0.9rem; }
+        .order-info b, .product-info b, .user-info b { color: var(--sky); }
+        .order-info p, .product-info p, .user-info p { margin: 3px 0; font-size: 0.9rem; }
         
         .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
         .pending { background: #451a03; color: var(--gold); }
         .completed { background: #064e3b; color: var(--success); }
+        .cancelled { background: #7f1d1d; color: var(--danger); }
+        .processing { background: #075985; color: var(--sky); }
 
         /* INPUTS & BUTTONS */
         input, select, textarea { 
@@ -89,6 +91,7 @@
         }
         .btn-primary { background: var(--sky); color: #000; }
         .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-danger { background: var(--danger); color: white; }
         .btn-disabled { background: #374151; color: #94a3b8; cursor: not-allowed; }
 
         .hidden { display: none !important; }
@@ -99,6 +102,21 @@
             border-radius: 8px; color: white; font-weight: bold; z-index: 1000;
             display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
         }
+
+        /* NEW STYLES FOR PRODUCT MANAGEMENT */
+        .product-actions button { margin-left: 10px; }
+        .product-form { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); }
+        .product-form h3 { margin-top: 0; color: var(--sky); }
+        .product-form .btn { margin-top: 10px; }
+
+        /* NEW STYLES FOR USER MANAGEMENT */
+        .user-list-container { margin-top: 20px; }
+        .user-item { align-items: flex-start; }
+        .user-actions { display: flex; flex-direction: column; gap: 5px; }
+
+        /* NEW STYLES FOR STATISTICS */
+        .chart-container { margin-top: 20px; background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .chart-container h3 { margin-top: 0; color: var(--sky); }
     </style>
 </head>
 <body>
@@ -125,42 +143,93 @@
                 <p>Thành viên</p>
                 <span class="reset-link" onclick="resetTopDeposit()"><i class="fas fa-sync-alt"></i> Reset Top Nạp</span>
             </div>
+            <div class="stat-card">
+                <i class="fas fa-box-open"></i>
+                <h3 id="stat-total-products">0</h3>
+                <p>Tổng sản phẩm</p>
+            </div>
         </div>
     </header>
 
     <div class="tabs">
         <button class="tab-btn active" data-tab="orders"><i class="fas fa-box"></i> ĐƠN HÀNG</button>
-        <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> CỘNG TIỀN</button>
+        <button class="tab-btn" data-tab="products"><i class="fas fa-cube"></i> SẢN PHẨM</button>
+        <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> NGƯỜI DÙNG</button>
+        <button class="tab-btn" data-tab="stats"><i class="fas fa-chart-line"></i> THỐNG KÊ</button>
         <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> CÀI ĐẶT</button>
     </div>
 
     <div id="tab-orders" class="section-card">
+        <h3 style="margin-top:0"><i class="fas fa-box"></i> Quản lý Đơn hàng</h3>
         <div class="filter-bar">
-            <button class="filter-btn active" onclick="filterOrders('Tất cả')">Tất cả</button>
-            <button class="filter-btn" onclick="filterOrders('Chờ xử lý')">Chờ xử lý</button>
-            <button class="filter-btn" onclick="filterOrders('Đã hoàn thành')">Đã xong</button>
+            <button class="filter-btn active" onclick="filterOrders('all')">Tất cả</button>
+            <button class="filter-btn" onclick="filterOrders('pending')">Chờ xử lý</button>
+            <button class="filter-btn" onclick="filterOrders('processing')">Đang thực hiện</button>
+            <button class="filter-btn" onclick="filterOrders('completed')">Đã hoàn thành</button>
+            <button class="filter-btn" onclick="filterOrders('cancelled')">Đã hủy</button>
+        </div>
+        <div class="filter-bar" id="product-type-filter-bar">
+            <!-- Product type filters will be loaded here dynamically -->
+            <button class="filter-btn active" onclick="filterOrdersByProductType('all')">Tất cả loại</button>
         </div>
         <div id="order-list-container">
             <p style="text-align: center; color: gray;">Đang đồng bộ dữ liệu...</p>
         </div>
     </div>
 
+    <div id="tab-products" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-cube"></i> Quản lý Sản phẩm</h3>
+        <div id="product-list-container">
+            <p style="text-align: center; color: gray;">Đang tải sản phẩm...</p>
+        </div>
+        <div class="product-form">
+            <h3><i class="fas fa-plus-circle"></i> Thêm/Sửa Sản phẩm</h3>
+            <input type="hidden" id="productId" value="">
+            <input type="text" id="productName" placeholder="Tên sản phẩm (ví dụ: Gamepass, Perm Fruit)">
+            <input type="number" id="productPrice" placeholder="Giá sản phẩm">
+            <input type="number" id="productStock" placeholder="Số lượng trong kho">
+            <textarea id="productDescription" rows="3" placeholder="Mô tả sản phẩm..."></textarea>
+            <button class="btn btn-primary" id="btn-save-product"><i class="fas fa-save"></i> LƯU SẢN PHẨM</button>
+            <button class="btn btn-danger hidden" id="btn-cancel-edit-product"><i class="fas fa-times"></i> HỦY</button>
+        </div>
+    </div>
+
     <div id="tab-users" class="section-card hidden">
-        <h3 style="margin-top:0"><i class="fas fa-search"></i> Tìm kiếm khách hàng</h3>
+        <h3 style="margin-top:0"><i class="fas fa-search"></i> Tìm kiếm & Quản lý khách hàng</h3>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="userEmailSearch" placeholder="Nhập đúng email khách hàng...">
-            <button class="btn btn-primary" id="btn-find" style="height: 46px;">TÌM</button>
+            <button class="btn btn-primary" id="btn-find-user" style="height: 46px;">TÌM</button>
         </div>
 
         <div id="user-result-area" class="hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border);">
-            <div style="background: #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <p>📧 Email: <b id="res-email" style="color:var(--sky)"></b></p>
-                <p>💰 Số dư: <b id="res-balance" style="color:var(--gold)"></b></p>
-                <p>📈 Tổng nạp: <b id="res-total" style="color:var(--success)"></b></p>
+            <div class="user-item" style="background: #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <div class="user-info">
+                    <p>📧 Email: <b id="res-email" style="color:var(--sky)"></b></p>
+                    <p>💰 Số dư: <b id="res-balance" style="color:var(--gold)"></b></p>
+                    <p>📈 Tổng nạp: <b id="res-total" style="color:var(--success)"></b></p>
+                </div>
+                <div class="user-actions">
+                    <label style="font-size: 0.8rem; color: #94a3b8;">SỐ TIỀN MUỐN CỘNG:</label>
+                    <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
+                    <button class="btn btn-success" id="btn-confirm-money">CỘNG TIỀN</button>
+                    <button class="btn btn-danger" id="btn-deduct-money">TRỪ TIỀN</button>
+                </div>
             </div>
-            <label style="font-size: 0.8rem; color: #94a3b8;">SỐ TIỀN MUỐN CỘNG:</label>
-            <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
-            <button class="btn btn-success" id="btn-confirm-money">XÁC NHẬN CỘNG TIỀN</button>
+        </div>
+        <div id="user-list-container" class="user-list-container">
+            <!-- User list will be loaded here -->
+        </div>
+    </div>
+
+    <div id="tab-stats" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-chart-line"></i> Thống kê Doanh thu & Đơn hàng</h3>
+        <div class="chart-container">
+            <h3>Doanh thu theo ngày</h3>
+            <canvas id="dailyRevenueChart"></canvas>
+        </div>
+        <div class="chart-container" style="margin-top: 15px;">
+            <h3>Đơn hàng theo trạng thái</h3>
+            <canvas id="orderStatusChart"></canvas>
         </div>
     </div>
 
@@ -186,7 +255,11 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo, set, remove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    // Chart.js for statistics
+    import "https://cdn.jsdelivr.net/npm/chart.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
@@ -197,6 +270,7 @@
 
     const app = initializeApp(firebaseConfig);
     const rtdb = getDatabase(app);
+    const auth = getAuth(app);
 
     // --- UTILS ---
     const showToast = (msg, type = 'success') => {
@@ -207,6 +281,34 @@
         setTimeout(() => t.style.display = 'none', 3000);
     }
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+    // --- AUTHENTICATION ---
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            // Redirect to login page or show login form
+            // For simplicity, we'll just alert and prevent access
+            alert('Bạn cần đăng nhập để truy cập trang Admin.');
+            // Example: window.location.href = '/login.html';
+            // Or show a login modal/form
+            // For now, just a basic login prompt
+            const email = prompt('Nhập email admin:');
+            const password = prompt('Nhập mật khẩu admin:');
+            if (email && password) {
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => showToast('Đăng nhập thành công!', 'success'))
+                    .catch(error => {
+                        console.error('Login failed:', error);
+                        showToast('Đăng nhập thất bại: ' + error.message, 'danger');
+                    });
+            } else {
+                showToast('Bạn phải đăng nhập để tiếp tục.', 'danger');
+            }
+        }
+    });
+
     // --- TAB SWITCHING ---
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.onclick = () => {
@@ -214,168 +316,526 @@
             btn.classList.add('active');
             const target = btn.getAttribute('data-tab');
             document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
+            document.getElementById('tab-products').classList.toggle('hidden', target !== 'products');
             document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
+            document.getElementById('tab-stats').classList.toggle('hidden', target !== 'stats');
             document.getElementById('tab-settings').classList.toggle('hidden', target !== 'settings');
+
+            // Load data for the active tab
+            if (target === 'orders') { loadOrders(); }
+            else if (target === 'products') { loadProducts(); }
+            else if (target === 'users') { loadUsers(); }
+            else if (target === 'stats') { loadStats(); }
+            else if (target === 'settings') { loadSettings(); }
         }
     });
 
-    // --- RENDER ORDERS & STATS ---
+    // --- ORDER MANAGEMENT ---
     let allOrders = [];
-    onValue(ref(rtdb, 'orders'), (snapshot) => {
-        const data = snapshot.val();
-        if(!data) {
-            document.getElementById('order-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có đơn hàng nào.</p>";
+    let currentOrderFilterStatus = 'all';
+    let currentOrderFilterProductType = 'all';
+
+    const loadOrders = () => {
+        onValue(ref(rtdb, 'orders'), (snapshot) => {
+            const data = snapshot.val();
+            if(!data) {
+                document.getElementById('order-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có đơn hàng nào.</p>";
+                allOrders = [];
+                renderOrders();
+                updateStats(allOrders);
+                return;
+            }
+            allOrders = Object.entries(data).map(([id, order]) => ({ id, ...order })).reverse();
+            renderOrders();
+            updateStats(allOrders);
+        });
+    };
+
+    const renderOrders = () => {
+        let filteredOrders = allOrders;
+
+        if (currentOrderFilterStatus !== 'all') {
+            filteredOrders = filteredOrders.filter(order => {
+                const statusMap = {
+                    'pending': 'Chờ xử lý',
+                    'processing': 'Đang thực hiện',
+                    'completed': 'Đã hoàn thành',
+                    'cancelled': 'Đã hủy'
+                };
+                return order.status === statusMap[currentOrderFilterStatus];
+            });
+        }
+
+        if (currentOrderFilterProductType !== 'all') {
+            filteredOrders = filteredOrders.filter(order => order.productType === currentOrderFilterProductType);
+        }
+
+        const container = document.getElementById('order-list-container');
+        container.innerHTML = '';
+
+        if (filteredOrders.length === 0) {
+            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không tìm thấy đơn hàng nào.</p>";
             return;
         }
-        allOrders = Object.entries(data).reverse();
-        renderOrders(allOrders);
-        updateStats(allOrders);
-    });
 
+        filteredOrders.forEach(order => {
+            const orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
+            let statusClass = '';
+            let statusText = '';
+            switch (order.status) {
+                case 'Chờ xử lý': statusClass = 'pending'; statusText = 'Chờ xử lý'; break;
+                case 'Đang thực hiện': statusClass = 'processing'; statusText = 'Đang thực hiện'; break;
+                case 'Đã hoàn thành': statusClass = 'completed'; statusText = 'Đã hoàn thành'; break;
+                case 'Đã hủy': statusClass = 'cancelled'; statusText = 'Đã hủy'; break;
+                default: statusClass = 'pending'; statusText = 'Không rõ';
+            }
+
+            orderItem.innerHTML = `
+                <div class="order-info">
+                    <p><b>Mã Đơn:</b> ${order.id}</p>
+                    <p><b>Khách hàng:</b> ${order.userEmail}</p>
+                    <p><b>Sản phẩm:</b> ${order.productName} (${formatCurrency(order.price)})</p>
+                    <p><b>Loại sản phẩm:</b> ${order.productType || 'N/A'}</p>
+                    <p><b>Thời gian:</b> ${new Date(order.timestamp).toLocaleString()}</p>
+                </div>
+                <div>
+                    <span class="status-pill ${statusClass}">${statusText}</span>
+                    <select class="status-selector" data-order-id="${order.id}">
+                        <option value="Chờ xử lý" ${order.status === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
+                        <option value="Đang thực hiện" ${order.status === 'Đang thực hiện' ? 'selected' : ''}>Đang thực hiện</option>
+                        <option value="Đã hoàn thành" ${order.status === 'Đã hoàn thành' ? 'selected' : ''}>Đã hoàn thành</option>
+                        <option value="Đã hủy" ${order.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(orderItem);
+        });
+
+        document.querySelectorAll('.status-selector').forEach(selector => {
+            selector.onchange = async (e) => {
+                const orderId = e.target.getAttribute('data-order-id');
+                const newStatus = e.target.value;
+                await update(ref(rtdb, `orders/${orderId}`), { status: newStatus });
+                showToast(`Cập nhật trạng thái đơn hàng ${orderId} thành ${newStatus}`, 'success');
+            };
+        });
+    };
+
+    const filterOrders = (status) => {
+        currentOrderFilterStatus = status;
+        document.querySelectorAll('.filter-bar:first-child .filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.filter-bar:first-child .filter-btn[onclick="filterOrders('${status}')"]`).classList.add('active');
+        renderOrders();
+    };
+
+    const filterOrdersByProductType = (type) => {
+        currentOrderFilterProductType = type;
+        document.querySelectorAll('#product-type-filter-bar .filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`#product-type-filter-bar .filter-btn[onclick="filterOrdersByProductType('${type}')"]`).classList.add('active');
+        renderOrders();
+    };
+
+    // --- PRODUCT MANAGEMENT ---
+    let allProducts = [];
+
+    const loadProducts = () => {
+        onValue(ref(rtdb, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            if(!data) {
+                document.getElementById('product-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có sản phẩm nào.</p>";
+                allProducts = [];
+                updateTotalProducts(0);
+                return;
+            }
+            allProducts = Object.entries(data).map(([id, product]) => ({ id, ...product })).reverse();
+            renderProducts();
+            updateTotalProducts(allProducts.length);
+            renderProductTypeFilters();
+        });
+    };
+
+    const renderProducts = () => {
+        const container = document.getElementById('product-list-container');
+        container.innerHTML = '';
+
+        if (allProducts.length === 0) {
+            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có sản phẩm nào.</p>";
+            return;
+        }
+
+        allProducts.forEach(product => {
+            const productItem = document.createElement('div');
+            productItem.className = 'product-item';
+            productItem.innerHTML = `
+                <div class="product-info">
+                    <p><b>Tên:</b> ${product.name}</p>
+                    <p><b>Giá:</b> ${formatCurrency(product.price)}</p>
+                    <p><b>Kho:</b> ${product.stock}</p>
+                    <p><b>Mô tả:</b> ${product.description || 'Không có'}</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary btn-sm" onclick="editProduct('${product.id}')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.id}')"><i class="fas fa-trash"></i> Xóa</button>
+                </div>
+            `;
+            container.appendChild(productItem);
+        });
+    };
+
+    const renderProductTypeFilters = () => {
+        const filterBar = document.getElementById('product-type-filter-bar');
+        filterBar.innerHTML = '<button class="filter-btn active" onclick="filterOrdersByProductType(\'all\')">Tất cả loại</button>';
+        const productTypes = [...new Set(allProducts.map(p => p.name))]; // Get unique product names as types
+        productTypes.forEach(type => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.innerText = type;
+            btn.setAttribute('onclick', `filterOrdersByProductType('${type}')`);
+            filterBar.appendChild(btn);
+        });
+    };
+
+    const saveProduct = async () => {
+        const productId = document.getElementById('productId').value;
+        const productName = document.getElementById('productName').value;
+        const productPrice = parseInt(document.getElementById('productPrice').value);
+        const productStock = parseInt(document.getElementById('productStock').value);
+        const productDescription = document.getElementById('productDescription').value;
+
+        if (!productName || !productPrice || !productStock) {
+            showToast('Vui lòng điền đầy đủ thông tin sản phẩm.', 'danger');
+            return;
+        }
+
+        const productData = {
+            name: productName,
+            price: productPrice,
+            stock: productStock,
+            description: productDescription,
+            timestamp: Date.now()
+        };
+
+        if (productId) {
+            // Update existing product
+            await update(ref(rtdb, `products/${productId}`), productData);
+            showToast('Cập nhật sản phẩm thành công!', 'success');
+        } else {
+            // Add new product
+            const newProductRef = ref(rtdb, 'products/' + Date.now()); // Simple ID generation
+            await set(newProductRef, productData);
+            showToast('Thêm sản phẩm thành công!', 'success');
+        }
+        clearProductForm();
+    };
+
+    const editProduct = (productId) => {
+        const product = allProducts.find(p => p.id === productId);
+        if (product) {
+            document.getElementById('productId').value = product.id;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productStock').value = product.stock;
+            document.getElementById('productDescription').value = product.description;
+            document.getElementById('btn-cancel-edit-product').classList.remove('hidden');
+            document.getElementById('btn-save-product').innerText = 'CẬP NHẬT SẢN PHẨM';
+        }
+    };
+
+    const deleteProduct = async (productId) => {
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+            await remove(ref(rtdb, `products/${productId}`));
+            showToast('Xóa sản phẩm thành công!', 'success');
+            clearProductForm();
+        }
+    };
+
+    const clearProductForm = () => {
+        document.getElementById('productId').value = '';
+        document.getElementById('productName').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productStock').value = '';
+        document.getElementById('productDescription').value = '';
+        document.getElementById('btn-cancel-edit-product').classList.add('hidden');
+        document.getElementById('btn-save-product').innerText = 'LƯU SẢN PHẨM';
+    };
+
+    document.getElementById('btn-save-product').onclick = saveProduct;
+    document.getElementById('btn-cancel-edit-product').onclick = clearProductForm;
+
+    // --- USER MANAGEMENT ---
+    let allUsers = [];
+
+    const loadUsers = () => {
+        onValue(ref(rtdb, 'users'), (snapshot) => {
+            const data = snapshot.val();
+            if(!data) {
+                document.getElementById('user-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có người dùng nào.</p>";
+                allUsers = [];
+                return;
+            }
+            allUsers = Object.entries(data).map(([uid, user]) => ({ uid, ...user }));
+            renderUsers();
+        });
+    };
+
+    const renderUsers = (usersToRender = allUsers) => {
+        const container = document.getElementById('user-list-container');
+        container.innerHTML = '';
+
+        if (usersToRender.length === 0) {
+            container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không tìm thấy người dùng nào.</p>";
+            return;
+        }
+
+        usersToRender.forEach(user => {
+            const userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.innerHTML = `
+                <div class="user-info">
+                    <p>📧 Email: <b style="color:var(--sky)">${user.email}</b></p>
+                    <p>💰 Số dư: <b style="color:var(--gold)">${formatCurrency(user.balance || 0)}</b></p>
+                    <p>📈 Tổng nạp: <b style="color:var(--success)">${formatCurrency(user.totalDeposit || 0)}</b></p>
+                </div>
+                <div class="user-actions">
+                    <input type="number" class="amount-input" placeholder="Số tiền" data-uid="${user.uid}">
+                    <button class="btn btn-success btn-sm" onclick="addBalance('${user.uid}')"><i class="fas fa-plus"></i> Cộng</button>
+                    <button class="btn btn-danger btn-sm" onclick="deductBalance('${user.uid}')"><i class="fas fa-minus"></i> Trừ</button>
+                </div>
+            `;
+            container.appendChild(userItem);
+        });
+    };
+
+    const findUser = async () => {
+        const email = document.getElementById('userEmailSearch').value;
+        if (!email) {
+            showToast('Vui lòng nhập email khách hàng để tìm kiếm.', 'danger');
+            return;
+        }
+
+        const userResultArea = document.getElementById('user-result-area');
+        userResultArea.classList.add('hidden');
+
+        const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
+        const snapshot = await get(userQuery);
+
+        if (snapshot.exists()) {
+            const userData = snapshot.val();
+            const uid = Object.keys(userData)[0];
+            const user = userData[uid];
+            
+            document.getElementById('res-email').innerText = user.email;
+            document.getElementById('res-balance').innerText = formatCurrency(user.balance || 0);
+            document.getElementById('res-total').innerText = formatCurrency(user.totalDeposit || 0);
+            userResultArea.classList.remove('hidden');
+
+            document.getElementById('btn-confirm-money').onclick = () => addBalance(uid, true);
+            document.getElementById('btn-deduct-money').onclick = () => deductBalance(uid, true);
+
+        } else {
+            showToast('Không tìm thấy khách hàng với email này.', 'danger');
+        }
+    };
+
+    const addBalance = async (uid, fromSearch = false) => {
+        const amountInput = fromSearch ? document.getElementById('amountToAdd') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
+        const amount = parseInt(amountInput.value);
+
+        if (isNaN(amount) || amount <= 0) {
+            showToast('Vui lòng nhập số tiền hợp lệ để cộng.', 'danger');
+            return;
+        }
+
+        const userRef = ref(rtdb, `users/${uid}`);
+        const userSnap = await get(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.val();
+            const newBalance = (userData.balance || 0) + amount;
+            const newTotalDeposit = (userData.totalDeposit || 0) + amount; // Assuming manual add is also a deposit
+            await update(userRef, { balance: newBalance, totalDeposit: newTotalDeposit });
+            showToast(`Đã cộng ${formatCurrency(amount)} vào tài khoản ${userData.email}`, 'success');
+            amountInput.value = ''; // Clear input
+            if (fromSearch) findUser(); // Refresh search result
+        }
+    };
+
+    const deductBalance = async (uid, fromSearch = false) => {
+        const amountInput = fromSearch ? document.getElementById('amountToAdd') : document.querySelector(`.amount-input[data-uid="${uid}"]`);
+        const amount = parseInt(amountInput.value);
+
+        if (isNaN(amount) || amount <= 0) {
+            showToast('Vui lòng nhập số tiền hợp lệ để trừ.', 'danger');
+            return;
+        }
+
+        const userRef = ref(rtdb, `users/${uid}`);
+        const userSnap = await get(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.val();
+            const newBalance = (userData.balance || 0) - amount;
+            if (newBalance < 0) {
+                showToast('Số dư không đủ để trừ số tiền này.', 'danger');
+                return;
+            }
+            await update(userRef, { balance: newBalance });
+            showToast(`Đã trừ ${formatCurrency(amount)} từ tài khoản ${userData.email}`, 'success');
+            amountInput.value = ''; // Clear input
+            if (fromSearch) findUser(); // Refresh search result
+        }
+    };
+
+    document.getElementById('btn-find-user').onclick = findUser;
+
+    // --- STATISTICS ---
+    let dailyRevenueChart, orderStatusChart;
+
+    const loadStats = () => {
+        onValue(ref(rtdb, 'orders'), (snapshot) => {
+            const data = snapshot.val();
+            if(!data) {
+                renderDailyRevenueChart([]);
+                renderOrderStatusChart([]);
+                return;
+            }
+            const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }));
+            renderDailyRevenueChart(orders);
+            renderOrderStatusChart(orders);
+        });
+    };
+
+    const renderDailyRevenueChart = (orders) => {
+        const dailyRevenue = {};
+        orders.forEach(order => {
+            if (order.status === 'Đã hoàn thành') {
+                const date = new Date(order.timestamp).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                dailyRevenue[date] = (dailyRevenue[date] || 0) + (order.price || 0);
+            }
+        });
+
+        const labels = Object.keys(dailyRevenue).sort();
+        const data = labels.map(date => dailyRevenue[date]);
+
+        const ctx = document.getElementById('dailyRevenueChart').getContext('2d');
+        if (dailyRevenueChart) dailyRevenueChart.destroy();
+        dailyRevenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VND)',
+                    data: data,
+                    borderColor: var(--sky),
+                    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#f3f4f6' },
+                        grid: { color: '#1f2937' }
+                    },
+                    x: {
+                        ticks: { color: '#f3f4f6' },
+                        grid: { color: '#1f2937' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f3f4f6' } }
+                }
+            }
+        });
+    };
+
+    const renderOrderStatusChart = (orders) => {
+        const statusCounts = {
+            'Chờ xử lý': 0,
+            'Đang thực hiện': 0,
+            'Đã hoàn thành': 0,
+            'Đã hủy': 0
+        };
+        orders.forEach(order => {
+            if (statusCounts.hasOwnProperty(order.status)) {
+                statusCounts[order.status]++;
+            }
+        });
+
+        const labels = Object.keys(statusCounts);
+        const data = Object.values(statusCounts);
+        const backgroundColors = [
+            '#fbbf24', // pending (gold)
+            '#38bdf8', // processing (sky)
+            '#22c55e', // completed (success)
+            '#ef4444'  // cancelled (danger)
+        ];
+
+        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+        if (orderStatusChart) orderStatusChart.destroy();
+        orderStatusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#f3f4f6' } }
+                }
+            }
+        });
+    };
+
+    // --- SETTINGS MANAGEMENT ---
+    const loadSettings = () => {
+        onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
+            const status = snapshot.val();
+            if (status) {
+                document.getElementById('shop-status-select').value = status.status;
+                document.getElementById('shop-announcement').value = status.announcement;
+            }
+        });
+    };
+
+    const saveSettings = async () => {
+        const status = document.getElementById('shop-status-select').value;
+        const announcement = document.getElementById('shop-announcement').value;
+        await update(ref(rtdb, 'settings/shopStatus'), { status, announcement });
+        showToast('Cập nhật trạng thái website thành công!', 'success');
+    };
+
+    document.getElementById('btn-save-status').onclick = saveSettings;
+
+    // Initial load for the default tab (Orders)
+    loadOrders();
+
+    // Initial stats update (for header stats)
     onValue(ref(rtdb, 'users'), (snapshot) => {
         const users = snapshot.val();
         if(users) document.getElementById('stat-users').innerText = Object.keys(users).length;
     });
 
-    function updateStats(orders) {
-        let revenue = 0;
-        orders.forEach(([id, order]) => {
-            if(order.status === "Đã hoàn thành") revenue += (order.price || 0);
-        });
-        document.getElementById('stat-total-orders').innerText = orders.length;
-        document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + "đ";
-    }
+    const updateTotalProducts = (count) => {
+        document.getElementById('stat-total-products').innerText = count;
+    };
 
-    window.filterOrders = (status) => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        if(status === 'Tất cả') renderOrders(allOrders);
-        else renderOrders(allOrders.filter(o => (o[1].status || 'Chờ xử lý') === status));
-    }
-
-    function renderOrders(orderArray) {
-        const container = document.getElementById('order-list-container');
-        if(orderArray.length === 0) { container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không có đơn hàng này.</p>"; return; }
-        
-        container.innerHTML = orderArray.map(([id, order]) => {
-            const isDone = order.status === "Đã hoàn thành";
-            return `
-                <div class="order-item">
-                    <div class="order-info">
-                        <span class="status-pill ${isDone ? 'completed' : 'pending'}">${order.status || 'Chờ xử lý'}</span>
-                        <p style="margin-top:8px">📦 <b>${order.item}</b></p>
-                        <p><i class="fas fa-user-circle"></i> ${order.robloxAccount} | 💰 ${order.price.toLocaleString()}đ</p>
-                        <p style="font-size:12px; opacity:0.6"><i class="fas fa-envelope"></i> ${order.email}</p>
-                    </div>
-                    <button class="btn ${isDone ? 'btn-disabled' : 'btn-primary'}" onclick="approveOrder('${id}')" ${isDone ? 'disabled' : ''}>
-                        ${isDone ? '<i class="fas fa-check"></i> ĐÃ XONG' : 'DUYỆT ĐƠN'}
-                    </button>
-                </div>
-            `;
-        }).join('');
-    }
-
-    window.approveOrder = async (id) => {
-        if(confirm("Bạn đã thực hiện trao vật phẩm cho khách chưa?")) {
-            try {
-                await update(ref(rtdb, `orders/${id}`), { status: "Đã hoàn thành" });
-                showToast("Duyệt đơn thành công!");
-            } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
-        }
-    }
-
-    // --- RESET TOP DEPOSIT ---
+    // Function to reset top deposit (from original code)
     window.resetTopDeposit = async () => {
-        const confirm1 = confirm("⚠️ CẢNH BÁO: Hành động này sẽ đặt 'TỔNG NẠP' của tất cả khách hàng về 0đ để bắt đầu đua top mới. Bạn chắc chắn chứ?");
-        if(!confirm1) return;
-
-        const confirm2 = confirm("Xác nhận lần cuối? Dữ liệu không thể khôi phục!");
-        if(!confirm2) return;
-
-        try {
-            const usersSnap = await get(ref(rtdb, 'users'));
-            if(!usersSnap.exists()) return showToast("Không có khách hàng nào để reset.", "error");
-
-            const updates = {};
-            usersSnap.forEach((child) => {
-                updates[`users/${child.key}/totalDeposit`] = 0;
-            });
-
-            await update(ref(rtdb), updates);
-            showToast("Đã Reset Top Nạp thành công!");
-        } catch (e) {
-            showToast("Lỗi: " + e.message, "error");
-        }
-    }
-
-    // --- USER MANAGEMENT LOGIC ---
-    let selectedUid = null;
-    document.getElementById('btn-find').onclick = async () => {
-        const email = document.getElementById('userEmailSearch').value.trim();
-        if(!email) return showToast("Vui lòng nhập email!", 'error');
-
-        const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
-        const snap = await get(userQuery);
-
-        if(snap.exists()) {
-            selectedUid = Object.keys(snap.val())[0];
-            const user = snap.val()[selectedUid];
-            document.getElementById('res-email').innerText = user.email;
-            document.getElementById('res-balance').innerText = (user.balance || 0).toLocaleString() + "đ";
-            document.getElementById('res-total').innerText = (user.totalDeposit || 0).toLocaleString() + "đ";
-            document.getElementById('user-result-area').classList.remove('hidden');
-            showToast("Đã tìm thấy khách!");
-        } else {
-            showToast("Không tìm thấy email này!", 'error');
-            document.getElementById('user-result-area').classList.add('hidden');
+        if (confirm('Bạn có chắc chắn muốn reset Top Nạp? Hành động này không thể hoàn tác.')) {
+            await remove(ref(rtdb, 'topDeposits'));
+            showToast('Đã reset Top Nạp thành công!', 'success');
         }
     };
 
-    document.getElementById('btn-confirm-money').onclick = async () => {
-        const amount = parseInt(document.getElementById('amountToAdd').value);
-        if(!amount || amount <= 0) return showToast("Số tiền không hợp lệ!", 'error');
-
-        try {
-            const userRef = ref(rtdb, `users/${selectedUid}`);
-            const snap = await get(userRef);
-            const user = snap.val();
-            
-            await update(userRef, {
-                balance: (user.balance || 0) + amount,
-                totalDeposit: (user.totalDeposit || 0) + amount
-            });
-
-            showToast(`Đã cộng ${amount.toLocaleString()}đ cho ${user.email}`);
-            document.getElementById('amountToAdd').value = "";
-            document.getElementById('btn-find').click(); // Refresh data
-        } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
-    };
-
-    // --- SHOP SETTINGS LOGIC ---
-    // Tải dữ liệu status cũ lên form
-    onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
-        const statusData = snapshot.val();
-        if(statusData) {
-            document.getElementById('shop-status-select').value = statusData.status || 'Online';
-            document.getElementById('shop-announcement').value = statusData.notice || '';
-        }
-    });
-
-    document.getElementById('btn-save-status').onclick = async () => {
-        const status = document.getElementById('shop-status-select').value;
-        const notice = document.getElementById('shop-announcement').value.trim();
-
-        try {
-            await set(ref(rtdb, 'settings/shopStatus'), {
-                status: status,
-                notice: notice,
-                lastUpdate: new Date().toLocaleString()
-            });
-            showToast("Đã cập nhật trạng thái Shop!");
-        } catch (e) {
-            showToast("Lỗi: " + e.message, 'error');
-        }
-    };
 </script>
 </body>
 </html>
+
