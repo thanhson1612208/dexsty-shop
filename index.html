@@ -673,7 +673,7 @@
     <div id="fruit-controls" style="display:none;">
         <div class="filter-pills">
             <span class="fp fp-all active" onclick="window.setFruitFilter('all')"> Tất cả</span>
-            <span class="fp fp-myth"  onclick="window.setFruitFilter('myth')"> Truyền thuyết (300k+)</span>
+            <span class="fp fp-myth"  onclick="window.setFruitFilter('myth')"> Truyền thuyết (310k+)</span>
             <span class="fp fp-legend" onclick="window.setFruitFilter('legend')"> Huyền thoại (150k+)</span>
             <span class="fp fp-rare"  onclick="window.setFruitFilter('rare')"> Hiếm (50k+)</span>
             <span class="fp fp-uncomm" onclick="window.setFruitFilter('uncomm')"> Không phổ biến (20k+)</span>
@@ -1172,7 +1172,7 @@
     };
 
     // ═══════ FRUIT RARITY ═══════
-    function rarity(p){ if(p>=300000) return 'myth'; if(p>=150000) return 'legend'; if(p>=50000) return 'rare'; if(p>=20000) return 'uncomm'; return 'common'; }
+    function rarity(p){ if(p>=310000) return 'myth'; if(p>=150000) return 'legend'; if(p>=50000) return 'rare'; if(p>=20000) return 'uncomm'; return 'common'; }
     const RARITY_META = { myth:{label:'🌟 Mythical',cls:'rb-myth'}, legend:{label:'💫 Legendary',cls:'rb-legend'}, rare:{label:'✨ Rare',cls:'rb-rare'}, uncomm:{label:'🔮 Uncommon',cls:'rb-uncomm'}, common:{label:'⚡ Common',cls:'rb-common'} };
 
     window.setFruitFilter = (r) => {
