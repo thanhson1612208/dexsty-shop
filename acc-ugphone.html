@@ -514,7 +514,7 @@
 
 <header>
     <div class="header-inner">
-        <a class="logo" href="#"><div class="logo-icon">🎮</div>Dexsty<span>Shop</span></a>
+        <a class="logo" href="#"><div class="logo-icon">💔</div>Dexsty<span>Shop</span></a>
         <nav>
             <a href="#products">Sản phẩm</a>
             <a href="#features">Tại sao chọn</a>
@@ -525,10 +525,10 @@
                 <span>💰</span><span class="bal-label">Số dư</span>
                 <span id="headerBalance">0đ</span>
             </div>
-            <button class="btn-header btn-topup-hdr" id="topupHeaderBtn" onclick="openTopupOrLogin()">💳 Nạp Tiền</button>
-            <button class="btn-header btn-orders-hdr" id="orderHistoryBtn" onclick="openOrderHistory()">📋 Đơn hàng</button>
+            <button class="btn-header btn-topup-hdr" id="topupHeaderBtn" onclick="openTopupOrLogin()"> Nạp Tiền</button>
+            <button class="btn-header btn-orders-hdr" id="orderHistoryBtn" onclick="openOrderHistory()"> Đơn hàng</button>
             <div id="userDisplay">
-                <span>👤</span><span id="userEmail"></span>
+                <span></span><span id="userEmail"></span>
                 <button class="btn-ghost" onclick="handleLogout()">Đăng xuất</button>
             </div>
             <button class="btn-ghost" id="loginBtn" onclick="openModal('authModal')">Đăng nhập</button>
@@ -539,13 +539,13 @@
 </header>
 
 <nav class="mobile-nav" id="mobileNav">
-    <a href="#products" onclick="closeNav()">🛒 Sản phẩm</a>
-    <a href="#features" onclick="closeNav()">⭐ Tại sao chọn</a>
-    <a href="#contact" onclick="closeNav()">💬 Liên hệ</a>
-    <button id="mobileTopupBtn" style="display:none" onclick="openTopupOrLogin();closeNav()">💳 Nạp Tiền</button>
-    <button id="mobileOrderBtn" style="display:none" onclick="openOrderHistory();closeNav()">📋 Lịch sử đơn hàng</button>
-    <button id="mobileAuthBtn" onclick="openModal('authModal');closeNav()">👤 Đăng nhập / Đăng ký</button>
-    <button id="mobileLogoutBtn" style="display:none;color:var(--danger)" onclick="handleLogout();closeNav()">🚪 Đăng Xuất</button>
+    <a href="#products" onclick="closeNav()"> Sản phẩm</a>
+    <a href="#features" onclick="closeNav()"> Tại sao chọn</a>
+    <a href="#contact" onclick="closeNav()"> Liên hệ</a>
+    <button id="mobileTopupBtn" style="display:none" onclick="openTopupOrLogin();closeNav()"> Nạp Tiền</button>
+    <button id="mobileOrderBtn" style="display:none" onclick="openOrderHistory();closeNav()"> Lịch sử đơn hàng</button>
+    <button id="mobileAuthBtn" onclick="openModal('authModal');closeNav()"> Đăng nhập / Đăng ký</button>
+    <button id="mobileLogoutBtn" style="display:none;color:var(--danger)" onclick="handleLogout();closeNav()"> Đăng Xuất</button>
 </nav>
 
 <section class="hero">
@@ -555,8 +555,8 @@
         <h1>Shop Acc <span class="accent-cyan">Uy Tín</span><br>Giá <span class="accent-orange">Tốt Nhất</span></h1>
         <p>Chuyên bán tài khoản Blox Fruit, Liên Quân Mobile & UGPhone. Giao ngay sau thanh toán.</p>
         <div class="hero-cta">
-            <button class="btn-hero-primary" onclick="scrollToProducts()">🛒 Xem Sản Phẩm</button>
-            <button class="btn-hero-secondary" onclick="openTopupOrLogin()">💰 Nạp Tiền</button>
+            <button class="btn-hero-primary" onclick="scrollToProducts()"> Xem Sản Phẩm</button>
+            <button class="btn-hero-secondary" onclick="openTopupOrLogin()"> Nạp Tiền</button>
         </div>
     </div>
 </section>
