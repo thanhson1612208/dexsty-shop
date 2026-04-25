@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="vi">
+<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -656,15 +656,15 @@
                             <div class="bank-info-row"><span class="label">Ngân Hàng</span><span class="value">VietinBank (CTG)</span></div>
                             <div class="bank-info-row"><span class="label">Số TK</span><div style="display:flex;align-items:center;gap:7px"><span class="value stk">103886880692</span><button class="copy-btn" onclick="copyText('103886880692','Đã sao chép STK!')">Copy</button></div></div>
                             <div class="bank-info-row"><span class="label">Chủ TK</span><span class="value">BUI THANH SON</span></div>
-                            <div class="bank-info-row"><span class="label">Nội Dung</span><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span class="value" style="font-size:12px;color:var(--yellow)" id="modal-ck-content">NAP SHOP ACC [TEN CUA BAN]</span><button class="copy-btn" onclick="copyModalCK()">Copy</button></div></div>
+                            <div class="bank-info-row"><span class="label">Nội Dung</span><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span class="value" style="font-size:12px;color:var(--yellow)" id="modal-ck-content">NAP SHOP ACC [GMAIL CỦA BẠN]</span><button class="copy-btn" onclick="copyModalCK()">Copy</button></div></div>
                         </div>
                         <div style="margin-top:14px">
-                            <div class="fg"><label>Nhập tên để tạo nội dung CK</label><input type="text" id="modal-bank-name" placeholder="VD: Nguyen Van A" oninput="updateModalCK(this.value)"></div>
+                            <div class="fg"><label>Nội dung chuyển khoản (Gmail)</label><input type="text" id="modal-bank-name" placeholder="Nhập Gmail của bạn" oninput="updateModalCK(this.value)"></div>
                         </div>
                         <div style="margin-top:14px">
                             <div style="font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;margin-bottom:11px;color:var(--cyan)">📌 Hướng Dẫn</div>
                             <div class="guide-step"><div class="step-num">1</div><div class="step-text"><strong>Quét QR hoặc nhập thủ công</strong><p>Mở app ngân hàng → Chuyển tiền → Quét QR hoặc nhập STK</p></div></div>
-                            <div class="guide-step"><div class="step-num">2</div><div class="step-text"><strong>Nhập nội dung: <span style="color:var(--yellow)">NAP SHOP ACC [Tên bạn]</span></strong><p>VD: NAP SHOP ACC NGUYEN VAN A</p></div></div>
+                            <div class="guide-step"><div class="step-num">2</div><div class="step-text"><strong>Nhập nội dung: <span style="color:var(--yellow)">NAP SHOP ACC [Gmail của bạn]</span></strong><p>VD: NAP SHOP ACC user@gmail.com</p></div></div>
                             <div class="guide-step"><div class="step-num">3</div><div class="step-text"><strong>Báo admin qua nhóm Zalo</strong><p>Gửi ảnh giao dịch để được cộng tiền</p></div></div>
                         </div>
                         <div class="topup-notice"><span>⚡</span><span>Số dư cộng trong <strong>5–15 phút</strong> sau khi admin xác nhận (8:00–23:00).</span></div>
@@ -1532,7 +1532,7 @@
             isAdmin=(user.email==='thanhson1612208@gmail.com');
             if(isAdmin) fab.classList.add('show');
             listenBalance(user.uid);
-            if(user.displayName){const inp=document.getElementById('modal-bank-name');if(!inp.value){inp.value=user.displayName;updateModalCK(user.displayName);}}
+            if(user.email){const inp=document.getElementById('modal-bank-name');if(!inp.value){inp.value=user.email;updateModalCK(user.email);}}
         } else {
             currentUserUID=null;currentUserName='';currentUserBalance=0;
             display.classList.remove('show');loginBtn.style.display='';
@@ -1578,7 +1578,7 @@
     window.switchAuthTab=function(t){['login','register'].forEach(x=>{document.getElementById(`tab${x.charAt(0).toUpperCase()+x.slice(1)}`).classList.toggle('active',x===t);document.getElementById(`${x}Form`).classList.toggle('active',x===t);});document.getElementById('authAlert').className='modal-alert';};
     window.switchTopupModal=function(tab,el){document.querySelectorAll('.topup-tab-m').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.topup-panel-m').forEach(p=>p.classList.remove('active'));document.getElementById('topup-modal-'+tab).classList.add('active');};
 
-    window.updateModalCK=function(name){document.getElementById('modal-ck-content').textContent='NAP SHOP ACC '+(name.toUpperCase().trim()||'[TEN CUA BAN]');};
+    window.updateModalCK=function(email){document.getElementById('modal-ck-content').textContent='NAP SHOP ACC '+(email.toUpperCase().trim()||'[GMAIL CỦA BẠN]');};
     window.copyModalCK=function(){copyText(document.getElementById('modal-ck-content').textContent,'Đã sao chép nội dung CK!');};
     window.openTopupOrLogin=function(){if(currentUserUID)openModal('topupModal');else{showToast('🔐','Đăng nhập để nạp tiền!');openModal('authModal');}};
 
@@ -1598,4 +1598,4 @@
     loadProducts();
 </script>
 </body>
-</html>  
+</html> 
