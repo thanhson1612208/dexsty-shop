@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-   <html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
+<html lang="vn" dir="ltr" class="light layout-boxed null nav-floating horizontalMenu">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -28,6 +28,128 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --bg:       #06090f;
+            --surface:  #0d1117;
+            --card:     #111827;
+            --border:   rgba(139, 92, 246, 0.18);
+            --primary:  #8b5cf6;
+            --primary2: #6d28d9;
+            --gold:     #f59e0b;
+            --pink:     #ec4899;
+            --green:    #10b981;
+            --red:      #ef4444;
+            --text:     #f1f5f9;
+            --muted:    #64748b;
+            --sky:      #8b5cf6;
+            --hot:      #ec4899;
+            --success:  #10b981;
+        }
+
+        html { scroll-behavior: smooth; }
+        *, *::before, *::after { box-sizing: border-box; transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s, transform .2s, opacity .2s; }
+
+        body {
+            margin: 0; padding-bottom: 120px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(109,40,217,.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(236,72,153,.10) 0%, transparent 60%),
+                linear-gradient(180deg, #06090f 0%, #0b0f1a 100%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: 0;
+            background-image: radial-gradient(circle, rgba(139,92,246,.07) 1px, transparent 1px);
+            background-size: 28px 28px; pointer-events: none;
+        }
+
+        /* ── SNOW EFFECT ── */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* ── MUSIC PLAYER ── */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: rgba(13, 17, 23, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .music-player:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .music-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .music-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .music-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .music-btn:hover {
+            color: #fff;
+        }
+        .music-visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 15px;
+        }
+        .bar {
+            width: 2px;
+            background: var(--primary);
+            animation: equalize 1s infinite ease-in-out;
+        }
+        @keyframes equalize {
+            0%, 100% { height: 5px; }
+            50% { height: 15px; }
+        }
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+
+        
         :root {
             --bg:       #06090f;
             --surface:  #0d1117;
@@ -417,9 +539,33 @@
         ::-webkit-scrollbar-track { background:rgba(255,255,255,.03); }
         ::-webkit-scrollbar-thumb { background:rgba(139,92,246,.3); border-radius:10px; }
         ::-webkit-scrollbar-thumb:hover { background:var(--primary); }
+    
     </style>
 </head>
 <body>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="music-player">
+        <div class="music-visualizer" id="visualizer" style="display: none;">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="music-info">
+            <span class="music-title" id="song-name">So Easy (To Fall In Love)</span>
+        </div>
+        <div class="music-controls">
+            <button class="music-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
+            <button class="music-btn" id="play-btn"><i class="fas fa-play"></i></button>
+            <button class="music-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
+        </div>
+        <!-- VỊ TRÍ NHÚNG NHẠC - BẠN CÓ THỂ THAY ĐỔI URL Ở ĐÂY -->
+        <div id="music-container" style="display:none;">
+            <iframe id="sc-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2176241616&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"></iframe>
+        </div>
+    </div>
+
+    
 
 <!-- TOAST -->
 <div id="toast-container"></div>
@@ -1415,5 +1561,1021 @@
     }
     render();
 </script>
+
+
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script>
+        // ── SNOW EFFECT SCRIPT ──
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, snowflakes = [];
+
+        function initSnow() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            snowflakes = [];
+            for (let i = 0; i < 150; i++) {
+                snowflakes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 3 + 1,
+                    d: Math.random() * 1,
+                    v: Math.random() * 1 + 0.5
+                });
+            }
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            for (let i = 0; i < snowflakes.length; i++) {
+                let f = snowflakes[i];
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            moveSnow();
+        }
+
+        function moveSnow() {
+            for (let i = 0; i < snowflakes.length; i++) {
+                let f = snowflakes[i];
+                f.y += f.v;
+                f.x += Math.sin(f.y / 50) * 0.5;
+                if (f.y > height) {
+                    snowflakes[i] = { x: Math.random() * width, y: -10, r: f.r, d: f.d, v: f.v };
+                }
+            }
+        }
+
+        function animateSnow() {
+            drawSnow();
+            requestAnimationFrame(animateSnow);
+        }
+
+        window.addEventListener('resize', initSnow);
+        initSnow();
+        animateSnow();
+
+        for(let i=0;i<50;i++)document.write(`<span style="--i:${i};"></span>`);</script>
+        </div>
+    </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div id="robloxModal" class="modal">
+    <div class="modal-content payment-modal" style="max-width:430px;">
+        <h3 style="color:#0f172a;margin:0 0 4px;font-weight:800;font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:.5px;">THÔNG TIN ĐƠN HÀNG</h3>
+        <div style="height:2px;background:linear-gradient(90deg,#8b5cf6,#ec4899);border-radius:2px;margin-bottom:0;"></div>
+        <table class="order-table">
+            <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color:#7c3aed;">---</td></tr>
+            <tr id="row-toc" style="display:none;"><td class="label">Chọn Tộc V4:</td><td class="value"><select id="selectToc" class="pay-input" style="margin:0;"><option value="Quỷ">Quỷ (Ghoul)</option><option value="Thiên thần">Thiên thần (Angel)</option><option value="Thỏ">Thỏ (Mink)</option><option value="Người">Người (Human)</option><option value="Cyborg">Cyborg</option><option value="Cá">Cá (Fishman)</option></select></td></tr>
+            <tr><td class="label">Số dư:</td><td class="value" id="userBalanceText" style="color:#ef4444;">0đ</td></tr>
+            <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr>
+            <tr id="row-pass"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr>
+            <tr id="row-2fa"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr>
+            <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size:17px;color:#7c3aed;">0đ</td></tr>
+        </table>
+        <div style="margin:14px 0;background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:#64748b;">
+                <input type="checkbox" id="checkCorrect" style="width:15px;height:15px;margin:1px 0 0;background:#fff;border:1px solid #cbd5e1;">
+                <span>Xác nhận thông tin chính xác. Sai không hoàn tiền.</span>
+            </label>
+        </div>
+        <button id="finalBuyBtn" class="btn-submit" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);font-size:14px;" onclick="window.confirmPurchase()">XÁC NHẬN THANH TOÁN</button>
+        <p style="color:#94a3b8;font-size:11px;margin-top:14px;cursor:pointer;font-weight:700;text-align:center;" onclick="window.closeModal('robloxModal')">← QUAY LẠI</p>
+    </div>
+</div>
+
+<!-- ALERT MODAL -->
+<div id="customAlert" class="modal">
+    <div class="modal-content" id="alertBox" style="max-width:320px;">
+        <div id="alertIcon"></div>
+        <h3 id="alertTitle"></h3>
+        <p id="alertMessage"></p>
+        <button id="alertBtn" class="btn-submit" onclick="window.closeModal('customAlert')">Đã Hiểu</button>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <button class="openbtn" onclick="window.openNav()"><i class="fas fa-bars"></i></button>
+        <a href="#" class="logo-container">
+            <img src="https://i.imgur.com/LE8umJt.png" class="logo-img" alt="logo">
+            <span class="logo-text">DEXSTY SHOP</span>
+        </a>
+    </div>
+    <div id="auth-ui" class="nav-right"></div>
+</nav>
+
+<!-- SYSTEM STATUS -->
+<div class="system-status-bar">
+    <div class="status-header">
+        <div class="status-dot" id="system-status-dot"></div>
+        <span id="system-status-text">Đang tải trạng thái...</span>
+        <span style="color:rgba(139,92,246,.3);">|</span>
+        <span class="online-pill"><span class="online-dot-sm"></span><span id="online-count">...</span> đang xem</span>
+    </div>
+    <div class="status-notice" id="system-status-notice">Vui lòng chờ trong giây lát...</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    <!-- HERO -->
+    <div class="hero-banner">
+        <div class="hero-text">
+            <h1>✦ Chào Mừng Đến Dexsty Shop</h1>
+            <p>Dịch vụ Roblox & Blox Fruits uy tín — giao dịch nhanh chóng, hỗ trợ 24/7</p>
+        </div>
+        <div class="hero-badges">
+            <span class="hero-badge hb-secure"><i class="fas fa-shield-alt"></i> Uy Tín</span>
+            <span class="hero-badge hb-fast"><i class="fas fa-bolt"></i> Nhanh</span>
+            <span class="hero-badge hb-cheap"><i class="fas fa-tag"></i> Giá Rẻ</span>
+        </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="section-title"><span>📺</span> Hướng Dẫn &amp; Giới Thiệu</div>
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_fH0ZeXFFSw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+
+    <!-- TOP DEPOSIT -->
+    <div class="section-title"><span>🏆</span> Top Nạp Trong Tháng</div>
+    <div id="top-deposit-list" class="top-deposit-card"></div>
+
+    <!-- ROBUX CALC -->
+    <div class="section-title"><span>💎</span> Nạp Robux Chính Hãng (120H)</div>
+    <div class="robux-container">
+        <div class="robux-input-group">
+            <div>
+                <label>Số Robux muốn nhận</label>
+                <input type="number" id="inputRobux" placeholder="Ví dụ: 1000" oninput="window.calcRobux()">
+            </div>
+            <div>
+                <label style="color:var(--gold);">Số tiền cần trả (230đ / 1 Robux)</label>
+                <input type="text" id="outputPrice" readonly style="color:var(--gold);font-weight:800;font-family:'Rajdhani',sans-serif;font-size:18px;">
+                <div class="robux-usd" id="robux-usd"></div>
+            </div>
+        </div>
+        <div class="calc-note">
+            🚀 Hệ thống tự tính thuế 30%: Bạn cần đặt giá Gamepass là <b id="taxNote">0</b> Robux.<br>
+            ⚠️ <b>Lưu ý:</b> Tạo Gamepass đúng giá trên, <b>tắt định giá theo khu vực</b> và để công khai.
+        </div>
+        <button class="btn-buy" id="btn-buy-robux" style="height:46px;font-size:14px;border-radius:10px;" onclick="window.buyRobux()">
+            <i class="fas fa-shopping-cart"></i> MUA ROBUX NGAY
+        </button>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="section-title"><span>🛠️</span> Công Cụ Tiện Ích</div>
+    <div class="tools-grid">
+        <div class="tool-card">
+            <h4><i class="fas fa-user-search"></i> Tra Cứu Profile Roblox</h4>
+            <input type="text" id="lookupUser" placeholder="Nhập username Roblox..." style="margin:0;">
+            <button class="btn-submit" style="padding:9px;font-size:12px;" onclick="window.lookupRoblox()"><i class="fas fa-search"></i> TÌM KIẾM</button>
+            <div id="lookup-result" class="tool-result"></div>
+        </div>
+        <div class="tool-card">
+            <h4><i class="fas fa-apple-alt"></i> Tra Giá Trái Cây Nhanh</h4>
+            <input type="text" id="fruitQuery" placeholder="Tên trái (vd: Dragon, Buddha)..." style="margin:0;" oninput="window.lookupFruit()">
+            <div id="fruit-lookup-result" class="tool-result"></div>
+        </div>
+    </div>
+
+    <!-- BLOX FRUITS -->
+    <div class="section-title"><span>🔥</span> Blox Fruits</div>
+
+    <!-- SEARCH -->
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchBar" class="search-input" placeholder="Tìm kiếm sản phẩm..." oninput="window.filterProducts()">
+        <button class="search-clear" onclick="document.getElementById('searchBar').value='';window.filterProducts()">×</button>
+    </div>
+
+    <!-- SHOP TABS -->
+    <div class="shop-tabs">
+        <div class="tab-btn" onclick="window.switchTab('service')"><i class="fas fa-hammer"></i> Cày Thuê</div>
+        <div class="tab-btn" onclick="window.switchTab('gp')"><i class="fas fa-id-card"></i> Game Pass</div>
+        <div class="tab-btn" onclick="window.switchTab('fruit')"><i class="fas fa-apple-alt"></i> Trái Vĩnh Viễn</div>
+        <div class="tab-btn" onclick="window.switchTab('wishlist')" style="color:#ff4757;"><i class="fas fa-heart"></i> Yêu Thích</div>
+        <div class="tab-btn" onclick="window.switchTab('referral')" style="color:var(--gold);"><i class="fas fa-gift"></i> Kiếm Tiền (2%)</div>
+    </div>
+
+    <!-- FRUIT FILTER/SORT (visible only when fruit tab active) -->
+    <div id="fruit-controls" style="display:none;">
+        <div class="filter-pills">
+            <span class="fp fp-all active" onclick="window.setFruitFilter('all')"> Tất cả</span>
+            <span class="fp fp-myth"  onclick="window.setFruitFilter('myth')"> Truyền thuyết (310k+)</span>
+            <span class="fp fp-legend" onclick="window.setFruitFilter('legend')"> Huyền thoại (150k+)</span>
+            <span class="fp fp-rare"  onclick="window.setFruitFilter('rare')"> Hiếm (50k+)</span>
+            <span class="fp fp-uncomm" onclick="window.setFruitFilter('uncomm')"> Không phổ biến (20k+)</span>
+            <span class="fp fp-common" onclick="window.setFruitFilter('common')"> Phổ biến</span>
+        </div>
+        <div class="sort-row">
+            <button class="sort-btn active" id="sb-default" onclick="window.setFruitSort('default')"> Mặc định</button>
+            <button class="sort-btn" id="sb-high"    onclick="window.setFruitSort('high')"> Giá cao → thấp</button>
+            <button class="sort-btn" id="sb-low"     onclick="window.setFruitSort('low')"> Giá thấp → cao</button>
+            <button class="sort-btn" id="sb-alpha"   onclick="window.setFruitSort('alpha')"> A → Z</button>
+        </div>
+    </div>
+
+    <!-- GRIDS -->
+    <div id="acc-grid"     class="grid active"></div>
+    <div id="service-grid" class="grid"></div>
+    <div id="gp-grid"      class="grid"></div>
+    <div id="fruit-grid"   class="grid"></div>
+    <div id="wishlist-grid" class="grid"></div>
+
+    <!-- SAILOR PIECES -->
+    <div class="section-title"><span>⚓</span> Sailor Pieces</div>
+    <div class="shop-tabs">
+        <div class="tab-btn active" onclick="window.switchTab('sailor-gp')"><i class="fas fa-id-card"></i> Game Pass</div>
+    </div>
+    <div id="sailor-gp-grid" class="grid active"></div>
+
+    <!-- REFERRAL -->
+    <div id="referral-grid" class="grid">
+        <div style="grid-column:1/-1;">
+            <div class="referral-box">
+                <h3 style="color:var(--primary);">MÃ MỜI CỦA BẠN</h3>
+                <p style="font-size:12px;color:var(--muted);">Chia sẻ mã này cho bạn bè. Khi họ nạp tiền, bạn nhận ngay <b style="color:var(--gold);">2%</b> giá trị nạp vào số dư shop!</p>
+                <div id="myReferralCode" class="ref-code-display" onclick="window.copyRef()">ĐANG TẢI...</div>
+                <div class="ref-stats">
+                    <div class="ref-stat-item"><b id="refCount">0</b><span>Người đã mời</span></div>
+                    <div class="ref-stat-item"><b id="refBonus">0đ</b><span>Hoa hồng nhận được</span></div>
+                </div>
+            </div>
+            <div id="input-ref-area" class="referral-box" style="border-color:rgba(255,255,255,.08);">
+                <h3 style="font-size:14px;color:#fff;">NHẬP MÃ NGƯỜI GIỚI THIỆU</h3>
+                <input type="text" id="inputReferral" placeholder="Nhập mã mời tại đây..." style="text-align:center;">
+                <button class="btn-submit" onclick="window.applyReferral()">XÁC NHẬN ĐẠN NHẬP</button>
+            </div>
+            <div id="already-referred" class="referral-box" style="display:none;border-color:var(--green);">
+                <p style="margin:0;color:var(--green);font-weight:bold;"><i class="fas fa-check-circle"></i> Bạn đã được giới thiệu!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div class="community-card" style="margin-top:30px;">
+        <h3>🚀 Tham Gia Cộng Đồng Dexsty</h3>
+        <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">Kết nối cùng hàng nghìn game thủ Blox Fruits</p>
+        <div class="community-grid">
+            <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Server Discord</a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
+            <a href="https://zalo.me/g/itxrwd287" target="_blank" class="comm-link comm-messenger"><i class="fab fa-facebook-messenger"></i> Nhóm Messenger</a>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
+
+    const DEPOSIT_WEBHOOK  = "https://discord.com/api/webhooks/1486075383743905925/GtoDjx9Kic9kwZmfe1kW8mOXtpzd7z9H7O3U00oreOJ6-BiWBwyMz5nvlFRiLxgGCs-U";
+    const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
+
+    let isMaintenance = false, pendingItem = null, currentBalance = 0, authMode = 'login';
+    let fruitFilter = 'all', fruitSort = 'default';
+    let wishlist = JSON.parse(localStorage.getItem('dexsty_wl') || '[]');
+
+    // ═══════ TOAST ═══════
+    window.toast = (msg, type = 'info', ms = 2800) => {
+        const icons = {success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+        document.getElementById('toast-container').appendChild(el);
+        requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, ms);
+    };
+
+    // ═══════ SCROLL TOP ═══════
+    window.addEventListener('scroll', () => {
+        document.getElementById('scrollTopBtn').classList.toggle('visible', window.scrollY > 300);
+    });
+
+    // ═══════ ONLINE COUNTER ═══════
+    function initOnline() {
+        const el = document.getElementById('online-count');
+        let n = Math.floor(Math.random()*18)+22;
+        el.innerText = n;
+        setInterval(() => { n += Math.floor(Math.random()*5)-2; n=Math.max(15,Math.min(80,n)); el.innerText=n; }, 4500);
+    }
+
+    // ═══════ SIDEBAR ═══════
+    window.openNav = () => { document.getElementById("mySidebar").style.width="260px"; document.getElementById("sidebarOverlay").style.display="block"; };
+    window.closeNav = () => { document.getElementById("mySidebar").style.width="0"; document.getElementById("sidebarOverlay").style.display="none"; };
+
+    // ═══════ AUTH TOGGLE ═══════
+    window.toggleAuthMode = () => {
+        authMode = authMode==='login'?'register':'login';
+        document.getElementById('auth-title').innerText      = authMode==='login'?'LOGIN':'REGISTER';
+        document.getElementById('auth-btn-text').innerText   = authMode==='login'?'XÁC NHẬN ĐĂNG NHẬP':'XÁC NHẬN ĐĂNG KÝ';
+        document.getElementById('auth-switch-text').innerText= authMode==='login'?'Chưa có tài khoản?':'Đã có tài khoản?';
+        document.getElementById('auth-switch-btn').innerText = authMode==='login'?'Đăng ký ngay':'Đăng nhập ngay';
+    };
+
+    // ═══════ SYSTEM STATUS ═══════
+    function initSystemStatus() {
+        onValue(ref(rtdb,'settings/shopStatus'), (snap) => {
+            const data=snap.val(); if(!data) return;
+            const status=data.status||"Online", notice=data.notice||"Chào mừng bạn đến với Dexsty Shop!";
+            document.getElementById('system-status-notice').innerText=notice;
+            const dot=document.getElementById('system-status-dot'), lbl=document.getElementById('system-status-text');
+            if(status==="Maintenance"){isMaintenance=true;lbl.innerText="Hệ thống: BẢO TRÌ";dot.style.background='#ef4444';}
+            else if(status==="Slow"){isMaintenance=false;lbl.innerText="Hệ thống: XỬ LÝ CHẬM";dot.style.background='#f59e0b';}
+            else{isMaintenance=false;lbl.innerText="Hệ thống: ĐANG HOẠT ĐỘNG";dot.style.background='#10b981';}
+        });
+    }
+
+    // ═══════ SWITCH TAB ═══════
+    window.switchTab = (type) => {
+        const allGrids=['acc','service','gp','fruit','referral','sailor-gp','wishlist'];
+        allGrids.forEach(g=>{ const el=document.getElementById(g+'-grid'); if(el) el.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        const target=document.getElementById(type+'-grid');
+        if(target) target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(`'${type}'`)) b.classList.add('active'); });
+        document.getElementById('fruit-controls').style.display = type==='fruit'?'block':'none';
+        if(type==='wishlist') window.renderWishlist();
+        const sb=document.getElementById('searchBar'); if(sb&&sb.value){sb.value='';window.filterProducts();}
+    };
+
+    // ═══════ ROBUX CALC ═══════
+    const RATE=230, USD=25000;
+    window.calcRobux = () => {
+        const rb=parseInt(document.getElementById('inputRobux').value)||0;
+        const vnd=rb*RATE;
+        document.getElementById('outputPrice').value = vnd.toLocaleString()+"đ";
+        document.getElementById('taxNote').innerText  = Math.ceil(rb/0.7).toLocaleString();
+        const hint=document.getElementById('robux-usd');
+        if(hint) hint.innerText = rb>0?`≈ $${(vnd/USD).toFixed(2)} USD`:'';
+    };
+    window.buyRobux = () => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
+        const rb=parseInt(document.getElementById('inputRobux').value)||0;
+        if(rb<10) return showAlert("Tối thiểu mua 10 Robux!");
+        window.buyItem(`Nạp ${rb} Robux`,rb*RATE,'robux');
+    };
+
+    // ═══════ COPY DEPOSIT NOTE ═══════
+    window.copyDepNote = () => {
+        const note=document.getElementById('depositMsg').innerText;
+        if(!note||note==='Đang tải...') return window.toast("Vui lòng đăng nhập trước!","warning");
+        navigator.clipboard.writeText(note);
+        window.toast("Đã sao chép nội dung chuyển khoản!","success");
+    };
+
+    window.openAuthModal = () => document.getElementById('authModal').style.display='flex';
+    window.closeModal = (id) => document.getElementById(id).style.display='none';
+
+    window.showAlert = (msg, isSuccess=false) => {
+        const box=document.getElementById('alertBox'),icon=document.getElementById('alertIcon'),
+              title=document.getElementById('alertTitle'),btn=document.getElementById('alertBtn'),
+              message=document.getElementById('alertMessage');
+        const color=isSuccess?"#10b981":"#ef4444";
+        box.style.borderColor=color; title.style.color=color;
+        title.innerText=isSuccess?"THÀNH CÔNG":"THÔNG BÁO";
+        icon.style.color=color; icon.style.fontSize="42px"; icon.style.marginBottom="14px";
+        icon.innerHTML=isSuccess?'<i class="fas fa-check-circle"></i>':'<i class="fas fa-exclamation-circle"></i>';
+        btn.style.background=color; message.innerText=msg;
+        document.getElementById('customAlert').style.display='flex';
+    };
+
+    window.buyItem = async (n,p,type) => {
+        if(isMaintenance) return showAlert("Hệ thống đang bảo trì!");
+        if(!auth.currentUser) return window.openAuthModal();
+        pendingItem={name:n,price:p,type:type};
+        const snapshot=await get(ref(rtdb,'users/'+auth.currentUser.uid));
+        currentBalance=snapshot.val()?.balance||0;
+        document.getElementById('orderItemName').innerText=n;
+        document.getElementById('userBalanceText').innerText=currentBalance.toLocaleString()+'đ';
+        document.getElementById('itemPriceText').innerText=p.toLocaleString()+'đ';
+        document.getElementById('robloxUser').value="";
+        document.getElementById('robloxPass').value="";
+        document.getElementById('roblox2fa').value="";
+        document.getElementById('checkCorrect').checked=false;
+        if(type==='acc'){
+            document.getElementById('row-user').style.display='none';
+            document.getElementById('row-pass').style.display='none';
+            document.getElementById('row-2fa').style.display='none';
+            document.getElementById('row-toc').style.display='none';
+        } else if(type==='service'||type==='robux'){
+            document.getElementById('row-user').style.display='table-row';
+            document.getElementById('row-pass').style.display='table-row';
+            document.getElementById('row-2fa').style.display='table-row';
+            document.getElementById('row-toc').style.display=n.toLowerCase().includes("tộc v4")?'table-row':'none';
+        } else {
+            document.getElementById('row-user').style.display='table-row';
+            document.getElementById('row-pass').style.display='none';
+            document.getElementById('row-2fa').style.display='none';
+            document.getElementById('row-toc').style.display='none';
+        }
+        document.getElementById('robloxModal').style.display='flex';
+    };
+
+    window.confirmPurchase = async () => {
+        const robloxName=document.getElementById('robloxUser').value.trim(),
+              robloxPass=document.getElementById('robloxPass').value.trim(),
+              roblox2fa=document.getElementById('roblox2fa').value.trim(),
+              selectedToc=document.getElementById('selectToc').value;
+        if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");
+        if(pendingItem.type!=='acc'&&!robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
+        if(currentBalance<pendingItem.price) return showAlert("Số dư không đủ!");
+        let finalItemName=pendingItem.name;
+        if(pendingItem.name.toLowerCase().includes("tộc v4")) finalItemName+=` [Tộc: ${selectedToc}]`;
+        try {
+            await update(ref(rtdb,'users/'+auth.currentUser.uid),{balance:currentBalance-pendingItem.price});
+            const orderId=Date.now(), orderData={
+                uid:auth.currentUser.uid,email:auth.currentUser.email,
+                robloxAccount:robloxName||"MUA ACC",item:finalItemName,
+                price:pendingItem.price,status:"Chờ xử lý",timestamp:orderId
+            };
+            if(pendingItem.type==='service'||pendingItem.type==='robux'){
+                orderData.robloxPass=robloxPass; orderData.roblox2fa=roblox2fa;
+            }
+            await set(ref(rtdb,'orders/'+orderId),orderData);
+            await fetch(PURCHASE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - ĐƠN MỚI",embeds:[{title:"🛒 CÓ ĐƠN HÀNG MỚI!",color:3447003,fields:[
+                    {name:"👤 Khách",value:auth.currentUser.email,inline:true},
+                    {name:"📦 Sản phẩm",value:finalItemName,inline:true},
+                    {name:"💰 Giá",value:pendingItem.price.toLocaleString()+"đ",inline:true},
+                    {name:"🎮 Tài khoản",value:`\`${robloxName||"MUA ACC"}\``,inline:true},
+                    {name:"🔑 Mật khẩu",value:`\`${robloxPass||"N/A"}\``,inline:true},
+                    {name:"🛡️ Mã 2FA",value:`\`${roblox2fa||"N/A"}\``,inline:true}
+                ],timestamp:new Date().toISOString()}]})});
+            window.closeModal('robloxModal');
+            showAlert("Mua thành công!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.copyRef = () => {
+        navigator.clipboard.writeText(document.getElementById('myReferralCode').innerText);
+        window.toast("Đã sao chép mã mời!","success");
+    };
+
+    window.applyReferral = async () => {
+        const code=document.getElementById('inputReferral').value.trim();
+        if(!code) return showAlert("Vui lòng nhập mã!");
+        if(code===auth.currentUser.uid.substring(0,6)) return showAlert("Bạn không thể tự mời chính mình!");
+        const snap=await get(ref(rtdb,'users'));
+        let referrerUid=null;
+        snap.forEach(child=>{ if(child.val().referralCode===code) referrerUid=child.key; });
+        if(!referrerUid) return showAlert("Mã mời không tồn tại!");
+        await update(ref(rtdb,'users/'+auth.currentUser.uid),{referredBy:referrerUid});
+        showAlert("Áp dụng mã mời thành công!", true);
+    };
+
+    onAuthStateChanged(auth, async (u) => {
+        const ui=document.getElementById('auth-ui'), sb=document.getElementById('bottomStatusBar');
+        if(u){
+            onValue(ref(rtdb,'users/'+u.uid),(s)=>{
+                const data=s.val()||{};
+                ui.innerHTML=`<button class="btn-sm btn-deposit" onclick="window.openDeposit()"><i class="fas fa-plus"></i> Nạp Tiền</button><button class="btn-sm btn-logout" onclick="window.logout()"><i class="fas fa-sign-out-alt"></i></button>`;
+                sb.style.display='flex';
+                document.getElementById('status-email').innerText=u.email.split('@')[0];
+                document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
+                document.getElementById('depositMsg').innerText="SEVQR NAP "+u.email.split('@')[0];
+                const myCode=data.referralCode||u.uid.substring(0,6).toUpperCase();
+                if(!data.referralCode) update(ref(rtdb,'users/'+u.uid),{referralCode:myCode});
+                document.getElementById('myReferralCode').innerText=myCode;
+                document.getElementById('refBonus').innerText=(data.totalReferralBonus||0).toLocaleString()+'đ';
+                if(data.referredBy){
+                    document.getElementById('input-ref-area').style.display='none';
+                    document.getElementById('already-referred').style.display='block';
+                }
+            });
+            onValue(query(ref(rtdb,'users'),orderByChild('referredBy'),equalTo(u.uid)),(snap)=>{
+                document.getElementById('refCount').innerText=snap.exists()?Object.keys(snap.val()).length:0;
+            });
+        } else {
+            ui.innerHTML=`<button class="btn-sm btn-login" onclick="window.openAuthModal()"><i class="fas fa-user"></i> Đăng nhập / Đăng ký</button>`;
+            sb.style.display='none';
+        }
+    });
+
+    // ═══════ SEPAY QR INTEGRATION ═══════
+    const SEPAY_API_KEY = "SEPAY_API_KEY"; // Thay bằng API Key SePay của bạn
+    const BANK_STK = "103886880692";
+    const ACCOUNT_NAME = "BUI THANH SON";
+
+    window.updateQR = () => {
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+        const qrContainer = document.getElementById('qr-container');
+        const qrImg = document.getElementById('sepayQR');
+        
+        if(amount >= 1000 && note !== "Đang tải...") {
+            const qrUrl = `https://img.vietqr.io/image/vietinbank-${BANK_STK}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(note)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+            qrImg.src = qrUrl;
+            qrContainer.style.display = 'block';
+        } else {
+            qrContainer.style.display = 'none';
+        }
+    };
+
+    window.checkPayment = async () => {
+        if (!auth.currentUser) return;
+        const btn = document.getElementById('btnConfirmBank');
+        const statusText = document.getElementById('paymentStatus');
+        const amount = parseInt(document.getElementById('depAmount').value) || 0;
+        const note = document.getElementById('depositMsg').innerText;
+
+        if (amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+        statusText.style.display = 'block';
+        statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
+
+        try {
+            const response = await fetch('/api/sepay-proxy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, note })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 200 && data.transactions) {
+                const transaction = data.transactions.find(t => 
+                    t.content.toLowerCase().includes(note.toLowerCase()) && 
+                    parseInt(t.amount) >= amount
+                );
+
+                if (transaction) {
+                    const transRef = ref(rtdb, `transactions/${transaction.id}`);
+                    const transSnap = await get(transRef);
+                    
+                    if (!transSnap.exists()) {
+                        await set(transRef, {
+                            uid: auth.currentUser.uid,
+                            amount: parseInt(transaction.amount),
+                            timestamp: Date.now(),
+                            content: transaction.content
+                        });
+
+                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                        const userSnap = await get(userRef);
+                        const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
+                        
+                        const newBalance = (userData.balance || 0) + parseInt(transaction.amount);
+                        const newTotalDep = (userData.totalDeposit || 0) + parseInt(transaction.amount);
+                        
+                        await update(userRef, { 
+                            balance: newBalance,
+                            totalDeposit: newTotalDep
+                        });
+
+                        await fetch(DEPOSIT_WEBHOOK, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
+                                embeds: [{
+                                    title: "✅ NẠP TIỀN TỰ ĐỘNG THÀNH CÔNG!",
+                                    color: 65280,
+                                    fields: [
+                                        { name: "👤 Khách", value: auth.currentUser.email, inline: true },
+                                        { name: "💰 Số tiền", value: parseInt(transaction.amount).toLocaleString() + "đ", inline: true },
+                                        { name: "📝 Nội dung", value: transaction.content, inline: false }
+                                    ],
+                                    timestamp: new Date().toISOString()
+                                }]
+                            })
+                        });
+
+                        window.closeModal('depositModal');
+                        showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
+                    } else {
+                        statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                    }
+                } else {
+                    statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
+                }
+            } else {
+                statusText.innerText = data.message || "Vui Lòng đợi  5-10p để admin check tiền.";
+            }
+        } catch (e) {
+            console.error(e);
+            statusText.innerText = "Vui Lòng đợi 5-10p để admin check tiền.";
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
+        }
+    };
+
+    window.sendDepositWebhook = async () => {
+        const u=auth.currentUser; if(!u) return;
+        try {
+            await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - BANK",embeds:[{title:"🏦 YÊU CẦU NẠP BANK!",color:2278750,
+                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"📝 Nội dung",value:"SEVQR NAP "+u.email.split('@')[0],inline:true}],
+                    timestamp:new Date().toISOString()}]})});
+            window.closeModal('depositModal'); showAlert("Đã gửi yêu cầu nạp!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.sendCardWebhook = async () => {
+        const t=document.getElementById('cardType').value, v=document.getElementById('cardValue').value,
+              p=document.getElementById('cardPin').value.trim(), s=document.getElementById('cardSeri').value.trim(),
+              u=auth.currentUser;
+        if(!t||!v||!p||!s) return showAlert("Vui lòng điền đủ thông tin!");
+        try {
+            await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO",embeds:[{title:"💳 THẺ CÀO MỚI!",color:16711767,
+                    fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"🆔 Loại",value:t,inline:true},
+                             {name:"💰 Mệnh giá",value:Number(v).toLocaleString()+"đ",inline:true},
+                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``}],
+                    timestamp:new Date().toISOString()}]})});
+            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
+        } catch(e){ showAlert(e.message); }
+    };
+
+    window.processAuth = async () => {
+        const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim();
+        if(!e||!p) return showAlert("Vui lòng nhập đầy đủ thông tin!");
+        try {
+            if(authMode==='login'){ await signInWithEmailAndPassword(auth,e,p); }
+            else {
+                const r=await createUserWithEmailAndPassword(auth,e,p);
+                await set(ref(rtdb,'users/'+r.user.uid),{balance:0,totalDeposit:0,email:e,referralCode:r.user.uid.substring(0,6).toUpperCase(),totalReferralBonus:0});
+            }
+            window.closeModal('authModal');
+        } catch(err){ showAlert(err.message); }
+    };
+
+    window.logout = () => signOut(auth).then(()=>location.reload());
+    window.openDeposit = () => {
+        document.getElementById('depositModal').style.display='flex';
+        window.updateQR();
+    };
+    window.setDepMode = (m) => {
+        document.getElementById('tab-dep-bank').className=`dep-tab ${m==='bank'?'active':''}`;
+        document.getElementById('tab-dep-card').className=`dep-tab ${m==='card'?'active':''}`;
+        document.getElementById('dep-bank-area').style.display=m==='bank'?'block':'none';
+        document.getElementById('dep-card-area').style.display=m==='card'?'block':'none';
+        if(m==='bank') window.updateQR();
+    };
+    window.openHistory = () => {
+        const content=document.getElementById('history-content');
+        document.getElementById('historyModal').style.display='flex';
+        onValue(query(ref(rtdb,'orders'),orderByChild('uid'),equalTo(auth.currentUser.uid)),(snap)=>{
+            const data=snap.val();
+            if(!data){content.innerHTML='<p style="color:#64748b;text-align:center;padding:20px;">Chưa có đơn hàng nào.</p>';return;}
+            content.innerHTML=Object.values(data).reverse().map(o=>
+                `<div class="history-item ${o.status==='Đã hoàn thành'?'done':''}">
+                    <span class="h-status">${o.status||'Chờ'}</span>
+                    <span class="h-name">${o.item}</span>
+                    <div class="h-info">🎮 ${o.robloxAccount} &nbsp;|&nbsp; 💰 ${o.price.toLocaleString()}đ</div>
+                </div>`
+            ).join('');
+        });
+    };
+
+    // ═══════ SEARCH / FILTER ═══════
+    window.filterProducts = () => {
+        const q=(document.getElementById('searchBar').value||'').toLowerCase().trim();
+        const activeGrid=document.querySelector('.grid.active');
+        if(!activeGrid||['referral-grid','wishlist-grid'].includes(activeGrid.id)) return;
+        let any=false;
+        activeGrid.querySelectorAll('.card[data-name]').forEach(c=>{
+            const match=!q||(c.getAttribute('data-name')||'').toLowerCase().includes(q);
+            c.style.display=match?'':'none';
+            if(match) any=true;
+        });
+        let nm=activeGrid.querySelector('.no-results');
+        if(!any&&q){
+            if(!nm){nm=document.createElement('div');nm.className='no-results';nm.innerHTML='<i class="fas fa-search"></i>Không tìm thấy sản phẩm phù hợp';activeGrid.appendChild(nm);}
+        } else { if(nm) nm.remove(); }
+    };
+
+    // ═══════ FRUIT RARITY ═══════
+    function rarity(p){ if(p>=310000) return 'myth'; if(p>=150000) return 'legend'; if(p>=50000) return 'rare'; if(p>=20000) return 'uncomm'; return 'common'; }
+    const RARITY_META = { myth:{label:'🌟 Mythical',cls:'rb-myth'}, legend:{label:'💫 Legendary',cls:'rb-legend'}, rare:{label:'✨ Rare',cls:'rb-rare'}, uncomm:{label:'🔮 Uncommon',cls:'rb-uncomm'}, common:{label:'⚡ Common',cls:'rb-common'} };
+
+    window.setFruitFilter = (r) => {
+        fruitFilter=r;
+        document.querySelectorAll('.fp').forEach(p=>p.classList.remove('active'));
+        const pill=document.querySelector(`.fp-${r}`); if(pill) pill.classList.add('active');
+        applyFruitControls();
+    };
+    window.setFruitSort = (s) => {
+        fruitSort=s;
+        document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+        const btn=document.getElementById('sb-'+s); if(btn) btn.classList.add('active');
+        applyFruitControls();
+    };
+    function applyFruitControls(){
+        const grid=document.getElementById('fruit-grid'); if(!grid) return;
+        const cards=Array.from(grid.querySelectorAll('.card[data-name]'));
+        cards.forEach(c=>{ const r=c.getAttribute('data-rarity')||'common'; c.style.display=(fruitFilter==='all'||r===fruitFilter)?'':'none'; });
+        if(fruitSort!=='default'){
+            const vis=cards.filter(c=>c.style.display!=='none');
+            vis.sort((a,b)=>{
+                if(fruitSort==='high')  return parseInt(b.dataset.price||0)-parseInt(a.dataset.price||0);
+                if(fruitSort==='low')   return parseInt(a.dataset.price||0)-parseInt(b.dataset.price||0);
+                if(fruitSort==='alpha') return (a.dataset.name||'').localeCompare(b.dataset.name||'');
+                return 0;
+            });
+            vis.forEach(c=>grid.appendChild(c));
+        }
+    }
+
+    // ═══════ WISHLIST ═══════
+    window.toggleWL = (name,price,img,type) => {
+        const idx=wishlist.findIndex(w=>w.name===name);
+        if(idx>=0){ wishlist.splice(idx,1); window.toast(`Đã xoá khỏi yêu thích`,'info'); }
+        else { wishlist.push({name,price,img,type}); window.toast(`Đã thêm vào yêu thích ❤️`,'success'); }
+        localStorage.setItem('dexsty_wl',JSON.stringify(wishlist));
+        document.querySelectorAll(`.wl-btn[data-n="${CSS.escape(name)}"]`).forEach(b=>{
+            b.classList.toggle('active',wishlist.some(w=>w.name===name));
+        });
+    };
+    window.renderWishlist = () => {
+        const grid=document.getElementById('wishlist-grid'); if(!grid) return;
+        if(!wishlist.length){ grid.innerHTML='<div class="wl-empty"><i class="fas fa-heart-broken"></i>Chưa có sản phẩm yêu thích.<br><small>Nhấn ❤️ trên sản phẩm để thêm.</small></div>'; return; }
+        grid.innerHTML='';
+        wishlist.forEach(item=>{
+            const card=document.createElement('div');
+            card.className='card'; card.setAttribute('data-name',item.name);
+            card.innerHTML=`
+                <button class="wl-btn active" data-n="${item.name.replace(/"/g,'&quot;')}" onclick="window.toggleWL('${item.name.replace(/'/g,"\\'")}',${item.price},'${item.img}','${item.type}');window.renderWishlist();" title="Bỏ yêu thích"><i class="fas fa-heart"></i></button>
+                <img src="${item.img}" loading="lazy">
+                <h3>${item.name}</h3>
+                <div class="price">${item.price.toLocaleString()}đ</div>
+                <button class="btn-buy" onclick="window.buyItem('${item.name.replace(/'/g,"\\'")}',${item.price},'${item.type}')">MUA NGAY</button>`;
+            grid.appendChild(card);
+        });
+    };
+
+    // ═══════ TOOLS ═══════
+    window.lookupRoblox = () => {
+        const u=(document.getElementById('lookupUser').value||'').trim();
+        const res=document.getElementById('lookup-result');
+        if(!u){res.className='tool-result';return;}
+        res.className='tool-result show';
+        res.innerHTML=`
+            <div style="color:var(--primary);font-weight:700;margin-bottom:8px;"><i class="fas fa-user"></i> ${u}</div>
+            <a href="https://www.roblox.com/users/profile?username=${encodeURIComponent(u)}" target="_blank" style="color:#c4b5fd;font-size:12px;display:block;margin-bottom:4px;text-decoration:none;"><i class="fas fa-external-link-alt"></i> Mở trang Profile Roblox</a>
+            <a href="https://www.roblox.com/search/users?keyword=${encodeURIComponent(u)}" target="_blank" style="color:var(--muted);font-size:12px;text-decoration:none;"><i class="fas fa-search"></i> Tìm kiếm trên Roblox</a>`;
+    };
+
+    window.lookupFruit = () => {
+        const q=(document.getElementById('fruitQuery').value||'').trim().toLowerCase();
+        const res=document.getElementById('fruit-lookup-result');
+        if(!q){res.className='tool-result';return;}
+        const matches=allItems.filter(it=>it.t==='f'&&it.n.toLowerCase().includes(q));
+        if(!matches.length){res.className='tool-result show';res.innerHTML='<span style="color:var(--muted);">Không tìm thấy trái phù hợp.</span>';return;}
+        const {cls,label}=RARITY_META;
+        res.className='tool-result show';
+        res.innerHTML=matches.slice(0,5).map(it=>{
+            const rm=RARITY_META[rarity(it.p)];
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+                <span><span class="rarity-badge ${rm.cls}" style="margin-right:5px;">${rm.label}</span>${it.n}</span>
+                <b style="color:var(--gold);white-space:nowrap;margin-left:8px;font-family:'Rajdhani',sans-serif;font-size:15px;">${it.p.toLocaleString()}đ</b>
+            </div>`;
+        }).join('');
+    };
+
+    // ═══════ ALL ITEMS (preserved 100%) ═══════
+    const allItems = [
+        
+        {n:"Cày 700 Level",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"1.000 Fragment",p:1000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"50.000 Fragment",p:45000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"100.000 Fragment",p:85000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"1M Beli",p:2000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"50M Beli",p:90000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"100M Beli",p:170000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"10M Bounty/Honor",p:70000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"30M Bounty/Honor",p:150000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V1-V3",p:8000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V4 (1 Bánh răng)",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Tộc V4 Full Bánh răng",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lấy Tộc Quỷ",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lấy Tộc Cyborg",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco (Có đủ đai)",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco (Thiếu đai)",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco V1-V3",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Draco V4 Full Bánh răng",p:60000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Gạt cần (Có mảnh gương)",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Gạt cần (Không mảnh gương)",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Melee V2",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"God Human",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Sanguine Art",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Up Yoru V3",p:62000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Kiếm/Súng Rồng",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Tam Kiếm",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Mini Yoru",p:25000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Lưỡi Hái",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Tushita",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Yama",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Song Kiếm",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Mỏ Neo",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Soul Guitar",p:20000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Đinh Ba Gai",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Koko",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Haki Legendary",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Leviathan về Tiki",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Leviathan về Hydra",p:40000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Nguyên Thạch Bóng Tối",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Cổng Rip_Indra",p:15000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 1 Giấy Mythical",p:30000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 20 Giấy Mythical",p:500000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 50 Giấy Mythical",p:1000000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Chế 100 Giấy Mythical",p:1500000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Awaken Fruit Thường",p:5000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Awaken Dough/Phoenix",p:10000,t:"s",i:"https://i.imgur.com/8CLFc5h.jpeg"},
+        {n:"Fruit Notifier",p:378000,t:"gp",i:"https://i.imgur.com/3m5NHWK.jpeg"},
+        {n:"Dark Blade",p:168000,t:"gp",i:"https://i.imgur.com/DbAN7S7.jpeg"},
+        {n:"x2 Money",p:63000,t:"gp",i:"https://i.imgur.com/aJoy0Nw.jpeg"},
+        {n:"x2 Mastery",p:63000,t:"gp",i:"https://i.imgur.com/6PXaYAF.jpeg"},
+        {n:"+1 Storage",p:56000,t:"gp",i:"https://i.imgur.com/O9sbGMx.jpeg"},
+        {n:"Fast Boats",p:49000,t:"gp",i:"https://i.imgur.com/FQkdkNT.jpeg"},
+        {n:"x2 Drop Chance",p:49000,t:"gp",i:"https://i.imgur.com/3ifB2RS.jpeg"},
+        {n:"Dragon",p:675000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
+        {n:"Kitsune",p:540000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
+        {n:"Control",p:540000,t:"f",i:"https://i.imgur.com/66dqB98.jpeg"},
+        {n:"Yeti",p:405000,t:"f",i:"https://i.imgur.com/J1Ne7dv.jpeg"},
+        {n:"Tiger",p:405000,t:"f",i:"https://i.imgur.com/0dXUzXD.jpeg"},
+        {n:"Spirit",p:344250,t:"f",i:"https://i.imgur.com/l5aIdw9.jpeg"},
+        {n:"Gas",p:344250,t:"f",i:"https://i.imgur.com/zy4ChAF.jpeg"},
+        {n:"Venom",p:330750,t:"f",i:"https://i.imgur.com/QzP5E0E.jpeg"},
+        {n:"Shadow",p:327375,t:"f",i:"https://i.imgur.com/LZAPvPb.jpeg"},
+        {n:"Dough",p:324000,t:"f",i:"https://i.imgur.com/6rEQHI5.jpeg"},
+        {n:"Mammoth",p:317250,t:"f",i:"https://i.imgur.com/Ez2xudQ.jpeg"},
+        {n:"T-Rex",p:317250,t:"f",i:"https://i.imgur.com/oqFHqzo.jpeg"},
+        {n:"Gravity",p:310500,t:"f",i:"https://i.imgur.com/LghKtc7.jpeg"},
+        {n:"Blizzard",p:303750,t:"f",i:"https://i.imgur.com/SIeh0Te.jpeg"},
+        {n:"Pain",p:297000,t:"f",i:"https://i.imgur.com/p3CqyEK.jpeg"},
+        {n:"Rumble",p:283500,t:"f",i:"https://i.imgur.com/xpQUYLW.jpeg"},
+        {n:"Portal",p:270000,t:"f",i:"https://i.imgur.com/Jftqt3B.jpeg"},
+        {n:"Phoenix",p:270000,t:"f",i:"https://i.imgur.com/aUB6T44.jpeg"},
+        {n:"Sound",p:256500,t:"f",i:"https://i.imgur.com/LKQol8k.jpeg"},
+        {n:"Spider",p:243000,t:"f",i:"https://i.imgur.com/ID0a36h.jpeg"},
+        {n:"Creation",p:236250,t:"f",i:"https://i.imgur.com/wXCWHcV.jpeg"},
+        {n:"Love",p:229500,t:"f",i:"https://i.imgur.com/cd02nrF.jpeg"},
+        {n:"Buddha",p:222750,t:"f",i:"https://i.imgur.com/y9oLYWT.jpeg"},
+        {n:"Quake",p:202500,t:"f",i:"https://i.imgur.com/LDH6uqW.jpeg"},
+        {n:"Magma",p:175500,t:"f",i:"https://i.imgur.com/rrpluXY.jpeg"},
+        {n:"Ghost",p:172125,t:"f",i:"https://i.imgur.com/ksHabID.jpeg"},
+        {n:"Rubber",p:162000,t:"f",i:"https://i.imgur.com/zQ4DhaA.jpeg"},
+        {n:"Light",p:148000,t:"f",i:"https://i.imgur.com/AyWbzot.jpeg"},
+        {n:"Diamond",p:135000,t:"f",i:"https://i.imgur.com/RNzFUoC.jpeg"},
+        {n:"Eagle",p:131625,t:"f",i:"https://i.imgur.com/3ovBTVZ.jpeg"},
+        {n:"Dark",p:128250,t:"f",i:"https://i.imgur.com/BKU2uIr.jpeg"},
+        {n:"Sand",p:114750,t:"f",i:"https://i.imgur.com/nzbbUzn.jpeg"},
+        {n:"Ice",p:101250,t:"f",i:"https://i.imgur.com/Stbmekr.jpeg"},
+        {n:"Flame",p:74250,t:"f",i:"https://i.imgur.com/1Csccr6.jpeg"},
+        {n:"Spike",p:51300,t:"f",i:"https://i.imgur.com/KjfNWXw.jpeg"},
+        {n:"Smoke",p:33750,t:"f",i:"https://i.imgur.com/02Sb01z.jpeg"},
+        {n:"Bomb",p:29700,t:"f",i:"https://i.imgur.com/ZHL18nV.jpeg"},
+        {n:"Spring",p:24300,t:"f",i:"https://i.imgur.com/UeOKLpA.jpeg"},
+        {n:"Blade",p:13500,t:"f",i:"https://i.imgur.com/Plprtph.jpeg"},
+        {n:"Spin",p:10125,t:"f",i:"https://i.imgur.com/mRJbKHu.jpeg"},
+        {n:"Rocket",p:6750,t:"f",i:"https://i.imgur.com/A6WvKsq.jpeg"},
+        {n:"[Sailor] x2 Drops",p:118000,t:"sgp",i:"https://i.imgur.com/ewQ78br.png"},
+        {n:"[Sailor] x2 Luck Drop",p:90860,t:"sgp",i:"https://i.imgur.com/JmdsaPp.png"},
+        {n:"[Sailor] x2 Exp",p:41860,t:"sgp",i:"https://i.imgur.com/qKA2epn.png"},
+        {n:"[Sailor] x2 Gems",p:55860,t:"sgp",i:"https://i.imgur.com/F9wzE3B.png"},
+        {n:"[Sailor] x2 Money",p:34860,t:"sgp",i:"https://i.imgur.com/K0nFOjc.png"}
+    ];
+
+    // ═══════ RENDER ═══════
+    function render() {
+        initSystemStatus();
+        initOnline();
+        const gp=document.getElementById('gp-grid'), fr=document.getElementById('fruit-grid'),
+              sv=document.getElementById('service-grid'), ac=document.getElementById('acc-grid'),
+              sgp=document.getElementById('sailor-gp-grid');
+        [gp,fr,sv,ac,sgp].forEach(g=>{ if(g) g.innerHTML=''; });
+
+        allItems.forEach(item => {
+            const card=document.createElement('div');
+            card.className='card';
+            let dt=item.t==='a'?'acc':item.t==='s'?'service':item.t==='f'?'fruit':item.t==='sgp'?'sailor-gp':'gp';
+            card.setAttribute('data-name',item.n);
+            card.setAttribute('data-price',item.p);
+            if(item.t==='f') card.setAttribute('data-rarity',rarity(item.p));
+
+            const inWL=wishlist.some(w=>w.name===item.n);
+            const wlHtml=`<button class="wl-btn${inWL?' active':''}" data-n="${item.n.replace(/"/g,'&quot;')}" title="${inWL?'Bỏ yêu thích':'Yêu thích'}" onclick="window.toggleWL('${item.n.replace(/'/g,"\\'")}',${item.p},'${item.i}','${dt}')"><i class="fas fa-heart"></i></button>`;
+
+            const rarBadge=item.t==='f'?(()=>{ const rm=RARITY_META[rarity(item.p)]; return `<div class="rarity-badge ${rm.cls}">${rm.label}</div>`; })():'';
+
+            let statsHtml='';
+            if(item.t==='a') statsHtml=`<div class="card-stats"><span class="stat-sold">🔥 Đã bán: ${item.sold||0}</span><span class="stat-stock">📦 Còn: ${item.stock||0}</span></div>`;
+
+            card.innerHTML=`${wlHtml}<img src="${item.i}" loading="lazy">${rarBadge}<h3>${item.n}</h3>${statsHtml}<div class="price">${item.p.toLocaleString()}đ</div><button class="btn-buy" onclick="window.buyItem('${item.n.replace(/'/g,"\\'")}',${item.p},'${dt}')">MUA NGAY</button>`;
+
+            if(item.t==='f'&&fr) fr.appendChild(card);
+            else if(item.t==='s'&&sv) sv.appendChild(card);
+            else if(item.t==='a'&&ac) ac.appendChild(card);
+            else if(item.t==='sgp'&&sgp) sgp.appendChild(card);
+            else if(gp) gp.appendChild(card);
+        });
+
+        onValue(query(ref(rtdb,'users'),orderByChild('totalDeposit'),limitToLast(5)),(snap)=>{
+            const list=document.getElementById('top-deposit-list'), data=snap.val();
+            if(!data) return;
+            const sorted=Object.entries(data).map(([id,v])=>({id,...v})).filter(u=>u.totalDeposit>0).sort((a,b)=>b.totalDeposit-a.totalDeposit);
+            list.innerHTML=sorted.map((u,i)=>{
+                const rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+                return `<div class="top-row ${rc}">
+                    <div style="display:flex;align-items:center;overflow:hidden;flex:1;">
+                        <span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</span>
+                        <div class="avatar-frame"><i class="fas fa-user-shield"></i></div>
+                        <span class="user-name">${u.email.split('@')[0]}***</span>
+                    </div>
+                    <div class="amount">${u.totalDeposit.toLocaleString()}đ</div>
+                </div>`;
+            }).join('');
+        });
+    }
+    render();
+
+
+        // ── MUSIC PLAYER SCRIPT ──
+        const widgetIframe = document.getElementById('sc-player');
+        const widget = SC.Widget(widgetIframe);
+        const playBtn = document.getElementById('play-btn');
+        const visualizer = document.getElementById('visualizer');
+        const songNameDisplay = document.getElementById('song-name');
+
+        // DANH SÁCH NHẠC - BẠN CÓ THỂ THÊM BÀI HÁT VÀO ĐÂY
+        // ==========================================
+        // VỊ TRÍ MÃ NGUỒN ĐỂ THÊM BÀI HÁT:
+        const playlist = [
+            { name: "So Easy (To Fall In Love)", url: "https://api.soundcloud.com/tracks/2176241616" },
+            // Thêm bài hát mới theo cấu trúc: { name: "Tên bài hát", url: "Link API SoundCloud" }
+            // Ví dụ: { name: "Lover", url: "https://api.soundcloud.com/tracks/669811439" }
+        ];
+        // ==========================================
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+
+        playBtn.addEventListener('click', () => {
+            widget.toggle();
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+        });
+
+        function loadTrack(index) {
+            const track = playlist[index];
+            songNameDisplay.innerText = track.name;
+            widget.load(track.url, {
+                auto_play: true,
+                hide_related: true,
+                show_comments: false,
+                show_user: false,
+                show_reposts: false,
+                show_teaser: false
+            });
+        }
+
+        widget.bind(SC.Widget.Events.PLAY, () => {
+            isPlaying = true;
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            visualizer.style.display = 'flex';
+        });
+
+        widget.bind(SC.Widget.Events.PAUSE, () => {
+            isPlaying = false;
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            visualizer.style.display = 'none';
+        });
+
+        widget.bind(SC.Widget.Events.FINISH, () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+        });
+    </script>
 </body>
 </html>
