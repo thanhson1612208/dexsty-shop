@@ -79,7 +79,7 @@
         }
 
         /* ── MUSIC PLAYER ── */
-        .music-player {
+        .music-player { cursor: move; user-select: none;
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -1101,6 +1101,19 @@
                 sb.style.display='flex';
                 document.getElementById('status-email').innerText=u.email.split('@')[0];
                 document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
+
+                // --- BALANCE CHANGE NOTIFICATION ---
+                if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
+                    const added = data.balance - window.lastBalance;
+                    window.toast(`Bạn vừa được cộng ${added.toLocaleString()}đ vào tài khoản!`, "success");
+                    
+                    // Optional: Play a sound or show a more prominent alert
+                    if (typeof showAlert === 'function') {
+                        // showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
+                    }
+                }
+                window.lastBalance = data.balance;
+
                 document.getElementById('depositMsg').innerText="SEVQR NAP "+u.email.split('@')[0];
                 const myCode=data.referralCode||u.uid.substring(0,6).toUpperCase();
                 if(!data.referralCode) update(ref(rtdb,'users/'+u.uid),{referralCode:myCode});
@@ -1574,7 +1587,7 @@
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             snowflakes = [];
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 50; i++) {
                 snowflakes.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
@@ -2052,6 +2065,19 @@
                 sb.style.display='flex';
                 document.getElementById('status-email').innerText=u.email.split('@')[0];
                 document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
+
+                // --- BALANCE CHANGE NOTIFICATION ---
+                if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
+                    const added = data.balance - window.lastBalance;
+                    window.toast(`Bạn vừa được cộng ${added.toLocaleString()}đ vào tài khoản!`, "success");
+                    
+                    // Optional: Play a sound or show a more prominent alert
+                    if (typeof showAlert === 'function') {
+                        // showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
+                    }
+                }
+                window.lastBalance = data.balance;
+
                 document.getElementById('depositMsg').innerText="SEVQR NAP "+u.email.split('@')[0];
                 const myCode=data.referralCode||u.uid.substring(0,6).toUpperCase();
                 if(!data.referralCode) update(ref(rtdb,'users/'+u.uid),{referralCode:myCode});
@@ -2513,6 +2539,51 @@
     render();
 
 
+        
+        // --- DRAG AND DROP FOR MUSIC PLAYER ---
+        const musicPlayer = document.querySelector('.music-player');
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        musicPlayer.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        function dragStart(e) {
+            if (e.target.closest('.music-btn')) return; // Don't drag if clicking buttons
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            if (e.target === musicPlayer || musicPlayer.contains(e.target)) {
+                isDragging = true;
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+                setTranslate(currentX, currentY, musicPlayer);
+            }
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+
         // ── MUSIC PLAYER SCRIPT ──
         const widgetIframe = document.getElementById('sc-player');
         const widget = SC.Widget(widgetIframe);
@@ -2578,4 +2649,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
