@@ -79,7 +79,7 @@
         }
 
         /* ── MUSIC PLAYER ── */
-        .music-player { cursor: move; user-select: none; touch-action: none; cursor: move; user-select: none;
+        .music-player { cursor: move; user-select: none;
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -1102,17 +1102,6 @@
                 document.getElementById('status-email').innerText=u.email.split('@')[0];
                 document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
 
-                // --- BALANCE CHANGE NOTIFICATION (CENTERED) ---
-                if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
-                    const added = data.balance - window.lastBalance;
-                    // Using showAlert which is already a centered modal in this template
-                    if (typeof showAlert === 'function') {
-                        showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
-                    }
-                }
-                window.lastBalance = data.balance;
-
-
                 // --- BALANCE CHANGE NOTIFICATION ---
                 if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
                     const added = data.balance - window.lastBalance;
@@ -1609,17 +1598,34 @@
             }
         }
 
+        
         function drawSnow() {
             ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.beginPath();
             for (let i = 0; i < snowflakes.length; i++) {
                 let f = snowflakes[i];
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+                ctx.save();
+                ctx.translate(f.x, f.y);
+                ctx.rotate(f.y / 20); // Xoay nhẹ khi rơi
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                // Vẽ 6 cánh của bông tuyết
+                for (let j = 0; j < 6; j++) {
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(0, f.r * 2);
+                    // Thêm nhánh nhỏ cho mỗi cánh
+                    ctx.moveTo(0, f.r);
+                    ctx.lineTo(f.r * 0.5, f.r * 1.5);
+                    ctx.moveTo(0, f.r);
+                    ctx.lineTo(-f.r * 0.5, f.r * 1.5);
+                    ctx.rotate(Math.PI / 3);
+                }
+                ctx.stroke();
+                ctx.restore();
             }
-            ctx.fill();
             moveSnow();
+        }
+
         }
 
         function moveSnow() {
@@ -2076,17 +2082,6 @@
                 sb.style.display='flex';
                 document.getElementById('status-email').innerText=u.email.split('@')[0];
                 document.getElementById('status-money').innerText=Number(data.balance||0).toLocaleString()+'đ';
-
-                // --- BALANCE CHANGE NOTIFICATION (CENTERED) ---
-                if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
-                    const added = data.balance - window.lastBalance;
-                    // Using showAlert which is already a centered modal in this template
-                    if (typeof showAlert === 'function') {
-                        showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
-                    }
-                }
-                window.lastBalance = data.balance;
-
 
                 // --- BALANCE CHANGE NOTIFICATION ---
                 if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
@@ -2562,50 +2557,6 @@
 
 
         
-        // --- DRAG AND DROP FOR MUSIC PLAYER ---
-        const musicPlayer = document.querySelector('.music-player');
-        let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
-
-        musicPlayer.addEventListener('mousedown', dragStart);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', dragEnd);
-
-        function dragStart(e) {
-            if (e.target.closest('.music-btn')) return; // Don't drag if clicking buttons
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-            if (e.target === musicPlayer || musicPlayer.contains(e.target)) {
-                isDragging = true;
-            }
-        }
-
-        function drag(e) {
-            if (isDragging) {
-                e.preventDefault();
-                currentX = e.clientX - initialX;
-                currentY = e.clientY - initialY;
-                xOffset = currentX;
-                yOffset = currentY;
-                setTranslate(currentX, currentY, musicPlayer);
-            }
-        }
-
-        function setTranslate(xPos, yPos, el) {
-            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-        }
-
-        function dragEnd(e) {
-            initialX = currentX;
-            initialY = currentY;
-            isDragging = false;
-        }
-
         
         // --- DRAG AND DROP FOR MUSIC PLAYER (MOUSE & TOUCH) ---
         const musicPlayer = document.querySelector('.music-player');
@@ -2617,15 +2568,19 @@
         let xOffset = 0;
         let yOffset = 0;
 
+        // Mouse Events
         musicPlayer.addEventListener('mousedown', dragStart);
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', dragEnd);
+
+        // Touch Events
         musicPlayer.addEventListener('touchstart', dragStart, { passive: false });
         document.addEventListener('touchmove', drag, { passive: false });
         document.addEventListener('touchend', dragEnd);
 
         function dragStart(e) {
             if (e.target.closest('.music-btn')) return;
+            
             let clientX, clientY;
             if (e.type === "touchstart") {
                 clientX = e.touches[0].clientX;
@@ -2634,8 +2589,10 @@
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
+
             initialX = clientX - xOffset;
             initialY = clientY - yOffset;
+
             if (e.target === musicPlayer || musicPlayer.contains(e.target)) {
                 isDragging = true;
             }
@@ -2644,6 +2601,7 @@
         function drag(e) {
             if (isDragging) {
                 e.preventDefault();
+                
                 let clientX, clientY;
                 if (e.type === "touchmove") {
                     clientX = e.touches[0].clientX;
@@ -2652,6 +2610,7 @@
                     clientX = e.clientX;
                     clientY = e.clientY;
                 }
+
                 currentX = clientX - initialX;
                 currentY = clientY - initialY;
                 xOffset = currentX;
@@ -2735,4 +2694,5 @@
         });
     </script>
 </body>
-</html> 
+</html>
+ 
