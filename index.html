@@ -1190,12 +1190,8 @@
                 // --- BALANCE CHANGE NOTIFICATION ---
                 if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
                     const added = data.balance - window.lastBalance;
+                    window.closeModal('depositModal');
                     window.showAlert(`Bạn vừa được cộng ${added.toLocaleString()}đ vào tài khoản!`, true);
-                    
-                    // Optional: Play a sound or show a more prominent alert
-                    if (typeof showAlert === 'function') {
-                        // showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
-                    }
                 }
                 window.lastBalance = data.balance;
 
@@ -1248,82 +1244,108 @@
         if (amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
 
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
         statusText.style.display = 'block';
-        statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
+        statusText.innerText = "Đang ghi nhận yêu cầu nạp tiền, vui lòng đợi...";
 
         try {
-            const response = await fetch('/api/sepay-proxy', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, note })
+            // ── TẠO YÊU CẦU NẠP TIỀN TRONG NHÁNH /naptien ──
+            const napTienId = Date.now();
+            const napTienRef = ref(rtdb, 'naptien/' + napTienId);
+            await set(napTienRef, {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                phuongThuc: 'chuyenkhoan',
+                soTien: amount,
+                noiDung: note,
+                trangThai: 'cho_duyet',
+                thoiGian: napTienId,
+                ghiChu: ''
             });
 
-            const data = await response.json();
+            // ── GỬI DISCORD WEBHOOK THÔNG BÁO ADMIN ──
+            await fetch(DEPOSIT_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - CHỜ DUYỆT NẠP BANK",
+                    embeds: [{
+                        title: "🏦 YÊU CẦU NẠP CHUYỂN KHOẢN MỚI!",
+                        color: 2278750,
+                        fields: [
+                            { name: "👤 Khách", value: auth.currentUser.email, inline: true },
+                            { name: "💰 Số tiền", value: amount.toLocaleString() + "đ", inline: true },
+                            { name: "📝 Nội dung CK", value: note, inline: false },
+                            { name: "🆔 Mã yêu cầu", value: String(napTienId), inline: true },
+                            { name: "📌 Trạng thái", value: "⏳ Chờ admin duyệt", inline: true }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
 
-            if (response.ok && data.status === 200 && data.transactions) {
-                const transaction = data.transactions.find(t => 
-                    t.content.toLowerCase().includes(note.toLowerCase()) && 
-                    parseInt(t.amount) >= amount
-                );
+            // ── THỬ KIỂM TRA TỰ ĐỘNG QUA SEPAY (nếu có) ──
+            try {
+                const response = await fetch('/api/sepay-proxy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, note })
+                });
 
-                if (transaction) {
-                    const transRef = ref(rtdb, `transactions/${transaction.id}`);
-                    const transSnap = await get(transRef);
-                    
-                    if (!transSnap.exists()) {
-                        await set(transRef, {
-                            uid: auth.currentUser.uid,
-                            amount: parseInt(transaction.amount),
-                            timestamp: Date.now(),
-                            content: transaction.content
-                        });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 200 && data.transactions) {
+                        const transaction = data.transactions.find(t =>
+                            t.content.toLowerCase().includes(note.toLowerCase()) &&
+                            parseInt(t.amount) >= amount
+                        );
 
-                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
-                        const userSnap = await get(userRef);
-                        const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
-                        
-                        const newBalance = (userData.balance || 0) + parseInt(transaction.amount);
-                        const newTotalDep = (userData.totalDeposit || 0) + parseInt(transaction.amount);
-                        
-                        await update(userRef, { 
-                            balance: newBalance,
-                            totalDeposit: newTotalDep
-                        });
+                        if (transaction) {
+                            const transRef = ref(rtdb, `transactions/${transaction.id}`);
+                            const transSnap = await get(transRef);
 
-                        await fetch(DEPOSIT_WEBHOOK, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
-                                embeds: [{
-                                    title: "✅ NẠP TIỀN TỰ ĐỘNG THÀNH CÔNG!",
-                                    color: 65280,
-                                    fields: [
-                                        { name: "👤 Khách", value: auth.currentUser.email, inline: true },
-                                        { name: "💰 Số tiền", value: parseInt(transaction.amount).toLocaleString() + "đ", inline: true },
-                                        { name: "📝 Nội dung", value: transaction.content, inline: false }
-                                    ],
-                                    timestamp: new Date().toISOString()
-                                }]
-                            })
-                        });
+                            if (!transSnap.exists()) {
+                                await set(transRef, {
+                                    uid: auth.currentUser.uid,
+                                    amount: parseInt(transaction.amount),
+                                    timestamp: Date.now(),
+                                    content: transaction.content
+                                });
 
-                        window.closeModal('depositModal');
-                        showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
-                    } else {
-                        statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                                const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                                const userSnap = await get(userRef);
+                                const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
+
+                                await update(userRef, {
+                                    balance: (userData.balance || 0) + parseInt(transaction.amount),
+                                    totalDeposit: (userData.totalDeposit || 0) + parseInt(transaction.amount)
+                                });
+
+                                // Cập nhật trạng thái nhánh naptien thành đã duyệt tự động
+                                await update(napTienRef, {
+                                    trangThai: 'da_duyet_tu_dong',
+                                    soTienThucNhan: parseInt(transaction.amount),
+                                    ghiChu: 'Hệ thống tự động xác nhận qua SePay'
+                                });
+
+                                window.closeModal('depositModal');
+                                showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
+                                return;
+                            } else {
+                                statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                            }
+                        }
                     }
-                } else {
-                    statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
                 }
-            } else {
-                statusText.innerText = data.message || "Vui Lòng đợi  5-10p để admin check tiền.";
-            }
+            } catch (_) { /* SePay không khả dụng, tiếp tục chờ admin duyệt */ }
+
+            // Nếu không tự động được → thông báo chờ admin
+            statusText.innerText = "✅ Đã ghi nhận! Admin sẽ duyệt trong 5-10 phút. Số dư sẽ cập nhật tự động.";
+            btn.innerHTML = '<i class="fas fa-check"></i> ĐÃ GỬI YÊU CẦU';
+
         } catch (e) {
             console.error(e);
-            statusText.innerText = "Vui Lòng đợi 5-10p để admin check tiền.";
-        } finally {
+            statusText.innerText = "Có lỗi xảy ra, vui lòng thử lại.";
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
         }
@@ -1345,14 +1367,42 @@
               p=document.getElementById('cardPin').value.trim(), s=document.getElementById('cardSeri').value.trim(),
               u=auth.currentUser;
         if(!t||!v||!p||!s) return showAlert("Vui lòng điền đủ thông tin!");
+        if(!u) return showAlert("Bạn cần đăng nhập!");
+
+        const meNhGia = parseInt(v);
+        const soTienThucNhan = Math.floor(meNhGia * 0.82); // Nhận 82% mệnh giá
+
         try {
+            // ── TẠO YÊU CẦU NẠP THẺ TRONG NHÁNH /naptien ──
+            const napTienId = Date.now();
+            const napTienRef = ref(rtdb, 'naptien/' + napTienId);
+            await set(napTienRef, {
+                uid: u.uid,
+                email: u.email,
+                phuongThuc: 'thecao',
+                loaiThe: t,
+                meNhGia: meNhGia,
+                soTienThucNhan: soTienThucNhan,
+                pinThe: p,
+                seriThe: s,
+                trangThai: 'cho_duyet',
+                thoiGian: napTienId,
+                ghiChu: 'Chiết khấu 18% - Nhận 82% mệnh giá'
+            });
+
+            // ── GỬI DISCORD WEBHOOK THÔNG BÁO ADMIN ──
             await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO",embeds:[{title:"💳 THẺ CÀO MỚI!",color:16711767,
+                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO MỚI",embeds:[{title:"💳 YÊU CẦU NẠP THẺ CÀO!",color:16711767,
                     fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"🆔 Loại",value:t,inline:true},
-                             {name:"💰 Mệnh giá",value:Number(v).toLocaleString()+"đ",inline:true},
-                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``}],
+                             {name:"💰 Mệnh giá",value:meNhGia.toLocaleString()+"đ",inline:true},
+                             {name:"✅ Thực nhận (82%)",value:soTienThucNhan.toLocaleString()+"đ",inline:true},
+                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``},
+                             {name:"🆔 Mã yêu cầu",value:String(napTienId),inline:true},
+                             {name:"📌 Trạng thái",value:"⏳ Chờ admin duyệt",inline:true}],
                     timestamp:new Date().toISOString()}]})});
-            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
+
+            window.closeModal('depositModal');
+            showAlert(`Đã gửi thẻ! Bạn sẽ nhận ${soTienThucNhan.toLocaleString()}đ sau khi admin duyệt.`, true);
         } catch(e){ showAlert(e.message); }
     };
 
@@ -2189,12 +2239,8 @@
                 // --- BALANCE CHANGE NOTIFICATION ---
                 if (window.lastBalance !== undefined && data.balance > window.lastBalance) {
                     const added = data.balance - window.lastBalance;
+                    window.closeModal('depositModal');
                     window.showAlert(`Bạn vừa được cộng ${added.toLocaleString()}đ vào tài khoản!`, true);
-                    
-                    // Optional: Play a sound or show a more prominent alert
-                    if (typeof showAlert === 'function') {
-                        // showAlert(`Chúc mừng! Tài khoản của bạn đã được cộng ${added.toLocaleString()}đ.`, true);
-                    }
                 }
                 window.lastBalance = data.balance;
 
@@ -2247,82 +2293,108 @@
         if (amount < 1000) return showAlert("Vui lòng nhập số tiền nạp (tối thiểu 1.000đ)");
 
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
         statusText.style.display = 'block';
-        statusText.innerText = "Hệ thống đang kiểm tra giao dịch, vui lòng đợi...";
+        statusText.innerText = "Đang ghi nhận yêu cầu nạp tiền, vui lòng đợi...";
 
         try {
-            const response = await fetch('/api/sepay-proxy', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, note })
+            // ── TẠO YÊU CẦU NẠP TIỀN TRONG NHÁNH /naptien ──
+            const napTienId = Date.now();
+            const napTienRef = ref(rtdb, 'naptien/' + napTienId);
+            await set(napTienRef, {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                phuongThuc: 'chuyenkhoan',
+                soTien: amount,
+                noiDung: note,
+                trangThai: 'cho_duyet',
+                thoiGian: napTienId,
+                ghiChu: ''
             });
 
-            const data = await response.json();
+            // ── GỬI DISCORD WEBHOOK THÔNG BÁO ADMIN ──
+            await fetch(DEPOSIT_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "Dexsty Shop - CHỜ DUYỆT NẠP BANK",
+                    embeds: [{
+                        title: "🏦 YÊU CẦU NẠP CHUYỂN KHOẢN MỚI!",
+                        color: 2278750,
+                        fields: [
+                            { name: "👤 Khách", value: auth.currentUser.email, inline: true },
+                            { name: "💰 Số tiền", value: amount.toLocaleString() + "đ", inline: true },
+                            { name: "📝 Nội dung CK", value: note, inline: false },
+                            { name: "🆔 Mã yêu cầu", value: String(napTienId), inline: true },
+                            { name: "📌 Trạng thái", value: "⏳ Chờ admin duyệt", inline: true }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            });
 
-            if (response.ok && data.status === 200 && data.transactions) {
-                const transaction = data.transactions.find(t => 
-                    t.content.toLowerCase().includes(note.toLowerCase()) && 
-                    parseInt(t.amount) >= amount
-                );
+            // ── THỬ KIỂM TRA TỰ ĐỘNG QUA SEPAY (nếu có) ──
+            try {
+                const response = await fetch('/api/sepay-proxy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, note })
+                });
 
-                if (transaction) {
-                    const transRef = ref(rtdb, `transactions/${transaction.id}`);
-                    const transSnap = await get(transRef);
-                    
-                    if (!transSnap.exists()) {
-                        await set(transRef, {
-                            uid: auth.currentUser.uid,
-                            amount: parseInt(transaction.amount),
-                            timestamp: Date.now(),
-                            content: transaction.content
-                        });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 200 && data.transactions) {
+                        const transaction = data.transactions.find(t =>
+                            t.content.toLowerCase().includes(note.toLowerCase()) &&
+                            parseInt(t.amount) >= amount
+                        );
 
-                        const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
-                        const userSnap = await get(userRef);
-                        const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
-                        
-                        const newBalance = (userData.balance || 0) + parseInt(transaction.amount);
-                        const newTotalDep = (userData.totalDeposit || 0) + parseInt(transaction.amount);
-                        
-                        await update(userRef, { 
-                            balance: newBalance,
-                            totalDeposit: newTotalDep
-                        });
+                        if (transaction) {
+                            const transRef = ref(rtdb, `transactions/${transaction.id}`);
+                            const transSnap = await get(transRef);
 
-                        await fetch(DEPOSIT_WEBHOOK, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                username: "Dexsty Shop - NẠP TIỀN THÀNH CÔNG",
-                                embeds: [{
-                                    title: "✅ NẠP TIỀN TỰ ĐỘNG THÀNH CÔNG!",
-                                    color: 65280,
-                                    fields: [
-                                        { name: "👤 Khách", value: auth.currentUser.email, inline: true },
-                                        { name: "💰 Số tiền", value: parseInt(transaction.amount).toLocaleString() + "đ", inline: true },
-                                        { name: "📝 Nội dung", value: transaction.content, inline: false }
-                                    ],
-                                    timestamp: new Date().toISOString()
-                                }]
-                            })
-                        });
+                            if (!transSnap.exists()) {
+                                await set(transRef, {
+                                    uid: auth.currentUser.uid,
+                                    amount: parseInt(transaction.amount),
+                                    timestamp: Date.now(),
+                                    content: transaction.content
+                                });
 
-                        window.closeModal('depositModal');
-                        showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
-                    } else {
-                        statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                                const userRef = ref(rtdb, 'users/' + auth.currentUser.uid);
+                                const userSnap = await get(userRef);
+                                const userData = userSnap.val() || { balance: 0, totalDeposit: 0 };
+
+                                await update(userRef, {
+                                    balance: (userData.balance || 0) + parseInt(transaction.amount),
+                                    totalDeposit: (userData.totalDeposit || 0) + parseInt(transaction.amount)
+                                });
+
+                                // Cập nhật trạng thái nhánh naptien thành đã duyệt tự động
+                                await update(napTienRef, {
+                                    trangThai: 'da_duyet_tu_dong',
+                                    soTienThucNhan: parseInt(transaction.amount),
+                                    ghiChu: 'Hệ thống tự động xác nhận qua SePay'
+                                });
+
+                                window.closeModal('depositModal');
+                                showAlert(`Nạp thành công ${parseInt(transaction.amount).toLocaleString()}đ!`, true);
+                                return;
+                            } else {
+                                statusText.innerText = "Giao dịch này đã được xử lý trước đó.";
+                            }
+                        }
                     }
-                } else {
-                    statusText.innerText = "Không tìm thấy giao dịch khớp. Vui lòng đợi 1-2 phút rồi thử lại.";
                 }
-            } else {
-                statusText.innerText = data.message || "Vui Lòng đợi  5-10p để admin check tiền.";
-            }
+            } catch (_) { /* SePay không khả dụng, tiếp tục chờ admin duyệt */ }
+
+            // Nếu không tự động được → thông báo chờ admin
+            statusText.innerText = "✅ Đã ghi nhận! Admin sẽ duyệt trong 5-10 phút. Số dư sẽ cập nhật tự động.";
+            btn.innerHTML = '<i class="fas fa-check"></i> ĐÃ GỬI YÊU CẦU';
+
         } catch (e) {
             console.error(e);
-            statusText.innerText = "Vui Lòng đợi 5-10p để admin check tiền.";
-        } finally {
+            statusText.innerText = "Có lỗi xảy ra, vui lòng thử lại.";
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-sync-alt"></i> XÁC NHẬN ĐÃ CHUYỂN TIỀN';
         }
@@ -2344,14 +2416,42 @@
               p=document.getElementById('cardPin').value.trim(), s=document.getElementById('cardSeri').value.trim(),
               u=auth.currentUser;
         if(!t||!v||!p||!s) return showAlert("Vui lòng điền đủ thông tin!");
+        if(!u) return showAlert("Bạn cần đăng nhập!");
+
+        const meNhGia = parseInt(v);
+        const soTienThucNhan = Math.floor(meNhGia * 0.82); // Nhận 82% mệnh giá
+
         try {
+            // ── TẠO YÊU CẦU NẠP THẺ TRONG NHÁNH /naptien ──
+            const napTienId = Date.now();
+            const napTienRef = ref(rtdb, 'naptien/' + napTienId);
+            await set(napTienRef, {
+                uid: u.uid,
+                email: u.email,
+                phuongThuc: 'thecao',
+                loaiThe: t,
+                meNhGia: meNhGia,
+                soTienThucNhan: soTienThucNhan,
+                pinThe: p,
+                seriThe: s,
+                trangThai: 'cho_duyet',
+                thoiGian: napTienId,
+                ghiChu: 'Chiết khấu 18% - Nhận 82% mệnh giá'
+            });
+
+            // ── GỬI DISCORD WEBHOOK THÔNG BÁO ADMIN ──
             await fetch(DEPOSIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO",embeds:[{title:"💳 THẺ CÀO MỚI!",color:16711767,
+                body:JSON.stringify({username:"Dexsty Shop - THẺ CÀO MỚI",embeds:[{title:"💳 YÊU CẦU NẠP THẺ CÀO!",color:16711767,
                     fields:[{name:"👤 Khách",value:u.email,inline:true},{name:"🆔 Loại",value:t,inline:true},
-                             {name:"💰 Mệnh giá",value:Number(v).toLocaleString()+"đ",inline:true},
-                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``}],
+                             {name:"💰 Mệnh giá",value:meNhGia.toLocaleString()+"đ",inline:true},
+                             {name:"✅ Thực nhận (82%)",value:soTienThucNhan.toLocaleString()+"đ",inline:true},
+                             {name:"🔑 PIN",value:`\`${p}\``},{name:"🔢 Seri",value:`\`${s}\``},
+                             {name:"🆔 Mã yêu cầu",value:String(napTienId),inline:true},
+                             {name:"📌 Trạng thái",value:"⏳ Chờ admin duyệt",inline:true}],
                     timestamp:new Date().toISOString()}]})});
-            window.closeModal('depositModal'); showAlert("Đã gửi thẻ thành công!", true);
+
+            window.closeModal('depositModal');
+            showAlert(`Đã gửi thẻ! Bạn sẽ nhận ${soTienThucNhan.toLocaleString()}đ sau khi admin duyệt.`, true);
         } catch(e){ showAlert(e.message); }
     };
 
