@@ -93,6 +93,67 @@
 
         .hidden { display: none !important; }
 
+        /* NAP TIEN TAB */
+        .dep-filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .dep-filter-btn {
+            padding: 6px 16px; border-radius: 20px; font-size: 0.82rem; border: 1px solid var(--border);
+            background: #1f2937; color: white; cursor: pointer; white-space: nowrap; font-weight: 600;
+        }
+        .dep-filter-btn.active { border-color: var(--sky); color: var(--sky); }
+
+        .dep-item {
+            background: #0f172a; border: 1px solid var(--border); border-radius: 12px;
+            padding: 15px; margin-bottom: 12px;
+        }
+        .dep-item.cho_duyet  { border-left: 4px solid var(--gold); }
+        .dep-item.da_duyet   { border-left: 4px solid var(--success); }
+        .dep-item.tu_choi    { border-left: 4px solid var(--danger); }
+        .dep-item.da_duyet_tu_dong { border-left: 4px solid #38bdf8; }
+
+        .dep-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .dep-badge {
+            padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700;
+        }
+        .badge-cho   { background: #451a03; color: var(--gold); }
+        .badge-duyet { background: #064e3b; color: var(--success); }
+        .badge-tu    { background: #3b0000; color: var(--danger); }
+        .badge-auto  { background: #0c2340; color: var(--sky); }
+
+        .dep-method {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+        }
+        .method-bank { background: rgba(56,189,248,.12); color: var(--sky); }
+        .method-card { background: rgba(251,191,36,.12); color: var(--gold); }
+
+        .dep-info p { margin: 4px 0; font-size: 0.88rem; color: #cbd5e1; }
+        .dep-info b { color: #f1f5f9; }
+        .dep-info .amt { font-size: 1.1rem; font-weight: 800; color: var(--gold); }
+        .dep-info .recv { font-size: 1rem; font-weight: 700; color: var(--success); }
+        .dep-card-detail {
+            background: rgba(255,255,255,.04); border-radius: 8px; padding: 10px 12px; margin-top: 8px;
+            font-size: 0.82rem; color: #94a3b8;
+        }
+        .dep-card-detail b { color: #f1f5f9; font-family: monospace; font-size: 0.9rem; }
+
+        .dep-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn-approve { background: var(--success); color: #fff; padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+        .btn-reject  { background: var(--danger);  color: #fff; padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+        .btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .dep-stat-badge {
+            background: #1f2937; border-radius: 10px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px; font-size: 0.88rem;
+        }
+        .dep-stat-badge i { color: var(--gold); font-size: 1.2rem; }
+
+        .stat-card .pending-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff; border-radius: 50%;
+            width: 22px; height: 22px; font-size: 11px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+
         /* TOAST NOTIFICATION */
         #toast {
             position: fixed; top: 20px; right: 20px; padding: 15px 25px; 
@@ -125,11 +186,18 @@
                 <p>Thành viên</p>
                 <span class="reset-link" onclick="resetTopDeposit()"><i class="fas fa-sync-alt"></i> Reset Top Nạp</span>
             </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave" style="color:var(--gold)"></i>
+                <h3 id="stat-pending-dep" style="color:var(--gold)">0</h3>
+                <p>Nạp tiền chờ duyệt</p>
+                <span id="pending-dep-badge" class="pending-badge" style="display:none">0</span>
+            </div>
         </div>
     </header>
 
     <div class="tabs">
         <button class="tab-btn active" data-tab="orders"><i class="fas fa-box"></i> ĐƠN HÀNG</button>
+        <button class="tab-btn" data-tab="naptien"><i class="fas fa-money-bill-wave"></i> NẠP TIỀN</button>
         <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> CỘNG TIỀN</button>
         <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> CÀI ĐẶT</button>
     </div>
@@ -142,6 +210,33 @@
         </div>
         <div id="order-list-container">
             <p style="text-align: center; color: gray;">Đang đồng bộ dữ liệu...</p>
+        </div>
+    </div>
+
+    <!-- TAB NẠP TIỀN -->
+    <div id="tab-naptien" class="section-card hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <h3 style="margin:0; color:var(--gold)"><i class="fas fa-money-bill-wave"></i> Quản lý Nạp Tiền</h3>
+            <div class="dep-stat-badge">
+                <i class="fas fa-clock"></i>
+                <span>Chờ duyệt: <b id="dep-pending-count" style="color:var(--gold)">0</b></span>
+                &nbsp;|&nbsp;
+                <span>Đã duyệt: <b id="dep-approved-count" style="color:var(--success)">0</b></span>
+            </div>
+        </div>
+
+        <div class="dep-filter-bar">
+            <button class="dep-filter-btn active" onclick="filterDep('all')">Tất cả</button>
+            <button class="dep-filter-btn" onclick="filterDep('cho_duyet')">⏳ Chờ duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('da_duyet')">✅ Đã duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('da_duyet_tu_dong')">🤖 Auto duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('tu_choi')">❌ Từ chối</button>
+            <button class="dep-filter-btn" onclick="filterDep('thecao')">💳 Thẻ cào</button>
+            <button class="dep-filter-btn" onclick="filterDep('chuyenkhoan')">🏦 Chuyển khoản</button>
+        </div>
+
+        <div id="dep-list-container">
+            <p style="text-align:center; color:gray; padding:30px;">Đang tải dữ liệu...</p>
         </div>
     </div>
 
@@ -214,6 +309,7 @@
             btn.classList.add('active');
             const target = btn.getAttribute('data-tab');
             document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
+            document.getElementById('tab-naptien').classList.toggle('hidden', target !== 'naptien');
             document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
             document.getElementById('tab-settings').classList.toggle('hidden', target !== 'settings');
         }
@@ -351,8 +447,7 @@
         } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
     };
 
-    // --- SHOP SETTINGS LOGIC ---
-    // Tải dữ liệu status cũ lên form
+    // ═══════ SHOP SETTINGS LOGIC ═══════
     onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
         const statusData = snapshot.val();
         if(statusData) {
@@ -364,7 +459,6 @@
     document.getElementById('btn-save-status').onclick = async () => {
         const status = document.getElementById('shop-status-select').value;
         const notice = document.getElementById('shop-announcement').value.trim();
-
         try {
             await set(ref(rtdb, 'settings/shopStatus'), {
                 status: status,
@@ -376,6 +470,175 @@
             showToast("Lỗi: " + e.message, 'error');
         }
     };
+
+    // ═══════ NẠP TIỀN LOGIC ═══════
+    let allDeposits = [];
+    let currentDepFilter = 'all';
+
+    onValue(ref(rtdb, 'naptien'), (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            allDeposits = [];
+            document.getElementById('dep-list-container').innerHTML =
+                "<p style='text-align:center;padding:30px;color:gray;'>Chưa có yêu cầu nạp tiền nào.</p>";
+            updateDepStats([]);
+            return;
+        }
+        // Sắp xếp mới nhất lên trên
+        allDeposits = Object.entries(data).sort((a, b) => b[0] - a[0]);
+        renderDeposits(allDeposits);
+        updateDepStats(allDeposits);
+    });
+
+    function updateDepStats(deps) {
+        const pending  = deps.filter(([, d]) => d.trangThai === 'cho_duyet').length;
+        const approved = deps.filter(([, d]) => ['da_duyet','da_duyet_tu_dong'].includes(d.trangThai)).length;
+        document.getElementById('dep-pending-count').innerText  = pending;
+        document.getElementById('dep-approved-count').innerText = approved;
+        document.getElementById('stat-pending-dep').innerText   = pending;
+        const badge = document.getElementById('pending-dep-badge');
+        if (pending > 0) { badge.style.display = 'flex'; badge.innerText = pending; }
+        else             { badge.style.display = 'none'; }
+    }
+
+    window.filterDep = (type) => {
+        currentDepFilter = type;
+        document.querySelectorAll('.dep-filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if (type === 'all') { renderDeposits(allDeposits); return; }
+        // Lọc theo phuongThuc hoặc trangThai
+        const filtered = allDeposits.filter(([, d]) =>
+            d.phuongThuc === type || d.trangThai === type
+        );
+        renderDeposits(filtered);
+    };
+
+    function renderDeposits(deps) {
+        const container = document.getElementById('dep-list-container');
+        if (!deps.length) {
+            container.innerHTML = "<p style='text-align:center;padding:30px;color:gray;'>Không có yêu cầu nào.</p>";
+            return;
+        }
+        container.innerHTML = deps.map(([id, d]) => {
+            const isBank = d.phuongThuc === 'chuyenkhoan';
+            const isCard = d.phuongThuc === 'thecao';
+            const isPending = d.trangThai === 'cho_duyet';
+            const isAuto    = d.trangThai === 'da_duyet_tu_dong';
+            const isDone    = d.trangThai === 'da_duyet' || isAuto;
+            const isRejected= d.trangThai === 'tu_choi';
+
+            const badgeClass = isPending ? 'badge-cho' : isDone ? 'badge-duyet' : isRejected ? 'badge-tu' : 'badge-auto';
+            const badgeText  = isPending ? '⏳ Chờ duyệt' : isAuto ? '🤖 Auto duyệt' : isDone ? '✅ Đã duyệt' : '❌ Từ chối';
+
+            const methodHtml = isBank
+                ? `<span class="dep-method method-bank"><i class="fas fa-university"></i> Chuyển khoản</span>`
+                : `<span class="dep-method method-card"><i class="fas fa-credit-card"></i> Thẻ cào</span>`;
+
+            const timeStr = new Date(parseInt(id)).toLocaleString('vi-VN');
+
+            // Thông tin chi tiết theo loại
+            let detailHtml = '';
+            if (isBank) {
+                detailHtml = `
+                    <p>💰 Số tiền: <span class="amt">${(d.soTien||0).toLocaleString()}đ</span></p>
+                    <p>📝 Nội dung CK: <b>${d.noiDung || '—'}</b></p>`;
+            } else if (isCard) {
+                const recv = d.soTienThucNhan || Math.floor((d.meNhGia||0) * 0.82);
+                detailHtml = `
+                    <p>💳 Loại thẻ: <b>${d.loaiThe || '—'}</b> &nbsp;|&nbsp; Mệnh giá: <span class="amt">${(d.meNhGia||0).toLocaleString()}đ</span></p>
+                    <p>✅ Thực nhận (82%): <span class="recv">${recv.toLocaleString()}đ</span></p>
+                    <div class="dep-card-detail">
+                        🔑 PIN: <b>${d.pinThe || '—'}</b><br>
+                        🔢 Serial: <b>${d.seriThe || '—'}</b>
+                    </div>`;
+            }
+
+            const ghiChuHtml = d.ghiChu
+                ? `<p style="font-size:12px;color:#64748b;margin-top:6px;">💬 ${d.ghiChu}</p>` : '';
+
+            const actionHtml = isPending
+                ? `<button class="btn-approve" onclick="approveDep('${id}')"><i class="fas fa-check"></i> DUYỆT & CỘNG TIỀN</button>
+                   <button class="btn-reject"  onclick="rejectDep('${id}')"><i class="fas fa-times"></i> TỪ CHỐI</button>`
+                : `<button class="btn-approve" disabled style="opacity:.35"><i class="fas fa-check"></i> ĐÃ XỬ LÝ</button>`;
+
+            return `
+            <div class="dep-item ${d.trangThai}">
+                <div class="dep-header">
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        ${methodHtml}
+                        <span class="dep-badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <span style="font-size:11px;color:#64748b;">${timeStr}</span>
+                </div>
+                <div class="dep-info">
+                    <p>👤 Email: <b style="color:var(--sky)">${d.email || '—'}</b></p>
+                    ${detailHtml}
+                    ${ghiChuHtml}
+                </div>
+                <div class="dep-actions">${actionHtml}</div>
+            </div>`;
+        }).join('');
+    }
+
+    window.approveDep = async (id) => {
+        const dep = allDeposits.find(([k]) => k === id)?.[1];
+        if (!dep) return showToast("Không tìm thấy yêu cầu!", 'error');
+
+        const soTienCong = dep.phuongThuc === 'thecao'
+            ? (dep.soTienThucNhan || Math.floor((dep.meNhGia||0) * 0.82))
+            : dep.soTien;
+
+        if (!confirm(`Xác nhận CỘNG ${soTienCong.toLocaleString()}đ cho ${dep.email}?`)) return;
+
+        try {
+            // Tìm uid từ email
+            const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(dep.email));
+            const userSnap  = await get(userQuery);
+            if (!userSnap.exists()) return showToast("Không tìm thấy tài khoản khách!", 'error');
+
+            const uid      = Object.keys(userSnap.val())[0];
+            const userData = userSnap.val()[uid];
+
+            // Cộng tiền cho khách
+            await update(ref(rtdb, `users/${uid}`), {
+                balance:      (userData.balance      || 0) + soTienCong,
+                totalDeposit: (userData.totalDeposit || 0) + soTienCong
+            });
+
+            // Cập nhật trạng thái nhánh naptien
+            await update(ref(rtdb, `naptien/${id}`), {
+                trangThai:      'da_duyet',
+                soTienThucNhan: soTienCong,
+                duyetBoi:       'admin',
+                thoiGianDuyet:  Date.now(),
+                ghiChu:         `Admin đã duyệt, cộng ${soTienCong.toLocaleString()}đ`
+            });
+
+            showToast(`✅ Đã cộng ${soTienCong.toLocaleString()}đ cho ${dep.email}`);
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
+    };
+
+    window.rejectDep = async (id) => {
+        const dep = allDeposits.find(([k]) => k === id)?.[1];
+        if (!dep) return;
+        const lydo = prompt(`Nhập lý do từ chối yêu cầu của ${dep.email} (để trống nếu không cần):`);
+        if (lydo === null) return; // Nhấn Cancel
+
+        try {
+            await update(ref(rtdb, `naptien/${id}`), {
+                trangThai:     'tu_choi',
+                duyetBoi:      'admin',
+                thoiGianDuyet: Date.now(),
+                ghiChu:        lydo || 'Admin từ chối yêu cầu'
+            });
+            showToast(`Đã từ chối yêu cầu của ${dep.email}`);
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
+    };
+
 </script>
 </body>
 </html>
