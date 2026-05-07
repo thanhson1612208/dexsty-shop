@@ -1,1089 +1,644 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Admin — Dexsty Shop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dexsty Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --sky: #38bdf8; --gold: #fbbf24; --bg: #030712; 
+            --card: #111827; --border: #1f2937; --success: #22c55e;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { 
+            background: var(--bg); color: #f3f4f6; 
+            font-family: 'Inter', sans-serif; margin: 0; padding: 20px; 
+        }
+        .admin-container { max-width: 1100px; margin: auto; }
+        
+        /* HEADER & STATS */
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: var(--sky); font-size: 2rem; letter-spacing: 2px; margin-bottom: 20px; }
+        
+        .stats-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; margin-bottom: 30px; 
+        }
+        .stat-card { 
+            background: var(--card); padding: 20px; border-radius: 12px; 
+            border: 1px solid var(--border); text-align: center; position: relative;
+        }
+        .stat-card i { font-size: 1.5rem; color: var(--sky); margin-bottom: 10px; }
+        .stat-card h3 { margin: 5px 0; font-size: 1.2rem; }
+        .stat-card p { color: #94a3b8; font-size: 0.9rem; margin: 0; }
+        
+        .reset-link {
+            display: block; margin-top: 10px; font-size: 11px; color: var(--danger);
+            text-decoration: none; cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
+        .reset-link:hover { opacity: 0.7; }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; font-size: 15px; }
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--card); padding: 5px; border-radius: 12px; overflow-x: auto;}
+        .tab-btn { 
+            flex: 1; padding: 12px; background: transparent; border: none; 
+            color: #94a3b8; cursor: pointer; border-radius: 8px; font-weight: bold; white-space: nowrap;
+        }
+        .tab-btn.active { background: var(--sky); color: #000; }
 
-:root {
-    --bg:    #060A12;
-    --surf:  #0C1220;
-    --glass: rgba(255,255,255,0.04);
-    --b1:    rgba(255,255,255,0.07);
-    --b2:    rgba(255,255,255,0.13);
-    --cyan:  #00D4FF;
-    --cdim:  rgba(0,212,255,0.12);
-    --gold:  #F5C842;
-    --gdim:  rgba(245,200,66,0.12);
-    --green: #00E8A2;
-    --edim:  rgba(0,232,162,0.12);
-    --red:   #FF4D6D;
-    --rdim:  rgba(255,77,109,0.12);
-    --text:  #E2E8F0;
-    --muted: #4A5568;
-    --sw:    250px;
-}
+        /* CONTENT AREAS */
+        .section-card { 
+            background: var(--card); border-radius: 15px; border: 1px solid var(--border); 
+            padding: 20px; animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Times New Roman', Times, serif;
-    height: 100vh;
-    overflow: hidden;
-}
+        /* ORDER MANAGEMENT */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { 
+            padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--border);
+            background: #1f2937; color: white; cursor: pointer; white-space: nowrap;
+        }
+        .filter-btn.active { border-color: var(--sky); color: var(--sky); }
 
-body::before {
-    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:
-        linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
-    background-size:40px 40px;
-}
+        .order-item { 
+            background: #0f172a; border: 1px solid var(--border); border-radius: 12px; 
+            padding: 15px; margin-bottom: 12px; display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: center; gap: 15px;
+        }
+        .order-info b { color: var(--sky); }
+        .order-info p { margin: 3px 0; font-size: 0.9rem; }
+        
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .pending { background: #451a03; color: var(--gold); }
+        .completed { background: #064e3b; color: var(--success); }
 
-/* ── LAYOUT ── */
-#app {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-    position: relative; z-index: 1;
-}
+        /* INPUTS & BUTTONS */
+        input, select, textarea { 
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); 
+            background: #030712; color: white; margin-bottom: 15px; outline: none; font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--sky); }
+        
+        .btn { 
+            padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; 
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--sky); color: #000; }
+        .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-disabled { background: #374151; color: #94a3b8; cursor: not-allowed; }
 
-/* ── SIDEBAR ── */
-#sidebar {
-    width: var(--sw);
-    background: var(--surf);
-    border-right: 1px solid var(--b1);
-    display: flex; flex-direction: column;
-    flex-shrink: 0;
-    position: sticky; top: 0;
-    height: 100vh; overflow-y: auto;
-}
+        .hidden { display: none !important; }
 
-.sb-brand { padding: 22px 20px 18px; border-bottom: 1px solid var(--b1); }
-.sb-tag {
-    font-family: 'Times New Roman', Times, serif; font-size: 9px;
-    letter-spacing: 3px; color: var(--cyan); display: block; margin-bottom: 5px;
-}
-.sb-brand h1 {
-    font-family: 'Times New Roman', Times, serif; font-size: 1.5rem; font-weight: 800;
-    background: linear-gradient(135deg, #fff 30%, var(--cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.sb-brand small { font-family: 'Times New Roman', Times, serif; font-size: 10px; color: var(--muted); }
+        /* NAP TIEN TAB */
+        .dep-filter-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .dep-filter-btn {
+            padding: 6px 16px; border-radius: 20px; font-size: 0.82rem; border: 1px solid var(--border);
+            background: #1f2937; color: white; cursor: pointer; white-space: nowrap; font-weight: 600;
+        }
+        .dep-filter-btn.active { border-color: var(--sky); color: var(--sky); }
 
-.sb-sec {
-    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; padding: 14px 20px 6px;
-}
+        .dep-item {
+            background: #0f172a; border: 1px solid var(--border); border-radius: 12px;
+            padding: 15px; margin-bottom: 12px;
+        }
+        .dep-item.cho_duyet  { border-left: 4px solid var(--gold); }
+        .dep-item.da_duyet   { border-left: 4px solid var(--success); }
+        .dep-item.tu_choi    { border-left: 4px solid var(--danger); }
+        .dep-item.da_duyet_tu_dong { border-left: 4px solid #38bdf8; }
 
-.nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; margin: 2px 10px;
-    border-radius: 9px; cursor: pointer;
-    color: var(--muted); font-weight: 600; font-size: 0.85rem;
-    border: 1px solid transparent; transition: all 0.2s; user-select: none;
-}
-.nav-item:hover { background: var(--glass); color: var(--text); }
-.nav-item.active { background: var(--cdim); color: var(--cyan); border-color: rgba(0,212,255,0.18); }
+        .dep-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .dep-badge {
+            padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700;
+        }
+        .badge-cho   { background: #451a03; color: var(--gold); }
+        .badge-duyet { background: #064e3b; color: var(--success); }
+        .badge-tu    { background: #3b0000; color: var(--danger); }
+        .badge-auto  { background: #0c2340; color: var(--sky); }
 
-.ni-ico {
-    width: 30px; height: 30px; border-radius: 7px;
-    background: var(--glass); display: flex; align-items: center;
-    justify-content: center; font-size: 0.8rem; flex-shrink: 0;
-}
+        .dep-method {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+        }
+        .method-bank { background: rgba(56,189,248,.12); color: var(--sky); }
+        .method-card { background: rgba(251,191,36,.12); color: var(--gold); }
 
-.nbadge {
-    margin-left: auto; background: var(--red); color: #fff;
-    font-size: 9px; font-weight: 800; padding: 2px 7px;
-    border-radius: 20px; font-family: 'Times New Roman', Times, serif;
-}
+        .dep-info p { margin: 4px 0; font-size: 0.88rem; color: #cbd5e1; }
+        .dep-info b { color: #f1f5f9; }
+        .dep-info .amt { font-size: 1.1rem; font-weight: 800; color: var(--gold); }
+        .dep-info .recv { font-size: 1rem; font-weight: 700; color: var(--success); }
+        .dep-card-detail {
+            background: rgba(255,255,255,.04); border-radius: 8px; padding: 10px 12px; margin-top: 8px;
+            font-size: 0.82rem; color: #94a3b8;
+        }
+        .dep-card-detail b { color: #f1f5f9; font-family: monospace; font-size: 0.9rem; }
 
-.sb-foot { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--b1); }
-.admin-pill {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--glass); border: 1px solid var(--b1);
-    padding: 9px 12px; border-radius: 9px;
-}
-.admin-av {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--cyan), var(--green));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 800; color: #000; flex-shrink: 0;
-}
-.admin-pill b { font-size: 12px; display: block; }
-.admin-pill small { font-size: 10px; color: var(--muted); font-family: 'Times New Roman', Times, serif; }
+        .dep-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn-approve { background: var(--success); color: #fff; padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+        .btn-reject  { background: var(--danger);  color: #fff; padding: 9px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+        .btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── MAIN ── */
-#main {
-    flex: 1; min-width: 0;
-    height: 100vh;
-    overflow-y: auto;
-    padding: 24px;
-    display: flex; flex-direction: column; gap: 20px;
-}
+        .dep-stat-badge {
+            background: #1f2937; border-radius: 10px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px; font-size: 0.88rem;
+        }
+        .dep-stat-badge i { color: var(--gold); font-size: 1.2rem; }
 
-/* ── TOPBAR (mobile) ── */
-#topbar {
-    display: none;
-    background: var(--surf); border-bottom: 1px solid var(--b1);
-    padding: 11px 14px;
-    align-items: center; gap: 10px;
-    position: sticky; top: 0; z-index: 200;
-    flex-shrink: 0;
-}
-#topbar h1 {
-    font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
-    background: linear-gradient(135deg, #fff, var(--cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; flex: 1;
-}
-#ham-btn {
-    background: var(--glass); border: 1px solid var(--b1);
-    color: var(--text); padding: 8px 11px; border-radius: 8px;
-    cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
-}
-.tb-badge {
-    background: var(--red); color: #fff; border-radius: 50%;
-    width: 20px; height: 20px; font-size: 9px; font-weight: 800;
-    display: none; align-items: center; justify-content: center;
-    font-family: 'DM Mono', monospace; flex-shrink: 0;
-}
+        .stat-card .pending-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff; border-radius: 50%;
+            width: 22px; height: 22px; font-size: 11px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-/* ── DRAWER (mobile) ── */
-#drawer { display: none; position: fixed; inset: 0; z-index: 300; }
-#drawer.open { display: block; }
-#drawer-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.65); }
-#drawer-inner {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 240px; background: var(--surf);
-    border-right: 1px solid var(--b1);
-    display: flex; flex-direction: column; overflow-y: auto;
-    animation: din 0.22s ease;
-}
-@keyframes din { from{transform:translateX(-100%)} to{transform:translateX(0)} }
-
-/* ── PAGE HEAD ── */
-.pg-head {
-    display: flex; justify-content: space-between;
-    align-items: center; flex-wrap: wrap; gap: 10px;
-}
-.pg-head h2 {
-    font-family: 'Times New Roman', Times, serif; font-size: 1.5rem; font-weight: 800;
-}
-.pg-head p { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
-.live {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--edim); border: 1px solid rgba(0,232,162,0.2);
-    color: var(--green); padding: 5px 12px; border-radius: 20px;
-    font-size: 0.72rem; font-weight: 700; white-space: nowrap;
-}
-.live::before {
-    content:''; width:5px; height:5px; border-radius:50%;
-    background:var(--green); animation:blink 1.5s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
-
-/* ── STATS ── */
-.stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-}
-.sc {
-    background: var(--surf); border: 1px solid var(--b1);
-    border-radius: 13px; padding: 16px 18px;
-    position: relative; overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-}
-.sc:hover { transform: translateY(-2px); border-color: var(--b2); }
-.sc::after {
-    content:''; position:absolute; top:0; left:0; right:0; height:2px;
-    background: linear-gradient(90deg, var(--ac, var(--cyan)), transparent);
-}
-.sc.gold  { --ac: var(--gold); }
-.sc.green { --ac: var(--green); }
-.sc.red   { --ac: var(--red); }
-
-.sc-lbl {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; margin-bottom: 10px;
-}
-.sc-ico {
-    width: 26px; height: 26px; border-radius: 6px;
-    background: var(--cdim); color: var(--cyan);
-    display: flex; align-items: center; justify-content: center; font-size: 0.7rem;
-}
-.sc.gold  .sc-ico { background: var(--gdim);  color: var(--gold); }
-.sc.green .sc-ico { background: var(--edim); color: var(--green); }
-.sc.red   .sc-ico { background: var(--rdim);  color: var(--red); }
-.sc-val {
-    font-family: 'Times New Roman', Times, serif; font-size: 1.5rem; font-weight: 800;
-    color: #fff; line-height: 1;
-}
-.sc-sub { font-size: 10px; color: var(--muted); font-family: 'Times New Roman', Times, serif; margin-top: 4px; }
-.sc-alert {
-    position: absolute; top: 10px; right: 10px;
-    background: var(--red); color: #fff;
-    width: 18px; height: 18px; border-radius: 50%;
-    font-size: 9px; font-weight: 800;
-    display: none; align-items: center; justify-content: center;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-/* ── PANEL ── */
-.panel {
-    background: var(--surf); border: 1px solid var(--b1);
-    border-radius: 14px; padding: 20px;
-    animation: up 0.3s ease;
-}
-.panel.hidden { display: none; }
-@keyframes up { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
-
-.panel-head {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-bottom: 16px; border-bottom: 1px solid var(--b1);
-    margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
-}
-.panel-title {
-    font-family: 'Times New Roman', Times, serif; font-size: 1rem; font-weight: 800;
-    display: flex; align-items: center; gap: 8px;
-}
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); display: inline-block; }
-
-/* ── CHIPS ── */
-.chips {
-    display: flex; gap: 6px; margin-bottom: 16px;
-    overflow-x: auto; padding-bottom: 3px; scrollbar-width: none;
-}
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-    padding: 6px 13px; border-radius: 7px; font-size: 0.78rem;
-    font-weight: 700; cursor: pointer; border: 1px solid var(--b1);
-    background: transparent; color: var(--muted);
-    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
-}
-.chip:hover { border-color: var(--b2); color: var(--text); }
-.chip.active     { background: var(--cdim); border-color: rgba(0,212,255,0.25); color: var(--cyan); }
-.chip.ga.active  { background: var(--gdim); border-color: rgba(245,200,66,0.25); color: var(--gold); }
-.chip.ea.active  { background: var(--edim); border-color: rgba(0,232,162,0.25); color: var(--green); }
-.chip.ra.active  { background: var(--rdim); border-color: rgba(255,77,109,0.25); color: var(--red); }
-
-/* ── ORDER CARD ── */
-.oc {
-    background: var(--glass); border: 1px solid var(--b1);
-    border-left: 3px solid var(--gold);
-    border-radius: 11px; padding: 13px 15px;
-    margin-bottom: 9px; display: flex;
-    justify-content: space-between; align-items: center;
-    gap: 12px; flex-wrap: wrap; transition: border-color 0.2s;
-}
-.oc:hover { border-color: var(--b2); }
-.oc.done { border-left-color: var(--green); }
-.oc-meta { flex: 1; min-width: 0; }
-.oc-name {
-    font-weight: 700; font-size: 0.9rem; margin-bottom: 5px;
-    display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
-}
-.oc-info {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    font-size: 0.77rem; color: var(--muted);
-    font-family: 'DM Mono', monospace;
-}
-.oc-info span { display: flex; align-items: center; gap: 4px; }
-.pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px; border-radius: 20px;
-    font-size: 9px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: .5px; white-space: nowrap;
-}
-.pill-p { background: var(--gdim); color: var(--gold); border: 1px solid rgba(245,200,66,.2); }
-.pill-d { background: var(--edim); color: var(--green); border: 1px solid rgba(0,232,162,.2); }
-
-/* ── DEPOSIT ── */
-.dc {
-    background: var(--glass); border: 1px solid var(--b1);
-    border-left: 3px solid var(--muted);
-    border-radius: 11px; padding: 15px;
-    margin-bottom: 10px; transition: border-color 0.2s;
-}
-.dc:hover { border-color: var(--b2); }
-.dc.cho_duyet        { border-left-color: var(--gold); }
-.dc.da_duyet         { border-left-color: var(--green); }
-.dc.tu_choi          { border-left-color: var(--red); }
-.dc.da_duyet_tu_dong { border-left-color: var(--cyan); }
-
-.dc-top {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
-}
-.dc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.dc-time { font-size: 10px; color: var(--muted); font-family: 'Times New Roman', Times, serif; }
-
-.tag {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px; border-radius: 6px;
-    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing:.5px;
-}
-.t-bank { background: var(--cdim); color: var(--cyan); border: 1px solid rgba(0,212,255,.18); }
-.t-card { background: var(--gdim); color: var(--gold); border: 1px solid rgba(245,200,66,.18); }
-.t-pend { background: var(--gdim); color: var(--gold); border: 1px solid rgba(245,200,66,.18); }
-.t-done { background: var(--edim); color: var(--green); border: 1px solid rgba(0,232,162,.18); }
-.t-rej  { background: var(--rdim); color: var(--red);  border: 1px solid rgba(255,77,109,.18); }
-.t-auto { background: var(--cdim); color: var(--cyan); border: 1px solid rgba(0,212,255,.18); }
-
-.dc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
-.dc-f {
-    background: rgba(255,255,255,0.025); border: 1px solid var(--b1);
-    border-radius: 7px; padding: 8px 11px;
-}
-.dc-f label {
-    display: block; font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; margin-bottom: 3px;
-    font-family: 'Times New Roman', Times, serif;
-}
-.dc-f .v {
-    font-weight: 700; font-size: 0.83rem; font-family: 'Times New Roman', Times, serif;
-    word-break: break-all;
-}
-.v.c { color: var(--cyan); }
-.v.g { color: var(--gold); font-size: 0.92rem; }
-.v.e { color: var(--green); font-size: 0.92rem; }
-
-.dc-secret {
-    background: rgba(245,200,66,0.04); border: 1px solid rgba(245,200,66,0.15);
-    border-radius: 8px; padding: 10px 13px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    margin-bottom: 10px; font-family: 'Times New Roman', Times, serif;
-}
-.dc-secret label {
-    font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--muted); font-weight: 700; display: block; margin-bottom: 3px;
-}
-.dc-secret .sv { color: var(--gold); font-size: 0.85rem; word-break: break-all; }
-
-.dc-note {
-    font-size: 11px; color: var(--muted); padding: 7px 10px;
-    background: rgba(255,255,255,.02); border-radius: 6px;
-    margin-bottom: 10px; font-family: 'Times New Roman', Times, serif;
-}
-.dc-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* ── DEP SUMMARY ── */
-.dep-sum { display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 14px; }
-.dep-sum-pill {
-    display: flex; align-items: center; gap: 7px;
-    background: var(--glass); border: 1px solid var(--b1);
-    padding: 7px 13px; border-radius: 8px; font-size: 0.8rem;
-}
-.dep-sum-pill .n { font-family: 'Times New Roman', Times, serif; font-weight: 700; }
-
-/* ── BUTTONS ── */
-.btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    gap: 7px; padding: 9px 17px; border-radius: 8px;
-    font-weight: 700; font-size: 0.8rem; cursor: pointer;
-    border: none; letter-spacing: .3px; transition: all 0.2s;
-    font-family: 'Times New Roman', Times, serif;
-}
-.btn-cyan  { background: var(--cyan); color: #000; }
-.btn-cyan:hover { filter: brightness(1.1); }
-.btn-ok    { background: var(--green); color: #000; }
-.btn-ok:hover { filter: brightness(1.12); }
-.btn-no    { background: var(--rdim); color: var(--red); border: 1px solid rgba(255,77,109,.25); }
-.btn-no:hover { background: var(--red); color: #fff; }
-.btn-ghost { background: var(--glass); color: var(--text); border: 1px solid var(--b1); }
-.btn-full  { width: 100%; padding: 12px; font-size: 0.85rem; }
-.btn-save  { background: linear-gradient(135deg,var(--cyan),#0099bb); color:#000; width:100%; padding:12px; }
-.btn-save:hover { filter: brightness(1.08); }
-.btn-dng   { background: var(--rdim); color: var(--red); border:1px solid rgba(255,77,109,.25); width:100%; padding:11px; }
-.btn-dng:hover { background: var(--red); color: #fff; }
-.btn:disabled { opacity: .3; cursor: not-allowed; }
-
-/* ── FORMS ── */
-.field { margin-bottom: 14px; }
-.field label {
-    display: block; font-size: 9px; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--muted);
-    font-weight: 700; margin-bottom: 7px;
-    font-family: 'Times New Roman', Times, serif;
-}
-.row-inp { display: flex; gap: 10px; }
-.row-inp input { flex: 1; min-width: 0; }
-
-input, select, textarea {
-    width: 100%; padding: 11px 13px;
-    border-radius: 8px; border: 1px solid var(--b1);
-    background: rgba(0,0,0,.35); color: var(--text);
-    font-family: 'Times New Roman', Times, serif; font-size: 0.88rem;
-    outline: none; transition: border-color 0.2s;
-}
-input:focus, select:focus, textarea:focus {
-    border-color: rgba(0,212,255,.4);
-    box-shadow: 0 0 0 3px rgba(0,212,255,.05);
-}
-select option { background: #0C1220; }
-textarea { resize: vertical; min-height: 90px; }
-
-.user-box {
-    background: rgba(0,212,255,.04); border: 1px solid rgba(0,212,255,.14);
-    border-radius: 11px; padding: 15px 17px; margin-bottom: 16px;
-}
-.ub-row {
-    display: flex; justify-content: space-between;
-    padding: 7px 0; border-bottom: 1px solid var(--b1);
-    font-size: 0.84rem; gap: 8px;
-}
-.ub-row:last-child { border-bottom: none; padding-bottom: 0; }
-.ub-row .lbl { color: var(--muted); }
-.ub-row .val { font-weight: 700; font-family: 'Times New Roman', Times, serif; text-align: right; word-break: break-all; }
-.ub-row .val.c { color: var(--cyan); }
-.ub-row .val.g { color: var(--gold); }
-.ub-row .val.e { color: var(--green); }
-
-.s-block {
-    background: var(--glass); border: 1px solid var(--b1);
-    border-radius: 11px; padding: 17px; margin-bottom: 13px;
-}
-.s-block h4 { font-family: 'Times New Roman', Times, serif; font-size:0.9rem; font-weight:700; margin-bottom:4px; }
-.s-block p  { font-size:0.79rem; color:var(--muted); margin-bottom:14px; }
-.s-block.dng { border-color: rgba(255,77,109,.2); }
-.s-block.dng h4 { color: var(--red); }
-
-.empty {
-    text-align: center; padding: 38px 20px;
-    color: var(--muted); font-size: 0.84rem;
-}
-.empty i { font-size: 2rem; display: block; margin-bottom: 10px; opacity: .3; }
-
-#toast {
-    position: fixed; bottom: 18px; right: 18px;
-    padding: 11px 18px; border-radius: 9px;
-    font-weight: 700; font-size: 0.82rem; z-index: 9999;
-    display: none; max-width: calc(100vw - 36px);
-    box-shadow: 0 15px 30px rgba(0,0,0,.5);
-}
-.tok { background: rgba(0,232,162,.12); border:1px solid rgba(0,232,162,.3); color:var(--green); }
-.ter { background: rgba(255,77,109,.12); border:1px solid rgba(255,77,109,.3); color:var(--red); }
-
-.hidden { display: none !important; }
-
-/* ── SCROLLBAR ── */
-#main::-webkit-scrollbar,
-#sidebar::-webkit-scrollbar,
-#drawer-inner::-webkit-scrollbar { width: 4px; }
-#main::-webkit-scrollbar-track,
-#sidebar::-webkit-scrollbar-track,
-#drawer-inner::-webkit-scrollbar-track { background: transparent; }
-#main::-webkit-scrollbar-thumb,
-#sidebar::-webkit-scrollbar-thumb,
-#drawer-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
-#main::-webkit-scrollbar-thumb:hover,
-#sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.25); }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 960px) {
-    .stats { grid-template-columns: repeat(2,1fr); }
-    .sc-val { font-size: 1.3rem; }
-}
-@media (max-width: 768px) {
-    #sidebar { display: none; }
-    #topbar  { display: flex; }
-    #app     { flex-direction: column; height: 100vh; overflow: hidden; }
-    #main    { padding: 14px; gap: 14px; height: calc(100vh - 48px); overflow-y: auto; }
-    .dc-grid   { grid-template-columns: 1fr; }
-    .dc-secret { grid-template-columns: 1fr; }
-    .pg-head h2 { font-size: 1.25rem; }
-}
-@media (max-width: 480px) {
-    .stats { grid-template-columns: 1fr 1fr; gap: 9px; }
-    .sc-val { font-size: 1.15rem; }
-    .sc { padding: 13px 14px; }
-    .panel { padding: 14px; }
-    .oc { flex-direction: column; align-items: flex-start; }
-    .oc .btn { width: 100%; }
-    .dc-actions .btn-ok { flex: 1; }
-    .pg-head { flex-direction: column; align-items: flex-start; }
-}
-</style>
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed; top: 20px; right: 20px; padding: 15px 25px; 
+            border-radius: 8px; color: white; font-weight: bold; z-index: 1000;
+            display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
 <body>
+
 <div id="toast"></div>
 
-<!-- MOBILE TOPBAR -->
-<div id="topbar">
-    <button id="ham-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
-    <h1>DEXSTY ADMIN</h1>
-    <div class="tb-badge" id="tb-badge">0</div>
-</div>
-
-<!-- MOBILE DRAWER -->
-<div id="drawer">
-    <div id="drawer-bg" onclick="closeDrawer()"></div>
-    <div id="drawer-inner">
-        <div class="sb-brand">
-            <span class="sb-tag">CONTROL CENTER</span>
-            <h1>DEXSTY</h1>
-            <small>SHOP ADMIN v2.0</small>
-        </div>
-        <div class="sb-sec">QUẢN LÝ</div>
-        <div class="nav-item active" data-tab="orders" onclick="go('orders')">
-            <div class="ni-ico"><i class="fas fa-box-open"></i></div> Đơn Hàng
-        </div>
-        <div class="nav-item" data-tab="chuyenkhoan" onclick="go('chuyenkhoan')">
-            <div class="ni-ico"><i class="fas fa-university"></i></div> Chuyển Khoản
-            <span class="nbadge hidden" id="nb-d-ck">0</span>
-        </div>
-        <div class="nav-item" data-tab="thecao" onclick="go('thecao')">
-            <div class="ni-ico"><i class="fas fa-credit-card"></i></div> Thẻ Cào
-            <span class="nbadge hidden" id="nb-d-tc">0</span>
-        </div>
-        <div class="nav-item" data-tab="users" onclick="go('users')">
-            <div class="ni-ico"><i class="fas fa-user-edit"></i></div> Cộng Tiền
-        </div>
-        <div class="sb-sec">HỆ THỐNG</div>
-        <div class="nav-item" data-tab="settings" onclick="go('settings')">
-            <div class="ni-ico"><i class="fas fa-sliders-h"></i></div> Cài Đặt
-        </div>
-        <div class="sb-foot">
-            <div class="admin-pill">
-                <div class="admin-av">AD</div>
-                <div><b>Administrator</b><small>Dexsty Shop</small></div>
+<div class="admin-container">
+    <header>
+        <h1><i class="fas fa-shield-cat"></i> DEXSTY ADMIN</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-shopping-cart"></i>
+                <h3 id="stat-total-orders">0</h3>
+                <p>Tổng đơn hàng</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-wallet"></i>
+                <h3 id="stat-revenue">0đ</h3>
+                <p>Doanh thu</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3 id="stat-users">0</h3>
+                <p>Thành viên</p>
+                <span class="reset-link" onclick="resetTopDeposit()"><i class="fas fa-sync-alt"></i> Reset Top Nạp</span>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave" style="color:var(--gold)"></i>
+                <h3 id="stat-pending-dep" style="color:var(--gold)">0</h3>
+                <p>Nạp tiền chờ duyệt</p>
+                <span id="pending-dep-badge" class="pending-badge" style="display:none">0</span>
             </div>
         </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="orders"><i class="fas fa-box"></i> ĐƠN HÀNG</button>
+        <button class="tab-btn" data-tab="naptien"><i class="fas fa-money-bill-wave"></i> NẠP TIỀN</button>
+        <button class="tab-btn" data-tab="users"><i class="fas fa-user-plus"></i> CỘNG TIỀN</button>
+        <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> CÀI ĐẶT</button>
+    </div>
+
+    <div id="tab-orders" class="section-card">
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterOrders('Tất cả')">Tất cả</button>
+            <button class="filter-btn" onclick="filterOrders('Chờ xử lý')">Chờ xử lý</button>
+            <button class="filter-btn" onclick="filterOrders('Đã hoàn thành')">Đã xong</button>
+        </div>
+        <div id="order-list-container">
+            <p style="text-align: center; color: gray;">Đang đồng bộ dữ liệu...</p>
+        </div>
+    </div>
+
+    <!-- TAB NẠP TIỀN -->
+    <div id="tab-naptien" class="section-card hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <h3 style="margin:0; color:var(--gold)"><i class="fas fa-money-bill-wave"></i> Quản lý Nạp Tiền</h3>
+            <div class="dep-stat-badge">
+                <i class="fas fa-clock"></i>
+                <span>Chờ duyệt: <b id="dep-pending-count" style="color:var(--gold)">0</b></span>
+                &nbsp;|&nbsp;
+                <span>Đã duyệt: <b id="dep-approved-count" style="color:var(--success)">0</b></span>
+            </div>
+        </div>
+
+        <div class="dep-filter-bar">
+            <button class="dep-filter-btn active" onclick="filterDep('all')">Tất cả</button>
+            <button class="dep-filter-btn" onclick="filterDep('cho_duyet')">⏳ Chờ duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('da_duyet')">✅ Đã duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('da_duyet_tu_dong')">🤖 Auto duyệt</button>
+            <button class="dep-filter-btn" onclick="filterDep('tu_choi')">❌ Từ chối</button>
+            <button class="dep-filter-btn" onclick="filterDep('thecao')">💳 Thẻ cào</button>
+            <button class="dep-filter-btn" onclick="filterDep('chuyenkhoan')">🏦 Chuyển khoản</button>
+        </div>
+
+        <div id="dep-list-container">
+            <p style="text-align:center; color:gray; padding:30px;">Đang tải dữ liệu...</p>
+        </div>
+    </div>
+
+    <div id="tab-users" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-search"></i> Tìm kiếm khách hàng</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="userEmailSearch" placeholder="Nhập đúng email khách hàng...">
+            <button class="btn btn-primary" id="btn-find" style="height: 46px;">TÌM</button>
+        </div>
+
+        <div id="user-result-area" class="hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border);">
+            <div style="background: #1f2937; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <p>📧 Email: <b id="res-email" style="color:var(--sky)"></b></p>
+                <p>💰 Số dư: <b id="res-balance" style="color:var(--gold)"></b></p>
+                <p>📈 Tổng nạp: <b id="res-total" style="color:var(--success)"></b></p>
+            </div>
+            <label style="font-size: 0.8rem; color: #94a3b8;">SỐ TIỀN MUỐN CỘNG:</label>
+            <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
+            <button class="btn btn-success" id="btn-confirm-money">XÁC NHẬN CỘNG TIỀN</button>
+        </div>
+    </div>
+
+    <div id="tab-settings" class="section-card hidden">
+        <h3 style="margin-top:0"><i class="fas fa-bullhorn"></i> Trạng thái Website</h3>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Thay đổi thông báo hiển thị cho toàn bộ khách hàng khi truy cập Shop.</p>
+        
+        <label style="font-size: 0.8rem; color: var(--sky); font-weight: bold;">TRẠNG THÁI HIỆN TẠI:</label>
+        <select id="shop-status-select">
+            <option value="Online">🟢 Đang hoạt động (Online)</option>
+            <option value="Maintenance">🔴 Bảo trì hệ thống (Maintenance)</option>
+            <option value="Slow">🟡 Đang xử lý chậm (Slow)</option>
+        </select>
+
+        <label style="font-size: 0.8rem; color: var(--sky); font-weight: bold;">NỘI DUNG THÔNG BÁO:</label>
+        <textarea id="shop-announcement" rows="4" placeholder="Nhập nội dung thông báo cho khách hàng..."></textarea>
+        
+        <button class="btn btn-primary" id="btn-save-status" style="width: 100%;">
+            <i class="fas fa-save"></i> LƯU CẬP NHẬT TRẠNG THÁI
+        </button>
     </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-    <!-- DESKTOP SIDEBAR -->
-    <nav id="sidebar">
-        <div class="sb-brand">
-            <span class="sb-tag">CONTROL CENTER</span>
-            <h1>DEXSTY</h1>
-            <small>SHOP ADMIN v2.0</small>
-        </div>
-        <div class="sb-sec">QUẢN LÝ</div>
-        <div class="nav-item active" data-tab="orders">
-            <div class="ni-ico"><i class="fas fa-box-open"></i></div> Đơn Hàng
-        </div>
-        <div class="nav-item" data-tab="chuyenkhoan">
-            <div class="ni-ico"><i class="fas fa-university"></i></div> Chuyển Khoản
-            <span class="nbadge hidden" id="nb-s-ck">0</span>
-        </div>
-        <div class="nav-item" data-tab="thecao">
-            <div class="ni-ico"><i class="fas fa-credit-card"></i></div> Thẻ Cào
-            <span class="nbadge hidden" id="nb-s-tc">0</span>
-        </div>
-        <div class="nav-item" data-tab="users">
-            <div class="ni-ico"><i class="fas fa-user-edit"></i></div> Cộng Tiền
-        </div>
-        <div class="sb-sec">HỆ THỐNG</div>
-        <div class="nav-item" data-tab="settings">
-            <div class="ni-ico"><i class="fas fa-sliders-h"></i></div> Cài Đặt Shop
-        </div>
-        <div class="sb-foot">
-            <div class="admin-pill">
-                <div class="admin-av">AD</div>
-                <div><b>Administrator</b><small>Dexsty Shop</small></div>
-            </div>
-        </div>
-    </nav>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-    <!-- MAIN CONTENT -->
-    <main id="main">
-        <!-- PAGE HEAD -->
-        <div class="pg-head">
-            <div>
-                <h2 id="pg-title">Đơn Hàng</h2>
-                <p id="pg-sub">Quản lý đơn hàng theo thời gian thực</p>
-            </div>
-            <span class="live">REALTIME</span>
-        </div>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
+        authDomain: "dexsty-shop-f955d.firebaseapp.com",
+        databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
+        projectId: "dexsty-shop-f955d",
+    };
 
-        <!-- STATS -->
-        <div class="stats">
-            <div class="sc">
-                <div class="sc-lbl">Đơn hàng <div class="sc-ico"><i class="fas fa-bag-shopping"></i></div></div>
-                <div class="sc-val" id="stat-total-orders">—</div>
-                <div class="sc-sub">tất cả thời gian</div>
-            </div>
-            <div class="sc gold">
-                <div class="sc-lbl">Doanh thu <div class="sc-ico"><i class="fas fa-chart-line"></i></div></div>
-                <div class="sc-val" id="stat-revenue">—</div>
-                <div class="sc-sub">đơn hoàn thành</div>
-            </div>
-            <div class="sc green">
-                <div class="sc-lbl">Thành viên <div class="sc-ico"><i class="fas fa-users"></i></div></div>
-                <div class="sc-val" id="stat-users">—</div>
-                <div class="sc-sub">đã đăng ký</div>
-            </div>
-            <div class="sc red">
-                <div class="sc-lbl">Chờ duyệt <div class="sc-ico"><i class="fas fa-clock"></i></div></div>
-                <div class="sc-val" id="stat-pending-dep" style="color:var(--gold)">—</div>
-                <div class="sc-sub">nạp tiền đang chờ</div>
-                <div class="sc-alert" id="sc-alert-badge">0</div>
-            </div>
-        </div>
+    const app = initializeApp(firebaseConfig);
+    const rtdb = getDatabase(app);
 
-        <!-- PANEL ORDERS -->
-        <div class="panel" id="tab-orders">
-            <div class="panel-head">
-                <div class="panel-title"><span class="dot"></span>Danh sách Đơn Hàng</div>
-                <small style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">realtime sync</small>
-            </div>
-            <div class="chips">
-                <button class="chip active" onclick="filterOrders('all',event)">Tất cả</button>
-                <button class="chip ga" onclick="filterOrders('Chờ xử lý',event)">⏳ Chờ xử lý</button>
-                <button class="chip ea" onclick="filterOrders('Đã hoàn thành',event)">✅ Đã xong</button>
-            </div>
-            <div id="order-list"><div class="empty"><i class="fas fa-spinner fa-spin"></i>Đang tải...</div></div>
-        </div>
+    // --- UTILS ---
+    const showToast = (msg, type = 'success') => {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.background = type === 'success' ? '#22c55e' : '#ef4444';
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
 
-        <!-- PANEL CHUYỂN KHOẢN -->
-        <div class="panel hidden" id="tab-chuyenkhoan">
-            <div class="panel-head">
-                <div class="panel-title"><span class="dot" style="background:var(--cyan)"></span>Chuyển Khoản</div>
-            </div>
-            <div class="dep-sum">
-                <div class="dep-sum-pill">
-                    <i class="fas fa-clock" style="color:var(--gold)"></i>
-                    Chờ: <span class="n" style="color:var(--gold)" id="ck-pending-count">0</span>
-                </div>
-                <div class="dep-sum-pill">
-                    <i class="fas fa-check-circle" style="color:var(--green)"></i>
-                    Đã duyệt: <span class="n" style="color:var(--green)" id="ck-approved-count">0</span>
-                </div>
-            </div>
-            <div class="chips">
-                <button class="chip active" onclick="filterByStatus('chuyenkhoan','all',event)">Tất cả</button>
-                <button class="chip ga" onclick="filterByStatus('chuyenkhoan','cho_duyet',event)">⏳ Chờ duyệt</button>
-                <button class="chip ea" onclick="filterByStatus('chuyenkhoan','da_duyet',event)">✅ Đã duyệt</button>
-                <button class="chip" onclick="filterByStatus('chuyenkhoan','da_duyet_tu_dong',event)">🤖 Auto</button>
-                <button class="chip ra" onclick="filterByStatus('chuyenkhoan','tu_choi',event)">❌ Từ chối</button>
-            </div>
-            <div id="dep-list-ck"><div class="empty"><i class="fas fa-spinner fa-spin"></i>Đang tải...</div></div>
-        </div>
+    // --- TAB SWITCHING ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-tab');
+            document.getElementById('tab-orders').classList.toggle('hidden', target !== 'orders');
+            document.getElementById('tab-naptien').classList.toggle('hidden', target !== 'naptien');
+            document.getElementById('tab-users').classList.toggle('hidden', target !== 'users');
+            document.getElementById('tab-settings').classList.toggle('hidden', target !== 'settings');
+        }
+    });
 
-        <!-- PANEL THẺ CÀO -->
-        <div class="panel hidden" id="tab-thecao">
-            <div class="panel-head">
-                <div class="panel-title"><span class="dot" style="background:var(--gold)"></span>Thẻ Cào</div>
-            </div>
-            <div class="dep-sum">
-                <div class="dep-sum-pill">
-                    <i class="fas fa-clock" style="color:var(--gold)"></i>
-                    Chờ: <span class="n" style="color:var(--gold)" id="tc-pending-count">0</span>
-                </div>
-                <div class="dep-sum-pill">
-                    <i class="fas fa-check-circle" style="color:var(--green)"></i>
-                    Đã duyệt: <span class="n" style="color:var(--green)" id="tc-approved-count">0</span>
-                </div>
-            </div>
-            <div class="chips">
-                <button class="chip active" onclick="filterByStatus('thecao','all',event)">Tất cả</button>
-                <button class="chip ga" onclick="filterByStatus('thecao','cho_duyet',event)">⏳ Chờ duyệt</button>
-                <button class="chip ea" onclick="filterByStatus('thecao','da_duyet',event)">✅ Đã duyệt</button>
-                <button class="chip" onclick="filterByStatus('thecao','da_duyet_tu_dong',event)">🤖 Auto</button>
-                <button class="chip ra" onclick="filterByStatus('thecao','tu_choi',event)">❌ Từ chối</button>
-            </div>
-            <div id="dep-list-tc"><div class="empty"><i class="fas fa-spinner fa-spin"></i>Đang tải...</div></div>
-        </div>
+    // --- RENDER ORDERS & STATS ---
+    let allOrders = [];
+    onValue(ref(rtdb, 'orders'), (snapshot) => {
+        const data = snapshot.val();
+        if(!data) {
+            document.getElementById('order-list-container').innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Chưa có đơn hàng nào.</p>";
+            return;
+        }
+        allOrders = Object.entries(data).reverse();
+        renderOrders(allOrders);
+        updateStats(allOrders);
+    });
 
-        <!-- PANEL USERS -->
-        <div class="panel hidden" id="tab-users">
-            <div class="panel-head">
-                <div class="panel-title"><span class="dot" style="background:var(--green)"></span>Tìm Khách & Cộng Tiền</div>
-            </div>
-            <div class="field">
-                <label>Email khách hàng</label>
-                <div class="row-inp">
-                    <input type="text" id="userEmailSearch" placeholder="Nhập chính xác email...">
-                    <button class="btn btn-cyan" id="btn-find" style="flex-shrink:0;white-space:nowrap">
-                        <i class="fas fa-search"></i> Tìm
+    onValue(ref(rtdb, 'users'), (snapshot) => {
+        const users = snapshot.val();
+        if(users) document.getElementById('stat-users').innerText = Object.keys(users).length;
+    });
+
+    function updateStats(orders) {
+        let revenue = 0;
+        orders.forEach(([id, order]) => {
+            if(order.status === "Đã hoàn thành") revenue += (order.price || 0);
+        });
+        document.getElementById('stat-total-orders').innerText = orders.length;
+        document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + "đ";
+    }
+
+    window.filterOrders = (status) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if(status === 'Tất cả') renderOrders(allOrders);
+        else renderOrders(allOrders.filter(o => (o[1].status || 'Chờ xử lý') === status));
+    }
+
+    function renderOrders(orderArray) {
+        const container = document.getElementById('order-list-container');
+        if(orderArray.length === 0) { container.innerHTML = "<p style='text-align:center; padding:20px; color:gray;'>Không có đơn hàng này.</p>"; return; }
+        
+        container.innerHTML = orderArray.map(([id, order]) => {
+            const isDone = order.status === "Đã hoàn thành";
+            return `
+                <div class="order-item">
+                    <div class="order-info">
+                        <span class="status-pill ${isDone ? 'completed' : 'pending'}">${order.status || 'Chờ xử lý'}</span>
+                        <p style="margin-top:8px">📦 <b>${order.item}</b></p>
+                        <p><i class="fas fa-user-circle"></i> ${order.robloxAccount} | 💰 ${order.price.toLocaleString()}đ</p>
+                        <p style="font-size:12px; opacity:0.6"><i class="fas fa-envelope"></i> ${order.email}</p>
+                    </div>
+                    <button class="btn ${isDone ? 'btn-disabled' : 'btn-primary'}" onclick="approveOrder('${id}')" ${isDone ? 'disabled' : ''}>
+                        ${isDone ? '<i class="fas fa-check"></i> ĐÃ XONG' : 'DUYỆT ĐƠN'}
                     </button>
                 </div>
-            </div>
-            <div id="user-result-area" class="hidden">
-                <div class="user-box">
-                    <div class="ub-row"><span class="lbl"><i class="fas fa-envelope"></i> Email</span><span class="val c" id="res-email"></span></div>
-                    <div class="ub-row"><span class="lbl"><i class="fas fa-wallet"></i> Số dư</span><span class="val g" id="res-balance"></span></div>
-                    <div class="ub-row"><span class="lbl"><i class="fas fa-arrow-trend-up"></i> Tổng nạp</span><span class="val e" id="res-total"></span></div>
-                </div>
-                <div class="field">
-                    <label>Số tiền cộng (VNĐ)</label>
-                    <input type="number" id="amountToAdd" placeholder="Ví dụ: 50000">
-                </div>
-                <button class="btn btn-ok btn-full" id="btn-confirm-money">
-                    <i class="fas fa-plus-circle"></i> XÁC NHẬN CỘNG TIỀN
-                </button>
-            </div>
-        </div>
-
-        <!-- PANEL SETTINGS -->
-        <div class="panel hidden" id="tab-settings">
-            <div class="panel-head">
-                <div class="panel-title"><span class="dot" style="background:var(--muted)"></span>Cài Đặt Hệ Thống</div>
-            </div>
-            <div class="s-block">
-                <h4><i class="fas fa-broadcast-tower"></i> Trạng thái Website</h4>
-                <p>Thay đổi trạng thái và thông báo hiển thị cho toàn bộ khách hàng.</p>
-                <div class="field">
-                    <label>Trạng thái hiện tại</label>
-                    <select id="shop-status-select">
-                        <option value="Online">🟢 Đang hoạt động (Online)</option>
-                        <option value="Maintenance">🔴 Bảo trì hệ thống</option>
-                        <option value="Slow">🟡 Đang xử lý chậm</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Nội dung thông báo</label>
-                    <textarea id="shop-announcement" placeholder="Thông báo hiển thị cho khách..."></textarea>
-                </div>
-                <button class="btn btn-save" id="btn-save-status">
-                    <i class="fas fa-save"></i> LƯU CẬP NHẬT
-                </button>
-            </div>
-            <div class="s-block dng">
-                <h4><i class="fas fa-triangle-exclamation"></i> Danger Zone</h4>
-                <p>Đặt lại Tổng Nạp của tất cả khách về 0đ để bắt đầu đua top mới. Không thể hoàn tác.</p>
-                <button class="btn btn-dng" onclick="resetTopDeposit()">
-                    <i class="fas fa-rotate-left"></i> RESET TOP NẠP TIỀN
-                </button>
-            </div>
-        </div>
-    </main>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getDatabase, ref, onValue, update, get, query, orderByChild, equalTo, set }
-    from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
-    authDomain: "dexsty-shop-f955d.firebaseapp.com",
-    databaseURL: "https://dexsty-shop-f955d-default-rtdb.firebaseio.com",
-    projectId: "dexsty-shop-f955d",
-};
-const app = initializeApp(firebaseConfig);
-const rtdb = getDatabase(app);
-
-/* TOAST */
-const toast = (msg, t='ok') => {
-    const el = document.getElementById('toast');
-    el.textContent = (t==='ok'?'✓ ':'✕ ')+msg;
-    el.className = t==='ok'?'tok':'ter';
-    el.style.display='block';
-    setTimeout(()=>el.style.display='none',3200);
-};
-
-/* DRAWER */
-window.openDrawer  = ()=>document.getElementById('drawer').classList.add('open');
-window.closeDrawer = ()=>document.getElementById('drawer').classList.remove('open');
-
-/* NAV */
-const META = {
-    orders:      ['Đơn Hàng',      'Quản lý đơn hàng theo thời gian thực'],
-    chuyenkhoan: ['Chuyển Khoản',  'Xét duyệt yêu cầu nạp qua chuyển khoản'],
-    thecao:      ['Thẻ Cào',       'Xét duyệt yêu cầu nạp bằng thẻ cào'],
-    users:       ['Cộng Tiền',     'Tìm kiếm & chỉnh sửa số dư tài khoản'],
-    settings:    ['Cài Đặt',       'Quản lý trạng thái và thông báo hệ thống']
-};
-
-window.go = (tab) => { switchTab(tab); closeDrawer(); };
-
-function switchTab(tab) {
-    document.querySelectorAll('.nav-item').forEach(n =>
-        n.classList.toggle('active', n.getAttribute('data-tab')===tab));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('tab-'+tab).classList.remove('hidden');
-    document.getElementById('pg-title').textContent = META[tab][0];
-    document.getElementById('pg-sub').textContent   = META[tab][1];
-}
-
-document.querySelectorAll('#sidebar .nav-item').forEach(item =>
-    item.onclick = ()=>switchTab(item.getAttribute('data-tab')));
-
-/* ORDERS */
-let allOrders = [];
-onValue(ref(rtdb,'orders'), snap => {
-    const d = snap.val();
-    if (!d) { document.getElementById('order-list').innerHTML='<div class="empty"><i class="fas fa-inbox"></i>Chưa có đơn hàng nào.</div>'; return; }
-    allOrders = Object.entries(d).reverse();
-    renderOrders(allOrders);
-    document.getElementById('stat-total-orders').textContent = allOrders.length;
-    let rev = 0;
-    allOrders.forEach(([,o])=>{ if(o.status==='Đã hoàn thành') rev+=(o.price||0); });
-    document.getElementById('stat-revenue').textContent = rev.toLocaleString()+'đ';
-});
-
-onValue(ref(rtdb,'users'), snap => {
-    if (snap.val()) document.getElementById('stat-users').textContent = Object.keys(snap.val()).length;
-});
-
-window.filterOrders = (status, ev) => {
-    document.querySelectorAll('#tab-orders .chip').forEach(b=>b.classList.remove('active'));
-    ev.target.classList.add('active');
-    renderOrders(status==='all'||status==='Tất cả' ? allOrders
-        : allOrders.filter(([,o])=>(o.status||'Chờ xử lý')===status));
-};
-
-function renderOrders(arr) {
-    const c = document.getElementById('order-list');
-    if (!arr.length) { c.innerHTML='<div class="empty"><i class="fas fa-filter"></i>Không có đơn hàng nào.</div>'; return; }
-    c.innerHTML = arr.map(([id,o])=>{
-        const done = o.status==='Đã hoàn thành';
-        return `<div class="oc ${done?'done':''}">
-            <div class="oc-meta">
-                <div class="oc-name">
-                    <span class="pill ${done?'pill-d':'pill-p'}">${done?'✓ Xong':'⏳ Chờ'}</span>
-                    ${o.item}
-                </div>
-                <div class="oc-info">
-                    <span><i class="fas fa-user"></i>${o.robloxAccount}</span>
-                    <span><i class="fas fa-tag"></i>${(o.price||0).toLocaleString()}đ</span>
-                    <span><i class="fas fa-envelope"></i>${o.email}</span>
-                </div>
-            </div>
-            <button class="btn ${done?'btn-ghost':'btn-cyan'}" onclick="approveOrder('${id}')" ${done?'disabled':''}>
-                ${done?'<i class="fas fa-check"></i> Đã xong':'<i class="fas fa-check-circle"></i> Duyệt đơn'}
-            </button>
-        </div>`;
-    }).join('');
-}
-
-window.approveOrder = async id => {
-    if (!confirm('Bạn đã trao vật phẩm cho khách chưa?')) return;
-    try { await update(ref(rtdb,`orders/${id}`),{status:'Đã hoàn thành'}); toast('Duyệt đơn thành công!'); }
-    catch(e){ toast(e.message,'err'); }
-};
-
-/* RESET TOP */
-window.resetTopDeposit = async () => {
-    if (!confirm('⚠️ Đặt TỔNG NẠP của tất cả khách về 0đ. Bạn chắc chưa?')) return;
-    if (!confirm('Xác nhận lần cuối? Không thể hoàn tác!')) return;
-    try {
-        const snap = await get(ref(rtdb,'users'));
-        if (!snap.exists()) return toast('Không có người dùng.','err');
-        const updates={};
-        snap.forEach(c=>{updates[`users/${c.key}/totalDeposit`]=0;});
-        await update(ref(rtdb),updates);
-        toast('Đã Reset Top Nạp!');
-    } catch(e){ toast(e.message,'err'); }
-};
-
-/* USERS */
-let selectedUid = null;
-document.getElementById('btn-find').onclick = async () => {
-    const email = document.getElementById('userEmailSearch').value.trim();
-    if (!email) return toast('Nhập email!','err');
-    const q = query(ref(rtdb,'users'),orderByChild('email'),equalTo(email));
-    const snap = await get(q);
-    if (snap.exists()) {
-        selectedUid = Object.keys(snap.val())[0];
-        const u = snap.val()[selectedUid];
-        document.getElementById('res-email').textContent   = u.email;
-        document.getElementById('res-balance').textContent = (u.balance||0).toLocaleString()+'đ';
-        document.getElementById('res-total').textContent   = (u.totalDeposit||0).toLocaleString()+'đ';
-        document.getElementById('user-result-area').classList.remove('hidden');
-        toast('Đã tìm thấy khách!');
-    } else {
-        toast('Không tìm thấy email!','err');
-        document.getElementById('user-result-area').classList.add('hidden');
+            `;
+        }).join('');
     }
-};
 
-document.getElementById('btn-confirm-money').onclick = async () => {
-    const amount = parseInt(document.getElementById('amountToAdd').value);
-    if (!amount||amount<=0) return toast('Số tiền không hợp lệ!','err');
-    try {
-        const uRef = ref(rtdb,`users/${selectedUid}`);
-        const snap = await get(uRef); const u = snap.val();
-        await update(uRef,{balance:(u.balance||0)+amount,totalDeposit:(u.totalDeposit||0)+amount});
-        toast(`Đã cộng ${amount.toLocaleString()}đ cho ${u.email}`);
-        document.getElementById('amountToAdd').value='';
-        document.getElementById('btn-find').click();
-    } catch(e){ toast(e.message,'err'); }
-};
-
-/* SETTINGS */
-onValue(ref(rtdb,'settings/shopStatus'), snap => {
-    const d = snap.val();
-    if (d) {
-        document.getElementById('shop-status-select').value = d.status||'Online';
-        document.getElementById('shop-announcement').value  = d.notice||'';
-    }
-});
-document.getElementById('btn-save-status').onclick = async () => {
-    try {
-        await set(ref(rtdb,'settings/shopStatus'),{
-            status: document.getElementById('shop-status-select').value,
-            notice: document.getElementById('shop-announcement').value.trim(),
-            lastUpdate: new Date().toLocaleString()
-        });
-        toast('Đã cập nhật trạng thái Shop!');
-    } catch(e){ toast(e.message,'err'); }
-};
-
-/* DEPOSITS */
-let allDeps = [];
-
-onValue(ref(rtdb,'naptien'), snap => {
-    const d = snap.val();
-    if (!d) {
-        allDeps = [];
-        ['ck','tc'].forEach(type => {
-            document.getElementById(`dep-list-${type}`).innerHTML =
-                '<div class="empty"><i class="fas fa-inbox"></i>Chưa có yêu cầu nào.</div>';
-        });
-        updDep([]);
-        return;
-    }
-    allDeps = Object.entries(d).sort((a,b)=>b[0]-a[0]);
-    renderDeps('chuyenkhoan', allDeps.filter(([,x])=>x.phuongThuc==='chuyenkhoan'));
-    renderDeps('thecao',      allDeps.filter(([,x])=>x.phuongThuc==='thecao'));
-    updDep(allDeps);
-});
-
-function updDep(deps) {
-    const ckDeps = deps.filter(([,d])=>d.phuongThuc==='chuyenkhoan');
-    const tcDeps = deps.filter(([,d])=>d.phuongThuc==='thecao');
-
-    const ckPend = ckDeps.filter(([,d])=>d.trangThai==='cho_duyet').length;
-    const tcPend = tcDeps.filter(([,d])=>d.trangThai==='cho_duyet').length;
-    const totalPend = ckPend + tcPend;
-
-    const ckAppr = ckDeps.filter(([,d])=>['da_duyet','da_duyet_tu_dong'].includes(d.trangThai)).length;
-    const tcAppr = tcDeps.filter(([,d])=>['da_duyet','da_duyet_tu_dong'].includes(d.trangThai)).length;
-
-    document.getElementById('ck-pending-count').textContent  = ckPend;
-    document.getElementById('ck-approved-count').textContent = ckAppr;
-    document.getElementById('tc-pending-count').textContent  = tcPend;
-    document.getElementById('tc-approved-count').textContent = tcAppr;
-    document.getElementById('stat-pending-dep').textContent  = totalPend;
-
-    // Nav badges CK
-    ['nb-s-ck','nb-d-ck'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.classList.toggle('hidden',ckPend===0);el.textContent=ckPend;}
-    });
-    // Nav badges TC
-    ['nb-s-tc','nb-d-tc'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.classList.toggle('hidden',tcPend===0);el.textContent=tcPend;}
-    });
-
-    const al  = document.getElementById('sc-alert-badge');
-    const tbb = document.getElementById('tb-badge');
-    al.style.display  = totalPend>0?'flex':'none'; al.textContent=totalPend;
-    tbb.style.display = totalPend>0?'flex':'none'; tbb.textContent=totalPend;
-}
-
-window.filterByStatus = (method, status, ev) => {
-    const panelId = method==='chuyenkhoan'?'tab-chuyenkhoan':'tab-thecao';
-    document.querySelectorAll(`#${panelId} .chip`).forEach(b=>b.classList.remove('active'));
-    ev.target.classList.add('active');
-    const base = allDeps.filter(([,d])=>d.phuongThuc===method);
-    renderDeps(method, status==='all'?base:base.filter(([,d])=>d.trangThai===status));
-};
-
-function renderDeps(method, deps) {
-    const containerId = method==='chuyenkhoan'?'dep-list-ck':'dep-list-tc';
-    const c = document.getElementById(containerId);
-    if (!deps.length){c.innerHTML='<div class="empty"><i class="fas fa-filter"></i>Không có yêu cầu nào.</div>';return;}
-
-    c.innerHTML = deps.map(([id,d])=>{
-        const isBank = d.phuongThuc==='chuyenkhoan';
-        const isPend = d.trangThai==='cho_duyet';
-        const isAuto = d.trangThai==='da_duyet_tu_dong';
-        const isDone = d.trangThai==='da_duyet'||isAuto;
-        const stCls  = isPend?'t-pend':isAuto?'t-auto':isDone?'t-done':'t-rej';
-        const stTxt  = isPend?'⏳ Chờ duyệt':isAuto?'🤖 Auto':isDone?'✅ Đã duyệt':'❌ Từ chối';
-        const time   = new Date(parseInt(id)).toLocaleString('vi-VN');
-
-        let body = '';
-        if (isBank) {
-            body = `<div class="dc-grid">
-                <div class="dc-f"><label>Email</label><div class="v c">${d.email||'—'}</div></div>
-                <div class="dc-f"><label>Số tiền CK</label><div class="v g">${(d.soTien||0).toLocaleString()}đ</div></div>
-                <div class="dc-f" style="grid-column:1/-1"><label>Nội dung chuyển khoản</label><div class="v">${d.noiDung||'—'}</div></div>
-            </div>`;
-        } else {
-            const recv = d.soTienThucNhan||Math.floor((d.meNhGia||0)*0.82);
-            body = `<div class="dc-grid">
-                <div class="dc-f"><label>Email</label><div class="v c">${d.email||'—'}</div></div>
-                <div class="dc-f"><label>Loại thẻ</label><div class="v">${d.loaiThe||'—'}</div></div>
-                <div class="dc-f"><label>Mệnh giá</label><div class="v g">${(d.meNhGia||0).toLocaleString()}đ</div></div>
-                <div class="dc-f"><label>Thực nhận (82%)</label><div class="v e">${recv.toLocaleString()}đ</div></div>
-            </div>
-            <div class="dc-secret">
-                <div><label>🔑 Mã PIN</label><div class="sv">${d.pinThe||'—'}</div></div>
-                <div><label>🔢 Serial</label><div class="sv">${d.seriThe||'—'}</div></div>
-            </div>`;
+    window.approveOrder = async (id) => {
+        if(confirm("Bạn đã thực hiện trao vật phẩm cho khách chưa?")) {
+            try {
+                await update(ref(rtdb, `orders/${id}`), { status: "Đã hoàn thành" });
+                showToast("Duyệt đơn thành công!");
+            } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
         }
+    }
 
-        const note = d.ghiChu?`<div class="dc-note">💬 ${d.ghiChu}</div>`:'';
-        const action = isPend
-            ?`<button class="btn btn-ok" style="flex:1" onclick="approveDep('${id}')"><i class="fas fa-check"></i> DUYỆT & CỘNG TIỀN</button>
-              <button class="btn btn-no" onclick="rejectDep('${id}')"><i class="fas fa-times"></i> Từ chối</button>`
-            :`<button class="btn btn-ghost" disabled><i class="fas fa-check"></i> Đã xử lý</button>`;
+    // --- RESET TOP DEPOSIT ---
+    window.resetTopDeposit = async () => {
+        const confirm1 = confirm("⚠️ CẢNH BÁO: Hành động này sẽ đặt 'TỔNG NẠP' của tất cả khách hàng về 0đ để bắt đầu đua top mới. Bạn chắc chắn chứ?");
+        if(!confirm1) return;
 
-        return `<div class="dc ${d.trangThai}">
-            <div class="dc-top">
-                <div class="dc-badges">
-                    <span class="tag ${stCls}">${stTxt}</span>
+        const confirm2 = confirm("Xác nhận lần cuối? Dữ liệu không thể khôi phục!");
+        if(!confirm2) return;
+
+        try {
+            const usersSnap = await get(ref(rtdb, 'users'));
+            if(!usersSnap.exists()) return showToast("Không có khách hàng nào để reset.", "error");
+
+            const updates = {};
+            usersSnap.forEach((child) => {
+                updates[`users/${child.key}/totalDeposit`] = 0;
+            });
+
+            await update(ref(rtdb), updates);
+            showToast("Đã Reset Top Nạp thành công!");
+        } catch (e) {
+            showToast("Lỗi: " + e.message, "error");
+        }
+    }
+
+    // --- USER MANAGEMENT LOGIC ---
+    let selectedUid = null;
+    document.getElementById('btn-find').onclick = async () => {
+        const email = document.getElementById('userEmailSearch').value.trim();
+        if(!email) return showToast("Vui lòng nhập email!", 'error');
+
+        const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(email));
+        const snap = await get(userQuery);
+
+        if(snap.exists()) {
+            selectedUid = Object.keys(snap.val())[0];
+            const user = snap.val()[selectedUid];
+            document.getElementById('res-email').innerText = user.email;
+            document.getElementById('res-balance').innerText = (user.balance || 0).toLocaleString() + "đ";
+            document.getElementById('res-total').innerText = (user.totalDeposit || 0).toLocaleString() + "đ";
+            document.getElementById('user-result-area').classList.remove('hidden');
+            showToast("Đã tìm thấy khách!");
+        } else {
+            showToast("Không tìm thấy email này!", 'error');
+            document.getElementById('user-result-area').classList.add('hidden');
+        }
+    };
+
+    document.getElementById('btn-confirm-money').onclick = async () => {
+        const amount = parseInt(document.getElementById('amountToAdd').value);
+        if(!amount || amount <= 0) return showToast("Số tiền không hợp lệ!", 'error');
+
+        try {
+            const userRef = ref(rtdb, `users/${selectedUid}`);
+            const snap = await get(userRef);
+            const user = snap.val();
+            
+            await update(userRef, {
+                balance: (user.balance || 0) + amount,
+                totalDeposit: (user.totalDeposit || 0) + amount
+            });
+
+            showToast(`Đã cộng ${amount.toLocaleString()}đ cho ${user.email}`);
+            document.getElementById('amountToAdd').value = "";
+            document.getElementById('btn-find').click(); // Refresh data
+        } catch (e) { showToast("Lỗi: " + e.message, 'error'); }
+    };
+
+    // ═══════ SHOP SETTINGS LOGIC ═══════
+    onValue(ref(rtdb, 'settings/shopStatus'), (snapshot) => {
+        const statusData = snapshot.val();
+        if(statusData) {
+            document.getElementById('shop-status-select').value = statusData.status || 'Online';
+            document.getElementById('shop-announcement').value = statusData.notice || '';
+        }
+    });
+
+    document.getElementById('btn-save-status').onclick = async () => {
+        const status = document.getElementById('shop-status-select').value;
+        const notice = document.getElementById('shop-announcement').value.trim();
+        try {
+            await set(ref(rtdb, 'settings/shopStatus'), {
+                status: status,
+                notice: notice,
+                lastUpdate: new Date().toLocaleString()
+            });
+            showToast("Đã cập nhật trạng thái Shop!");
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
+    };
+
+    // ═══════ NẠP TIỀN LOGIC ═══════
+    let allDeposits = [];
+    let currentDepFilter = 'all';
+
+    onValue(ref(rtdb, 'naptien'), (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            allDeposits = [];
+            document.getElementById('dep-list-container').innerHTML =
+                "<p style='text-align:center;padding:30px;color:gray;'>Chưa có yêu cầu nạp tiền nào.</p>";
+            updateDepStats([]);
+            return;
+        }
+        // Sắp xếp mới nhất lên trên
+        allDeposits = Object.entries(data).sort((a, b) => b[0] - a[0]);
+        renderDeposits(allDeposits);
+        updateDepStats(allDeposits);
+    });
+
+    function updateDepStats(deps) {
+        const pending  = deps.filter(([, d]) => d.trangThai === 'cho_duyet').length;
+        const approved = deps.filter(([, d]) => ['da_duyet','da_duyet_tu_dong'].includes(d.trangThai)).length;
+        document.getElementById('dep-pending-count').innerText  = pending;
+        document.getElementById('dep-approved-count').innerText = approved;
+        document.getElementById('stat-pending-dep').innerText   = pending;
+        const badge = document.getElementById('pending-dep-badge');
+        if (pending > 0) { badge.style.display = 'flex'; badge.innerText = pending; }
+        else             { badge.style.display = 'none'; }
+    }
+
+    window.filterDep = (type) => {
+        currentDepFilter = type;
+        document.querySelectorAll('.dep-filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if (type === 'all') { renderDeposits(allDeposits); return; }
+        // Lọc theo phuongThuc hoặc trangThai
+        const filtered = allDeposits.filter(([, d]) =>
+            d.phuongThuc === type || d.trangThai === type
+        );
+        renderDeposits(filtered);
+    };
+
+    function renderDeposits(deps) {
+        const container = document.getElementById('dep-list-container');
+        if (!deps.length) {
+            container.innerHTML = "<p style='text-align:center;padding:30px;color:gray;'>Không có yêu cầu nào.</p>";
+            return;
+        }
+        container.innerHTML = deps.map(([id, d]) => {
+            const isBank = d.phuongThuc === 'chuyenkhoan';
+            const isCard = d.phuongThuc === 'thecao';
+            const isPending = d.trangThai === 'cho_duyet';
+            const isAuto    = d.trangThai === 'da_duyet_tu_dong';
+            const isDone    = d.trangThai === 'da_duyet' || isAuto;
+            const isRejected= d.trangThai === 'tu_choi';
+
+            const badgeClass = isPending ? 'badge-cho' : isDone ? 'badge-duyet' : isRejected ? 'badge-tu' : 'badge-auto';
+            const badgeText  = isPending ? '⏳ Chờ duyệt' : isAuto ? '🤖 Auto duyệt' : isDone ? '✅ Đã duyệt' : '❌ Từ chối';
+
+            const methodHtml = isBank
+                ? `<span class="dep-method method-bank"><i class="fas fa-university"></i> Chuyển khoản</span>`
+                : `<span class="dep-method method-card"><i class="fas fa-credit-card"></i> Thẻ cào</span>`;
+
+            const timeStr = new Date(parseInt(id)).toLocaleString('vi-VN');
+
+            // Thông tin chi tiết theo loại
+            let detailHtml = '';
+            if (isBank) {
+                detailHtml = `
+                    <p>💰 Số tiền: <span class="amt">${(d.soTien||0).toLocaleString()}đ</span></p>
+                    <p>📝 Nội dung CK: <b>${d.noiDung || '—'}</b></p>`;
+            } else if (isCard) {
+                const recv = d.soTienThucNhan || Math.floor((d.meNhGia||0) * 0.82);
+                detailHtml = `
+                    <p>💳 Loại thẻ: <b>${d.loaiThe || '—'}</b> &nbsp;|&nbsp; Mệnh giá: <span class="amt">${(d.meNhGia||0).toLocaleString()}đ</span></p>
+                    <p>✅ Thực nhận (82%): <span class="recv">${recv.toLocaleString()}đ</span></p>
+                    <div class="dep-card-detail">
+                        🔑 PIN: <b>${d.pinThe || '—'}</b><br>
+                        🔢 Serial: <b>${d.seriThe || '—'}</b>
+                    </div>`;
+            }
+
+            const ghiChuHtml = d.ghiChu
+                ? `<p style="font-size:12px;color:#64748b;margin-top:6px;">💬 ${d.ghiChu}</p>` : '';
+
+            const actionHtml = isPending
+                ? `<button class="btn-approve" onclick="approveDep('${id}')"><i class="fas fa-check"></i> DUYỆT & CỘNG TIỀN</button>
+                   <button class="btn-reject"  onclick="rejectDep('${id}')"><i class="fas fa-times"></i> TỪ CHỐI</button>`
+                : `<button class="btn-approve" disabled style="opacity:.35"><i class="fas fa-check"></i> ĐÃ XỬ LÝ</button>`;
+
+            return `
+            <div class="dep-item ${d.trangThai}">
+                <div class="dep-header">
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        ${methodHtml}
+                        <span class="dep-badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <span style="font-size:11px;color:#64748b;">${timeStr}</span>
                 </div>
-                <span class="dc-time">${time}</span>
-            </div>
-            ${body}${note}
-            <div class="dc-actions">${action}</div>
-        </div>`;
-    }).join('');
-}
+                <div class="dep-info">
+                    <p>👤 Email: <b style="color:var(--sky)">${d.email || '—'}</b></p>
+                    ${detailHtml}
+                    ${ghiChuHtml}
+                </div>
+                <div class="dep-actions">${actionHtml}</div>
+            </div>`;
+        }).join('');
+    }
 
-window.approveDep = async id => {
-    const dep = allDeps.find(([k])=>k===id)?.[1];
-    if (!dep) return toast('Không tìm thấy!','err');
-    const amt = dep.phuongThuc==='thecao'
-        ?(dep.soTienThucNhan||Math.floor((dep.meNhGia||0)*0.82)):dep.soTien;
-    if (!confirm(`Xác nhận CỘNG ${amt.toLocaleString()}đ cho ${dep.email}?`)) return;
-    try {
-        const uq = query(ref(rtdb,'users'),orderByChild('email'),equalTo(dep.email));
-        const snap = await get(uq);
-        if (!snap.exists()) return toast('Không tìm thấy tài khoản!','err');
-        const uid = Object.keys(snap.val())[0];
-        const u   = snap.val()[uid];
-        await update(ref(rtdb,`users/${uid}`),{
-            balance:(u.balance||0)+amt, totalDeposit:(u.totalDeposit||0)+amt
-        });
-        await update(ref(rtdb,`naptien/${id}`),{
-            trangThai:'da_duyet',soTienThucNhan:amt,
-            duyetBoi:'admin',thoiGianDuyet:Date.now(),
-            ghiChu:`Admin đã duyệt, cộng ${amt.toLocaleString()}đ`
-        });
-        toast(`Đã cộng ${amt.toLocaleString()}đ cho ${dep.email}`);
-    } catch(e){ toast(e.message,'err'); }
-};
+    window.approveDep = async (id) => {
+        const dep = allDeposits.find(([k]) => k === id)?.[1];
+        if (!dep) return showToast("Không tìm thấy yêu cầu!", 'error');
 
-window.rejectDep = async id => {
-    const dep = allDeps.find(([k])=>k===id)?.[1];
-    if (!dep) return;
-    const lydo = prompt(`Lý do từ chối yêu cầu của ${dep.email}:`);
-    if (lydo===null) return;
-    try {
-        await update(ref(rtdb,`naptien/${id}`),{
-            trangThai:'tu_choi',duyetBoi:'admin',
-            thoiGianDuyet:Date.now(),
-            ghiChu:lydo||'Admin từ chối yêu cầu'
-        });
-        toast(`Đã từ chối yêu cầu của ${dep.email}`);
-    } catch(e){ toast(e.message,'err'); }
-};
+        const soTienCong = dep.phuongThuc === 'thecao'
+            ? (dep.soTienThucNhan || Math.floor((dep.meNhGia||0) * 0.82))
+            : dep.soTien;
+
+        if (!confirm(`Xác nhận CỘNG ${soTienCong.toLocaleString()}đ cho ${dep.email}?`)) return;
+
+        try {
+            // Tìm uid từ email
+            const userQuery = query(ref(rtdb, 'users'), orderByChild('email'), equalTo(dep.email));
+            const userSnap  = await get(userQuery);
+            if (!userSnap.exists()) return showToast("Không tìm thấy tài khoản khách!", 'error');
+
+            const uid      = Object.keys(userSnap.val())[0];
+            const userData = userSnap.val()[uid];
+
+            // Cộng tiền cho khách
+            await update(ref(rtdb, `users/${uid}`), {
+                balance:      (userData.balance      || 0) + soTienCong,
+                totalDeposit: (userData.totalDeposit || 0) + soTienCong
+            });
+
+            // Cập nhật trạng thái nhánh naptien
+            await update(ref(rtdb, `naptien/${id}`), {
+                trangThai:      'da_duyet',
+                soTienThucNhan: soTienCong,
+                duyetBoi:       'admin',
+                thoiGianDuyet:  Date.now(),
+                ghiChu:         `Admin đã duyệt, cộng ${soTienCong.toLocaleString()}đ`
+            });
+
+            showToast(`✅ Đã cộng ${soTienCong.toLocaleString()}đ cho ${dep.email}`);
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
+    };
+
+    window.rejectDep = async (id) => {
+        const dep = allDeposits.find(([k]) => k === id)?.[1];
+        if (!dep) return;
+        const lydo = prompt(`Nhập lý do từ chối yêu cầu của ${dep.email} (để trống nếu không cần):`);
+        if (lydo === null) return; // Nhấn Cancel
+
+        try {
+            await update(ref(rtdb, `naptien/${id}`), {
+                trangThai:     'tu_choi',
+                duyetBoi:      'admin',
+                thoiGianDuyet: Date.now(),
+                ghiChu:        lydo || 'Admin từ chối yêu cầu'
+            });
+            showToast(`Đã từ chối yêu cầu của ${dep.email}`);
+        } catch (e) {
+            showToast("Lỗi: " + e.message, 'error');
+        }
+    };
+
 </script>
 </body>
-</html>
+</html> 
