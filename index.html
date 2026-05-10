@@ -832,6 +832,10 @@
             <span class="fp fp-uncomm" onclick="window.setFruitFilter('uncomm')"> Không phổ biến (20k+)</span>
             <span class="fp fp-common" onclick="window.setFruitFilter('common')"> Phổ biến</span>
         </div>
+        <div class="filter-pills" style="margin-top: 10px;">
+            <span class="fp fp-perm active" onclick="window.setFruitTypeFilter('perm')"> Trái Vĩnh Viễn</span>
+            <span class="fp fp-chest" onclick="window.setFruitTypeFilter('chest')"> Trái Rương</span>
+        </div>
         <div class="sort-row">
             <button class="sort-btn active" id="sb-default" onclick="window.setFruitSort('default')"> Mặc định</button>
             <button class="sort-btn" id="sb-high"    onclick="window.setFruitSort('high')"> Giá cao → thấp</button>
@@ -909,7 +913,7 @@
     const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
 
     let isMaintenance = false, pendingItem = null, currentBalance = 0, authMode = 'login';
-    let fruitFilter = 'all', fruitSort = 'default';
+    let fruitFilter='all', fruitSort='default', fruitTypeFilter='perm';
     let wishlist = JSON.parse(localStorage.getItem('dexsty_wl') || '[]');
 
     // ═══════ TOAST ═══════
@@ -1411,8 +1415,15 @@
 
     window.setFruitFilter = (r) => {
         fruitFilter=r;
-        document.querySelectorAll('.fp').forEach(p=>p.classList.remove('active'));
+        document.querySelectorAll('.filter-pills:nth-child(1) .fp').forEach(b=>b.classList.remove('active'));
         const pill=document.querySelector(`.fp-${r}`); if(pill) pill.classList.add('active');
+        applyFruitControls();
+    };
+
+    window.setFruitTypeFilter = (t) => {
+        fruitTypeFilter = t;
+        document.querySelectorAll('.filter-pills:nth-child(2) .fp').forEach(b=>b.classList.remove('active'));
+        const pill = document.querySelector(`.fp-${t}`); if(pill) pill.classList.add('active');
         applyFruitControls();
     };
     window.setFruitSort = (s) => {
@@ -1424,7 +1435,14 @@
     function applyFruitControls(){
         const grid=document.getElementById('fruit-grid'); if(!grid) return;
         const cards=Array.from(grid.querySelectorAll('.card[data-name]'));
-        cards.forEach(c=>{ const r=c.getAttribute('data-rarity')||'common'; c.style.display=(fruitFilter==='all'||r===fruitFilter)?'':'none'; });
+        cards.forEach(c=>{ 
+            const r=c.getAttribute('data-rarity')||'common';
+            const name = (c.getAttribute('data-name')||'').toLowerCase();
+            const isChest = name.includes('rương');
+            const typeMatch = (fruitTypeFilter === 'chest') ? isChest : !isChest;
+            const rarityMatch = (fruitFilter === 'all' || r === fruitFilter);
+            c.style.display = (typeMatch && rarityMatch) ? '' : 'none';
+        });
         if(fruitSort!=='default'){
             const vis=cards.filter(c=>c.style.display!=='none');
             vis.sort((a,b)=>{
@@ -1549,6 +1567,8 @@
         {n:"+1 Storage",p:56000,t:"gp",i:"https://i.imgur.com/O9sbGMx.jpeg"},
         {n:"Fast Boats",p:49000,t:"gp",i:"https://i.imgur.com/FQkdkNT.jpeg"},
         {n:"x2 Drop Chance",p:49000,t:"gp",i:"https://i.imgur.com/3ifB2RS.jpeg"},
+        {n:"Dragon (Rương)",p:50000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
+        {n:"Kitsune (Rương)",p:45000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
         {n:"Dragon",p:675000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
         {n:"Kitsune",p:540000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
         {n:"Control",p:540000,t:"f",i:"https://i.imgur.com/66dqB98.jpeg"},
