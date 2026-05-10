@@ -688,6 +688,7 @@
         <table class="order-table">
             <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color:#7c3aed;">---</td></tr>
             <tr id="row-toc" style="display:none;"><td class="label">Chọn Tộc V4:</td><td class="value"><select id="selectToc" class="pay-input" style="margin:0;"><option value="Quỷ">Quỷ (Ghoul)</option><option value="Thiên thần">Thiên thần (Angel)</option><option value="Thỏ">Thỏ (Mink)</option><option value="Người">Người (Human)</option><option value="Cyborg">Cyborg</option><option value="Cá">Cá (Fishman)</option></select></td></tr>
+            <tr id="row-dragon-type" style="display:none;"><td class="label">Loại Rồng:</td><td class="value"><select id="selectDragonType" class="pay-input" style="margin:0;" onchange="window.updateOrderPrice()"><option value="Rồng Đông">Rồng Đông (370k)</option><option value="Rồng Tây">Rồng Tây (420k)</option></select></td></tr>
             <tr id="row-quantity" style="display:none;"><td class="label">Số lượng:</td><td class="value"><input type="number" id="orderQuantity" value="1" min="1" class="pay-input" oninput="window.updateOrderPrice()"></td></tr>
             <tr><td class="label">Số dư:</td><td class="value" id="userBalanceText" style="color:#ef4444;">0đ</td></tr>
             <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr>
@@ -1057,7 +1058,9 @@
         document.getElementById('orderQuantity').value=1;
 
         const isChest = n.toLowerCase().includes('rương');
+        const isDragonChest = n.toLowerCase().includes('dragon (rương)');
         document.getElementById('row-quantity').style.display = isChest ? 'table-row' : 'none';
+        document.getElementById('row-dragon-type').style.display = isDragonChest ? 'table-row' : 'none';
         document.getElementById('chest-note').style.display = isChest ? 'block' : 'none';
 
         if(type==='acc'){
@@ -1082,7 +1085,12 @@
 
     window.updateOrderPrice = () => {
         const qty = parseInt(document.getElementById('orderQuantity').value) || 1;
-        const total = pendingItem.price * qty;
+        let price = pendingItem.price;
+        if(pendingItem.name.toLowerCase().includes('dragon (rương)')){
+            const dragonType = document.getElementById('selectDragonType').value;
+            price = (dragonType === 'Rồng Đông') ? 370000 : 420000;
+        }
+        const total = price * qty;
         document.getElementById('itemPriceText').innerText = total.toLocaleString() + 'đ';
     };
 
@@ -1091,10 +1099,15 @@
               robloxPass=document.getElementById('robloxPass').value.trim(),
               roblox2fa=document.getElementById('roblox2fa').value.trim(),
               qty=parseInt(document.getElementById('orderQuantity').value)||1,
-              selectedToc=document.getElementById('selectToc').value;
+              selectedToc=document.getElementById('selectToc').value,
+              dragonType=document.getElementById('selectDragonType').value;
         
         const isChest = pendingItem.name.toLowerCase().includes('rương');
-        const totalPrice = pendingItem.price * qty;
+        const isDragonChest = pendingItem.name.toLowerCase().includes('dragon (rương)');
+        
+        let price = pendingItem.price;
+        if(isDragonChest) price = (dragonType === 'Rồng Đông') ? 370000 : 420000;
+        const totalPrice = price * qty;
 
         if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");
         if(pendingItem.type!=='acc' && !robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
@@ -1102,6 +1115,7 @@
         if(currentBalance < totalPrice) return showAlert("Số dư không đủ!");
 
         let finalItemName = pendingItem.name;
+        if(isDragonChest) finalItemName = `Dragon (Rương - ${dragonType})`;
         if(isChest) finalItemName += ` (SL: ${qty})`;
         if(pendingItem.name.toLowerCase().includes("tộc v4")) finalItemName+=` [Tộc: ${selectedToc}]`;
 
