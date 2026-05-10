@@ -880,7 +880,7 @@
     <!-- COMMUNITY -->
     <div class="community-card" style="margin-top:30px;">
         <h3> Tham Gia Cộng Đồng Dexsty</h3>
-        <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">Kết nối cùng hàng trămtrăm game thủ Blox Fruits</p>
+        <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">Kết nối cùng hàng game thủ Blox Fruits</p>
         <div class="community-grid">
             <a href="https://discord.gg/m8KXj9X4VE" target="_blank" class="comm-link comm-discord"><i class="fab fa-discord"></i> Server Discord</a>
             <a href="https://zalo.me/g/yljafbbtokmaqznjc2wt" target="_blank" class="comm-link comm-zalo"><i class="fas fa-comment"></i> Nhóm Săn Levi Zalo</a>
@@ -893,8 +893,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
+    import { getDatabase, ref, onValue, set, get, update, query, orderByChild, limitToLast, equalTo } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";                      
+    
     const firebaseConfig = {
         apiKey: "AIzaSyAodrFbbkBhdSWA7oY_qz4FnoRUpQpsJls",
         authDomain: "dexsty-shop-f955d.firebaseapp.com",
@@ -1281,7 +1281,7 @@
             } catch (_) { /* SePay không khả dụng, tiếp tục chờ admin duyệt */ }
 
             // Nếu không tự động được → thông báo chờ admin
-            statusText.innerText = "✅ Đã ghi nhận! Admin sẽ duyệt trong 5-10 phút. Số dư sẽ cập nhật tự động.";
+            statusText.innerText = " Đã xác nhận nạp tiền thành công! tiền sẽ duyệt trong 5-10 phút. Số dư sẽ cập nhật tự động.";
             btn.innerHTML = '<i class="fas fa-check"></i> ĐÃ GỬI YÊU CẦU';
 
         } catch (e) {
