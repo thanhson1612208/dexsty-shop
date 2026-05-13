@@ -688,16 +688,13 @@
         <table class="order-table">
             <tr><td class="label">Sản phẩm:</td><td class="value" id="orderItemName" style="color:#7c3aed;">---</td></tr>
             <tr id="row-toc" style="display:none;"><td class="label">Chọn Tộc V4:</td><td class="value"><select id="selectToc" class="pay-input" style="margin:0;"><option value="Quỷ">Quỷ (Ghoul)</option><option value="Thiên thần">Thiên thần (Angel)</option><option value="Thỏ">Thỏ (Mink)</option><option value="Người">Người (Human)</option><option value="Cyborg">Cyborg</option><option value="Cá">Cá (Fishman)</option></select></td></tr>
-            <tr id="row-quantity" style="display:none;"><td class="label">Số lượng:</td><td class="value"><input type="number" id="orderQuantity" value="1" min="1" class="pay-input" oninput="window.updateOrderPrice()"></td></tr>
             <tr><td class="label">Số dư:</td><td class="value" id="userBalanceText" style="color:#ef4444;">0đ</td></tr>
             <tr id="row-user"><td class="label">Tài khoản:</td><td class="value"><input type="text" id="robloxUser" placeholder="Tên đăng nhập..." class="pay-input"></td></tr>
             <tr id="row-pass"><td class="label">Mật khẩu:</td><td class="value"><input type="text" id="robloxPass" placeholder="Mật khẩu..." class="pay-input"></td></tr>
             <tr id="row-2fa"><td class="label">2FA / Mã dự phòng:</td><td class="value"><input type="text" id="roblox2fa" placeholder="Mã 2FA (nếu có)..." class="pay-input"></td></tr>
             <tr><td class="label">Thành tiền:</td><td class="value" id="itemPriceText" style="font-size:17px;color:#7c3aed;">0đ</td></tr>
         </table>
-        <div id="chest-note" style="display:none;margin:14px 0;background:rgba(239,68,68,.05);padding:10px 12px;border-radius:8px;border:1px dashed #ef4444;font-size:11px;color:#ef4444;line-height:1.4;">
-            <b>LƯU Ý:</b> Nếu không có 2FA, hãy tắt bảo mật để Admin tự vào trade.
-        </div>
+
         <div style="margin:14px 0;background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
             <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:#64748b;">
                 <input type="checkbox" id="checkCorrect" style="width:15px;height:15px;margin:1px 0 0;background:#fff;border:1px solid #cbd5e1;">
@@ -836,10 +833,7 @@
             <span class="fp fp-uncomm" onclick="window.setFruitFilter('uncomm')"> Không phổ biến (20k+)</span>
             <span class="fp fp-common" onclick="window.setFruitFilter('common')"> Phổ biến</span>
         </div>
-        <div class="filter-pills" style="margin-top: 10px;">
-            <span class="fp fp-perm active" onclick="window.setFruitTypeFilter('perm')"> Trái Vĩnh Viễn</span>
-            <span class="fp fp-chest" onclick="window.setFruitTypeFilter('chest')"> Trái Rương</span>
-        </div>
+
         <div class="sort-row">
             <button class="sort-btn active" id="sb-default" onclick="window.setFruitSort('default')"> Mặc định</button>
             <button class="sort-btn" id="sb-high"    onclick="window.setFruitSort('high')"> Giá cao → thấp</button>
@@ -917,7 +911,7 @@
     const PURCHASE_WEBHOOK = "https://discord.com/api/webhooks/1486062088114798744/NIdkZaGVo549rigv63oC3X6fnHA5Hot5sBsAKUMpoBtSFZ5syeGWmrm8JprxVcqtH8sc";
 
     let isMaintenance = false, pendingItem = null, currentBalance = 0, authMode = 'login';
-    let fruitFilter='all', fruitSort='default', fruitTypeFilter='perm';
+    let fruitFilter='all', fruitSort='default';
     let wishlist = JSON.parse(localStorage.getItem('dexsty_wl') || '[]');
 
     // ═══════ TOAST ═══════
@@ -1050,69 +1044,48 @@
         currentBalance=snapshot.val()?.balance||0;
         document.getElementById('orderItemName').innerText=n;
         document.getElementById('userBalanceText').innerText=currentBalance.toLocaleString()+'đ';
+        document.getElementById('itemPriceText').innerText=p.toLocaleString()+'đ';
         document.getElementById('robloxUser').value="";
         document.getElementById('robloxPass').value="";
         document.getElementById('roblox2fa').value="";
         document.getElementById('checkCorrect').checked=false;
-        document.getElementById('orderQuantity').value=1;
-
-        const isChest = n.toLowerCase().includes('rương');
-        document.getElementById('row-quantity').style.display = isChest ? 'table-row' : 'none';
-        document.getElementById('chest-note').style.display = isChest ? 'block' : 'none';
-
         if(type==='acc'){
             document.getElementById('row-user').style.display='none';
             document.getElementById('row-pass').style.display='none';
             document.getElementById('row-2fa').style.display='none';
             document.getElementById('row-toc').style.display='none';
-        } else if(type==='service'||type==='robux'||isChest){
+        } else if(type==='service'||type==='robux'){
             document.getElementById('row-user').style.display='table-row';
             document.getElementById('row-pass').style.display='table-row';
             document.getElementById('row-2fa').style.display='table-row';
-            document.getElementById('row-toc').style.display=(!isChest && n.toLowerCase().includes("tộc v4"))?'table-row':'none';
+            document.getElementById('row-toc').style.display=n.toLowerCase().includes("tộc v4")?'table-row':'none';
         } else {
             document.getElementById('row-user').style.display='table-row';
             document.getElementById('row-pass').style.display='none';
             document.getElementById('row-2fa').style.display='none';
             document.getElementById('row-toc').style.display='none';
         }
-        window.updateOrderPrice();
         document.getElementById('robloxModal').style.display='flex';
-    };
-
-    window.updateOrderPrice = () => {
-        const qty = parseInt(document.getElementById('orderQuantity').value) || 1;
-        const total = pendingItem.price * qty;
-        document.getElementById('itemPriceText').innerText = total.toLocaleString() + 'đ';
     };
 
     window.confirmPurchase = async () => {
         const robloxName=document.getElementById('robloxUser').value.trim(),
               robloxPass=document.getElementById('robloxPass').value.trim(),
               roblox2fa=document.getElementById('roblox2fa').value.trim(),
-              qty=parseInt(document.getElementById('orderQuantity').value)||1,
               selectedToc=document.getElementById('selectToc').value;
-        
-        const isChest = pendingItem.name.toLowerCase().includes('rương');
-        const totalPrice = pendingItem.price * qty;
-
         if(!document.getElementById('checkCorrect').checked) return showAlert("Vui lòng tích xác nhận thông tin!");
-        if(pendingItem.type!=='acc' && !robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
-        if((isChest || pendingItem.type==='service' || pendingItem.type==='robux') && !robloxPass) return showAlert("Vui lòng điền mật khẩu Roblox!");
-        if(currentBalance < totalPrice) return showAlert("Số dư không đủ!");
-
-        let finalItemName = pendingItem.name;
-        if(isChest) finalItemName += ` (SL: ${qty})`;
+        if(pendingItem.type!=='acc'&&!robloxName) return showAlert("Vui lòng điền tên tài khoản Roblox!");
+        if(currentBalance<pendingItem.price) return showAlert("Số dư không đủ!");
+        let finalItemName=pendingItem.name;
         if(pendingItem.name.toLowerCase().includes("tộc v4")) finalItemName+=` [Tộc: ${selectedToc}]`;
-
         try {
-            await update(ref(rtdb,'users/'+auth.currentUser.uid),{balance:currentBalance-totalPrice});
+            await update(ref(rtdb,'users/'+auth.currentUser.uid),{balance:currentBalance-pendingItem.price});
             const orderId=Date.now(), orderData={
                 uid:auth.currentUser.uid,email:auth.currentUser.email,
                 robloxAccount:robloxName||"MUA ACC",item:finalItemName,
-                price:totalPrice,status:"Chờ xử lý",timestamp:orderId
+                price:pendingItem.price,status:"Chờ xử lý",timestamp:orderId
             };
-            if(pendingItem.type==='service'||pendingItem.type==='robux'||isChest){
+            if(pendingItem.type==='service'||pendingItem.type==='robux'){
                 orderData.robloxPass=robloxPass; orderData.roblox2fa=roblox2fa;
             }
             await set(ref(rtdb,'orders/'+orderId),orderData);
@@ -1440,15 +1413,8 @@
 
     window.setFruitFilter = (r) => {
         fruitFilter=r;
-        document.querySelectorAll('.filter-pills:nth-child(1) .fp').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.fp').forEach(b=>b.classList.remove('active'));
         const pill=document.querySelector(`.fp-${r}`); if(pill) pill.classList.add('active');
-        applyFruitControls();
-    };
-
-    window.setFruitTypeFilter = (t) => {
-        fruitTypeFilter = t;
-        document.querySelectorAll('.filter-pills:nth-child(2) .fp').forEach(b=>b.classList.remove('active'));
-        const pill = document.querySelector(`.fp-${t}`); if(pill) pill.classList.add('active');
         applyFruitControls();
     };
     window.setFruitSort = (s) => {
@@ -1460,14 +1426,7 @@
     function applyFruitControls(){
         const grid=document.getElementById('fruit-grid'); if(!grid) return;
         const cards=Array.from(grid.querySelectorAll('.card[data-name]'));
-        cards.forEach(c=>{ 
-            const r=c.getAttribute('data-rarity')||'common';
-            const name = (c.getAttribute('data-name')||'').toLowerCase();
-            const isChest = name.includes('rương');
-            const typeMatch = (fruitTypeFilter === 'chest') ? isChest : !isChest;
-            const rarityMatch = (fruitFilter === 'all' || r === fruitFilter);
-            c.style.display = (typeMatch && rarityMatch) ? '' : 'none';
-        });
+        cards.forEach(c=>{ const r=c.getAttribute('data-rarity')||'common'; c.style.display=(fruitFilter==='all'||r===fruitFilter)?'':'none'; });
         if(fruitSort!=='default'){
             const vis=cards.filter(c=>c.style.display!=='none');
             vis.sort((a,b)=>{
@@ -1592,28 +1551,6 @@
         {n:"+1 Storage",p:56000,t:"gp",i:"https://i.imgur.com/O9sbGMx.jpeg"},
         {n:"Fast Boats",p:49000,t:"gp",i:"https://i.imgur.com/FQkdkNT.jpeg"},
         {n:"x2 Drop Chance",p:49000,t:"gp",i:"https://i.imgur.com/3ifB2RS.jpeg"},
-        {n:"Dragon (Rương)",p:50000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
-        {n:"Kitsune (Rương)",p:45000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
-        {n:"Control (Rương)",p:40000,t:"f",i:"https://i.imgur.com/66dqB98.jpeg"},
-        {n:"Yeti (Rương)",p:35000,t:"f",i:"https://i.imgur.com/J1Ne7dv.jpeg"},
-        {n:"Tiger (Rương)",p:35000,t:"f",i:"https://i.imgur.com/0dXUzXD.jpeg"},
-        {n:"Spirit (Rương)",p:30000,t:"f",i:"https://i.imgur.com/l5aIdw9.jpeg"},
-        {n:"Gas (Rương)",p:30000,t:"f",i:"https://i.imgur.com/zy4ChAF.jpeg"},
-        {n:"Venom (Rương)",p:25000,t:"f",i:"https://i.imgur.com/QzP5E0E.jpeg"},
-        {n:"Shadow (Rương)",p:25000,t:"f",i:"https://i.imgur.com/LZAPvPb.jpeg"},
-        {n:"Dough (Rương)",p:35000,t:"f",i:"https://i.imgur.com/6rEQHI5.jpeg"},
-        {n:"Mammoth (Rương)",p:20000,t:"f",i:"https://i.imgur.com/Ez2xudQ.jpeg"},
-        {n:"T-Rex (Rương)",p:20000,t:"f",i:"https://i.imgur.com/oqFHqzo.jpeg"},
-        {n:"Gravity (Rương)",p:15000,t:"f",i:"https://i.imgur.com/LghKtc7.jpeg"},
-        {n:"Blizzard (Rương)",p:15000,t:"f",i:"https://i.imgur.com/SIeh0Te.jpeg"},
-        {n:"Pain (Rương)",p:10000,t:"f",i:"https://i.imgur.com/p3CqyEK.jpeg"},
-        {n:"Rumble (Rương)",p:15000,t:"f",i:"https://i.imgur.com/xpQUYLW.jpeg"},
-        {n:"Portal (Rương)",p:15000,t:"f",i:"https://i.imgur.com/Jftqt3B.jpeg"},
-        {n:"Phoenix (Rương)",p:10000,t:"f",i:"https://i.imgur.com/aUB6T44.jpeg"},
-        {n:"Sound (Rương)",p:10000,t:"f",i:"https://i.imgur.com/LKQol8k.jpeg"},
-        {n:"Spider (Rương)",p:8000,t:"f",i:"https://i.imgur.com/ID0a36h.jpeg"},
-        {n:"Love (Rương)",p:8000,t:"f",i:"https://i.imgur.com/cd02nrF.jpeg"},
-        {n:"Buddha (Rương)",p:15000,t:"f",i:"https://i.imgur.com/y9oLYWT.jpeg"},
         {n:"Dragon",p:675000,t:"f",i:"https://i.imgur.com/hd885Pk.jpeg"},
         {n:"Kitsune",p:540000,t:"f",i:"https://i.imgur.com/VT4sDLv.jpeg"},
         {n:"Control",p:540000,t:"f",i:"https://i.imgur.com/66dqB98.jpeg"},
@@ -1877,3 +1814,4 @@
 </div>
 
 <!    </html> 
+ 
